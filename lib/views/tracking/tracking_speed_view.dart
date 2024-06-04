@@ -3,7 +3,10 @@ import 'package:robot/views/tracking/bar_view.dart';
 
 import '../../constants/constants.dart';
 import '../../model/game_model.dart';
+import '../../route/route.dart';
 import '../../utils/local_data_util.dart';
+import '../../utils/navigator_util.dart';
+import '../../utils/toast.dart';
 import '../base/avatar_view.dart';
 
 class TrackingSpeedView extends StatefulWidget {
@@ -61,36 +64,29 @@ class _TrackingSpeedViewState extends State<TrackingSpeedView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Constants.boldWhiteTextWidget('Shoot', 26),
                       SizedBox(
-                        height: 36,
-                      ),
-                      Constants.regularWhiteTextWidget('Shoot', 14),
-                      SizedBox(
-                        height: 16,
+                        height: 10,
                       ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Constants.boldWhiteTextWidget(_datas.length > 0 ? _datas.first.speed : '-', 20,height: 0.8),
-                          SizedBox(width: 8,),
-                           Constants.boldWhiteTextWidget('km/h', 12,height: 1.0),
+                          Constants.boldWhiteTextWidget(_datas.length > 0 ? _datas.first.speed : '-', 30,height: 0.8),
+                          SizedBox(width: 2,),
+                           Constants.boldWhiteTextWidget('km/h', 14,height: 1.0),
                         ],
-                      ),
-                      SizedBox(
-                        height: 36,
                       ),
                     ],
                   ),
                   Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
-                        height: 36,
-                      ),
                       Row(
                         children: [
-                          Constants.regularWhiteTextWidget('Today', 14),
+                          Constants.boldWhiteTextWidget('Today', 20),
                           SizedBox(
                             width: 4,
                           ),
@@ -104,21 +100,30 @@ class _TrackingSpeedViewState extends State<TrackingSpeedView> {
                       SizedBox(
                         height: 16,
                       ),
-                      Row(
-                        children: [
-                          Constants.regularWhiteTextWidget('Video', 14),
-                          SizedBox(
-                            width: 4,
-                          ),
-                          Icon(
-                            Icons.play_circle_fill_sharp,
-                            size: 16,
-                            color: Colors.white,
-                          )
-                        ],
-                      ),
-                      SizedBox(
-                        height: 36,
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        child: Row(
+                          children: [
+                            Constants.regularWhiteTextWidget('Video', 20),
+                            SizedBox(
+                              width: 4,
+                            ),
+                            Icon(
+                              Icons.play_circle_fill_sharp,
+                              size: 16,
+                              color: Colors.white,
+                            )
+                          ],
+                        ),
+                        onTap: (){
+                          if(_datas.length == 0){
+                            TTToast.showToast('No video');
+                          }else if(_datas.first.path.length == 0){
+                            TTToast.showToast('No video');
+                          }else{
+                            NavigatorUtil.push(Routes.videoplay,arguments: _datas.first.path);
+                          }
+                        },
                       ),
                     ],
                   ),

@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:robot/constants/constants.dart';
 import 'package:robot/controllers/base/base_view_controller.dart';
 import 'package:robot/route/route.dart';
+import 'package:robot/utils/blue_tooth_manager.dart';
 import 'package:robot/utils/navigator_util.dart';
+import 'package:robot/utils/toast.dart';
+import 'package:robot/utils/tt_dialog.dart';
 import 'package:robot/views/base/avatar_view.dart';
 import 'package:video_player/video_player.dart';
 
@@ -55,7 +58,12 @@ class _TrainersHomeControllerState extends State<TrainersHomeController> {
           Expanded(child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: (){
-              NavigatorUtil.push(Routes.gamemodel);
+              int bleConectedCount = BluetoothManager().conectedDeviceCount.value;
+              if(bleConectedCount <= 0){
+                TTToast.showErrorInfo('Pls. Connect Digital Shooter Tutor Firstly！',duration: 3000);
+              }else{
+                NavigatorUtil.push(Routes.gamemodel);
+              }
             },
             child: Container(
               width: Constants.screenWidth(context) - 32,
@@ -65,8 +73,9 @@ class _TrainersHomeControllerState extends State<TrainersHomeController> {
                   color: Colors.red
               ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  SizedBox(height: 64,),
                  AvatarView(),
                   SizedBox(height: 32,),
                   Text('DIGITAL TRAINERS',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.white),)

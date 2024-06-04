@@ -45,7 +45,8 @@ class _JuniorControllerState extends State<JuniorController> {
           // 先保存数据
           Gamemodel model =
               Gamemodel.modelFromJson({'score': _score.toString()});
-          await DatabaseHelper().insertData(kDataBaseTableName, model);
+          model.speed = maxSpeed.toString();
+          await DatabaseHelper().insertData(kDataBaseTableName, model); // 数据存入数据库
           // 初始化状态
           initStatu();
         }
@@ -68,6 +69,7 @@ class _JuniorControllerState extends State<JuniorController> {
     BluetoothManager().dataChange = (BLEDataType type) async {
       if (type == BLEDataType.targetIn) {
         if (!firsthit) {
+          _speed = '0';
           firsthit = true;
           // 熄灭所有的灯光
           BLESendUtil.closeAllLight();
@@ -104,7 +106,16 @@ class _JuniorControllerState extends State<JuniorController> {
             }
           }
         }
-      } else {}
+      }else if (type == BLEDataType.speed) {
+        // 速度
+        _speed = BluetoothManager().gameData.speed.toString();
+        if(maxSpeed < BluetoothManager().gameData.speed){
+          maxSpeed = BluetoothManager().gameData.speed;
+        }
+        setState(() {
+
+        });
+      }
     };
   }
 
@@ -131,6 +142,7 @@ class _JuniorControllerState extends State<JuniorController> {
     _secondsRemaining = 3;
     firsthit = false;
     begainGame = false;
+    maxSpeed = 0;
   }
 
   void _startCountdown() {
@@ -161,6 +173,8 @@ class _JuniorControllerState extends State<JuniorController> {
 
   int _secondsRemaining = 3; // 倒计时时间
   String _score = '0'; // 得分
+  String _speed = '0'; // 速度
+  int maxSpeed = 0;
   bool firsthit = false; // 首次击中
   bool begainGame = false;
 
@@ -219,7 +233,7 @@ class _JuniorControllerState extends State<JuniorController> {
               SizedBox(
                 height: 16,
               ),
-              SpeedView(speed: '0'),
+              SpeedView(speed: _speed.padLeft(3,'0')),
               SizedBox(
                 height: 32,
               ),
@@ -234,6 +248,7 @@ class _JuniorControllerState extends State<JuniorController> {
     _countdownTimer.stop();
     _countdownTimer.dispose();
     subscription.cancel();
+    BLESendUtil.blueLightBlink();
     //  WidgetsBinding.instance.removeObserver(this);
   }
 }

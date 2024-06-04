@@ -21,13 +21,14 @@ class NoviceController extends StatefulWidget {
   State<NoviceController> createState() => _NoviceControllerState();
 }
 
-class _NoviceControllerState extends State<NoviceController>  with WidgetsBindingObserver{
-
-  late CountdownTimer _countdownTimer ;
+class _NoviceControllerState extends State<NoviceController>
+    with WidgetsBindingObserver {
+  late CountdownTimer _countdownTimer;
 
   List<int> doneLights = []; // 已经关闭的灯
   int _secondsRemaining = 3; // 倒计时时间
   String _score = '0'; // 得分
+  String _speed = '0'; // 速度
   bool firsthit = false; // 首次击中
   bool begainGame = false;
 
@@ -76,7 +77,13 @@ class _NoviceControllerState extends State<NoviceController>  with WidgetsBindin
             }
           }
         }
-      } else {}
+      } else if (type == BLEDataType.speed) {
+        // 速度
+        _speed = BluetoothManager().gameData.speed.toString();
+        setState(() {
+
+        });
+      }
     };
   }
 
@@ -104,9 +111,7 @@ class _NoviceControllerState extends State<NoviceController>  with WidgetsBindin
       } else {
         timer.cancel(); // 倒计时结束，取消定时器
         _score = 'GO';
-        setState(() {
-
-        });
+        setState(() {});
         begainGame = true;
         BLESendUtil.openAllBlueLight();
         // 正式开始游戏
@@ -136,62 +141,65 @@ class _NoviceControllerState extends State<NoviceController>  with WidgetsBindin
   @override
   Widget build(BuildContext context) {
     return BaseViewController(
-      paused: (){
+        paused: () {
           BLESendUtil.appOffLine();
           BLESendUtil.blueLightBlink();
           NavigatorUtil.popToRoot();
-      },
+        },
         child: Padding(
-      padding: EdgeInsets.only(left: 32, right: 32),
-      child: Column(
-        children: [
-          SizedBox(
-            height: 32,
-          ),
-          Constants.regularBaseTextWidget('GAME TIME', 16),
-          StopWatchView(formaterText: _countdownTimer.formattedTime,),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage('images/gamemodel/计分栏蓝色底带红框.png'),
-                      fit: BoxFit.fill)),
-              child: Stack(
-                children: [
-                  Positioned(
-                    child: Container(
-                      child: Center(
-                        child: Constants.digiRegularWhiteTextWidget(
-                            _score == 'GO' ? 'GO' : _score.padLeft(3, '0'), 160,
-                            textAlign: TextAlign.center),
-                      ),
-                    ),
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    bottom: 0,
-                  ),
-                  Positioned(
-                    child: Constants.boldWhiteTextWidget('SCORE', 16,
-                        textAlign: TextAlign.end),
-                    left: 0,
-                    right: 32,
-                    bottom: 32,
-                  )
-                ],
+          padding: EdgeInsets.only(left: 32, right: 32),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 32,
               ),
-            ),
+              Constants.regularBaseTextWidget('GAME TIME', 16),
+              StopWatchView(
+                formaterText: _countdownTimer.formattedTime,
+              ),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage('images/gamemodel/计分栏蓝色底带红框.png'),
+                          fit: BoxFit.fill)),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        child: Container(
+                          child: Center(
+                            child: Constants.digiRegularWhiteTextWidget(
+                                _score == 'GO' ? 'GO' : _score.padLeft(3, '0'),
+                                160,
+                                textAlign: TextAlign.center),
+                          ),
+                        ),
+                        left: 0,
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
+                      ),
+                      Positioned(
+                        child: Constants.boldWhiteTextWidget('SCORE', 16,
+                            textAlign: TextAlign.end),
+                        left: 0,
+                        right: 32,
+                        bottom: 32,
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              SpeedView(speed: _speed.padLeft(3,'0')),
+              SizedBox(
+                height: 32,
+              ),
+            ],
           ),
-          SizedBox(
-            height: 16,
-          ),
-          SpeedView(speed: '0'),
-          SizedBox(
-            height: 32,
-          ),
-        ],
-      ),
-    ));
+        ));
   }
 
   @override

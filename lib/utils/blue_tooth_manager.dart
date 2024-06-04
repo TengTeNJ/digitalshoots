@@ -36,6 +36,7 @@ class BluetoothManager {
   GameData gameData = GameData();
 
   Function(BLEDataType type)? dataChange;
+  Function(BLEDataType type)? deviceinfoChange; // 设备基本信息改变
 
   final ValueNotifier<int> deviceListLength = ValueNotifier(-1);
 
@@ -133,13 +134,16 @@ class BluetoothManager {
             serviceId: Uuid.parse(kBLE_SERVICE_NOTIFY_UUID),
             characteristicId: Uuid.parse(kBLE_CHARACTERISTIC_NOTIFY_UUID),
             deviceId: model.device.id);
-        final writerCharacteristic = QualifiedCharacteristic(
-            serviceId: Uuid.parse(kBLE_SERVICE_WRITER_UUID),
-            characteristicId: Uuid.parse(kBLE_CHARACTERISTIC_WRITER_UUID),
-            deviceId: model.device.id);
-        model.notifyCharacteristic = notifyCharacteristic;
-        model.writerCharacteristic = writerCharacteristic;
 
+        model.notifyCharacteristic = notifyCharacteristic;
+        // 确保不是测速仪
+        if(model.device.name != kBLEDevice_Name){
+          final writerCharacteristic = QualifiedCharacteristic(
+              serviceId: Uuid.parse(kBLE_SERVICE_WRITER_UUID),
+              characteristicId: Uuid.parse(kBLE_CHARACTERISTIC_WRITER_UUID),
+              deviceId: model.device.id);
+          model.writerCharacteristic = writerCharacteristic;
+        }
         //  给digital shoots设备发送上线通知，不能给测速器发送
        if(model.device.name == kBLEDevice_NewName){
          writerDataToDevice(model, onLineData());
@@ -164,7 +168,8 @@ class BluetoothManager {
           // if (gameUtil.nowISGamePage) {
           //   BluetoothDataParse.parseData(data);
           // }
-          BluetoothDataParse.parseData(data);
+          print('更新数据===${data}');
+          BluetoothDataParse.parseData(data,model);
         });
       } else if (connectionStateUpdate.connectionState ==
           DeviceConnectionState.disconnected) {
@@ -212,4 +217,8 @@ class BluetoothManager {
   triggerCallback({BLEDataType type = BLEDataType.none}) {
     dataChange?.call(type);
   }
+  triggerDeviceInfoCallback({BLEDataType type = BLEDataType.dviceInfo}) {
+    deviceinfoChange?.call(type);
+  }
+
 }

@@ -21,6 +21,7 @@ import '../../utils/count_down_75_timer.dart';
 import '../../utils/data_base.dart';
 import '../../utils/global.dart';
 import '../../utils/notification_bloc.dart';
+
 class JuniorRecordController extends StatefulWidget {
   CameraDescription camera;
 
@@ -39,29 +40,31 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
 
   int _secondsRemaining = 3; // 倒计时时间
   String _score = '0'; // 得分
-  String _speed = '0' ;// 速度
+  String _speed = '0'; // 速度
   String _countDownString = '00:00';
   bool firsthit = false; // 首次击中
   bool begainGame = false;
+  int maxSpeed = 0;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     initCamera();
-   //  DeviceScreenRecorder.startRecordScreen(name: 'example');
-    subscription = EventBus().stream.listen((event) async{
-      if (event == kJuniorGameEnd){
+    //  DeviceScreenRecorder.startRecordScreen(name: 'example');
+    subscription = EventBus().stream.listen((event) async {
+      if (event == kJuniorGameEnd) {
         if (mounted) {
           resetTimer();
           TTToast.showLoading();
-          final _path =   await  DeviceScreenRecorder.stopRecordScreen();
+          final _path = await DeviceScreenRecorder.stopRecordScreen();
           print('视频保存路径:${_path}');
           await BLESendUtil.openAllBlueLight();
           // DeviceScreenRecorder
           // 先保存数据
-          Gamemodel model =
-          Gamemodel.modelFromJson({'score': _score.toString(),'path':_path});
+          Gamemodel model = Gamemodel.modelFromJson(
+              {'score': _score.toString(), 'path': _path});
+          model.speed = maxSpeed.toString();
           await DatabaseHelper().insertData(kDataBaseTableName, model);
           TTToast.hideLoading();
           // 初始化状态
@@ -90,6 +93,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
           // 熄灭所有的灯光
           BLESendUtil.closeAllLight();
           // 3 2 1 Go 然后开开始游戏
+          _score = '0';
           _startCountdown();
         } else {
           if (_countDownString == 'GO') {
@@ -122,7 +126,16 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
             }
           }
         }
-      } else {}
+      }else if (type == BLEDataType.speed) {
+        // 速度
+        _speed = BluetoothManager().gameData.speed.toString();
+        if(maxSpeed < BluetoothManager().gameData.speed){
+          maxSpeed = BluetoothManager().gameData.speed;
+        }
+        setState(() {
+
+        });
+      }
     };
   }
 
@@ -135,7 +148,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
   }
 
   /*重置定时器*/
-  resetTimer(){
+  resetTimer() {
     if (timer != null) {
       if (timer!.isActive) {
         timer!.cancel();
@@ -149,6 +162,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
     _secondsRemaining = 3;
     firsthit = false;
     begainGame = false;
+    maxSpeed = 0;
   }
 
   void _startCountdown() {
@@ -157,7 +171,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
       _countDownString = _secondsRemaining.toString();
       _secondsRemaining--; // 每秒递减
     });
-    Timer.periodic(Duration(seconds: 1), (timer) async{
+    Timer.periodic(Duration(seconds: 1), (timer) async {
       if (_secondsRemaining > 0) {
         setState(() {
           BLESendUtil.preGame(_secondsRemaining);
@@ -169,7 +183,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
         _countDownString = 'GO';
         setState(() {});
         // 开始录屏
-       await DeviceScreenRecorder.startRecordScreen(name: 'example');
+        await DeviceScreenRecorder.startRecordScreen(name: 'example');
         begainGame = true;
         BLESendUtil.juniorControlLight();
         autoRefreshControl();
@@ -178,6 +192,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
       }
     });
   }
+
   /*初始化相机*/
   initCamera() {
     // 初始化相机相关
@@ -212,7 +227,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
                                 'DIGITAL SHOTS', 20),
                             Column(
                               children: [
-                               AvatarView(),
+                                AvatarView(),
                                 SizedBox(
                                   height: 6,
                                 ),
@@ -238,8 +253,8 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
                               width: 80,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
-                                  color: hexStringToOpacityColor('#F8850B', 0.6)
-                              ),
+                                  color:
+                                      hexStringToOpacityColor('#F8850B', 0.6)),
                               child: Column(
                                 children: [
                                   SizedBox(
@@ -249,31 +264,40 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
                                   SizedBox(
                                     height: 8,
                                   ),
-                                  Constants.digiRegularWhiteTextWidget(_score.padLeft(3,'0'), 40),
+                                  Constants.digiRegularWhiteTextWidget(
+                                      _score.padLeft(3, '0'), 40),
                                 ],
                               ),
-
-
                             ),
                             SizedBox(
                               width: 12,
                             ),
                             Container(
                               height: 110,
-                              width: Constants.screenWidth(context) - 160 - 32 -8 - 24,
+                              width: Constants.screenWidth(context) -
+                                  160 -
+                                  32 -
+                                  8 -
+                                  24,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
-                                  color: hexStringToOpacityColor('#F8850B', 0.6)
-                              ),
+                                  color:
+                                      hexStringToOpacityColor('#F8850B', 0.6)),
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
                                 children: [
-                                  Constants.regularWhiteTextWidget('TIME LEFT', 16),
-                                  Constants.digiRegularWhiteTextWidget( begainGame == false ? _countDownString :   _countdownTimer.formattedTime, 60),
-                                  Constants.regularWhiteTextWidget('JUNIOR', 16),
+                                  Constants.regularWhiteTextWidget(
+                                      'TIME LEFT', 16),
+                                  Constants.digiRegularWhiteTextWidget(
+                                      begainGame == false
+                                          ? _countDownString
+                                          : _countdownTimer.formattedTime,
+                                      60),
+                                  Constants.regularWhiteTextWidget(
+                                      'JUNIOR', 16),
                                 ],
                               ),
-
                             ),
                             SizedBox(
                               width: 12,
@@ -283,8 +307,8 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
                               width: 80,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
-                                  color: hexStringToOpacityColor('#F8850B', 0.6)
-                              ),
+                                  color:
+                                      hexStringToOpacityColor('#F8850B', 0.6)),
                               child: Column(
                                 children: [
                                   SizedBox(
@@ -294,11 +318,10 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
                                   SizedBox(
                                     height: 8,
                                   ),
-                                  Constants.digiRegularWhiteTextWidget(_speed.padLeft(3,'0'), 40),
+                                  Constants.digiRegularWhiteTextWidget(
+                                      _speed.padLeft(3, '0'), 40),
                                 ],
                               ),
-
-
                             )
                           ],
                         )
@@ -311,5 +334,18 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
             }),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    DeviceScreenRecorder.stopRecordScreen();
+    BLESendUtil.blueLightBlink();
+    _countdownTimer.stop();
+    _countdownTimer.dispose();
+    timer?.cancel();
+    subscription.cancel();
+    _controller.dispose();
   }
 }

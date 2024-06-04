@@ -6,6 +6,10 @@ import 'package:robot/utils/local_data_util.dart';
 import 'package:robot/views/base/avatar_view.dart';
 import 'package:robot/views/tracking/line_area_view.dart';
 import 'dart:io';
+
+import '../../route/route.dart';
+import '../../utils/navigator_util.dart';
+import '../../utils/toast.dart';
 class TrackingScoreView extends StatefulWidget {
   const TrackingScoreView({super.key});
 
@@ -61,25 +65,21 @@ class _TrackingScoreViewState extends State<TrackingScoreView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Constants.boldWhiteTextWidget('Score', 26),
                       SizedBox(
-                        height: 36,
+                        height: 10,
                       ),
-                      Constants.regularWhiteTextWidget('Score', 14),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      Constants.boldWhiteTextWidget(_datas.length > 0 ? _datas.first.score : '-', 16),
+                      Constants.boldWhiteTextWidget(_datas.length > 0 ? _datas.first.score : '-', 26),
                     ],
                   ),
                   Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
-                        height: 36,
-                      ),
                       Row(
                         children: [
-                          Constants.regularWhiteTextWidget('Today', 14),
+                          Constants.boldWhiteTextWidget('Today', 20),
                           SizedBox(
                             width: 4,
                           ),
@@ -93,21 +93,30 @@ class _TrackingScoreViewState extends State<TrackingScoreView> {
                       SizedBox(
                         height: 16,
                       ),
-                      Row(
-                        children: [
-                          Constants.regularWhiteTextWidget('Video', 14),
-                          SizedBox(
-                            width: 4,
-                          ),
-                          Icon(
-                            Icons.play_circle_fill_sharp,
-                            size: 16,
-                            color: Colors.white,
-                          )
-                        ],
-                      ),
-                      SizedBox(
-                        height: 36,
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        child: Row(
+                          children: [
+                            Constants.regularWhiteTextWidget('Video', 20),
+                            SizedBox(
+                              width: 4,
+                            ),
+                            Icon(
+                              Icons.play_circle_fill_sharp,
+                              size: 16,
+                              color: Colors.white,
+                            )
+                          ],
+                        ),
+                        onTap: (){
+                          if(_datas.length == 0){
+                            TTToast.showToast('No video');
+                          }else if(_datas.first.path.length == 0){
+                            TTToast.showToast('No video');
+                          }else{
+                            NavigatorUtil.push(Routes.videoplay,arguments: _datas.first.path);
+                          }
+                        },
                       ),
                     ],
                   ),

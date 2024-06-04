@@ -34,7 +34,7 @@ class _HomePageControllerState extends State<HomePageController> {
     // 确认有没有需要删除的视频
     LocalDataUtil.getDeletedVideoPath();
     // 开市搜索蓝牙设备
-    // BluetoothManager().startScan();
+    BluetoothManager().startScan();
     subscription = EventBus().stream.listen((event) {
       if (event == kTabBarPageChange) {
         GameUtil gameUtil = GetIt.instance<GameUtil>();

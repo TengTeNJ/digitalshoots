@@ -5,6 +5,7 @@ class GameData  extends ChangeNotifier{
   bool _powerOn = false; // 开机状态
   int _currentTarget = 0; // 当前响应标靶
   int _score = 0; // 得分
+  int _speed = 0; // 速度
   bool _gameStart = false; // 游戏状态
   int _powerValue = 100; // 电量值
   int _remainTime = 45; // 剩余时长
@@ -15,6 +16,7 @@ class GameData  extends ChangeNotifier{
   bool get powerOn => _powerOn;
   int get currentTarget => _currentTarget;
   int get score => _score;
+  int get speed => _speed;
   int get powerValue => _powerValue;
   bool get gameStart => _gameStart;
   int get remainTime => _remainTime;
@@ -33,6 +35,10 @@ class GameData  extends ChangeNotifier{
 
   set score(int score){
     _score = score;
+  }
+
+  set speed(int speed){
+    _speed = speed;
   }
 
   set powerValue(int powerValue){

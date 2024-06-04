@@ -3,6 +3,7 @@
 import 'package:robot/utils/ble_send_util.dart';
 
 import '../constants/constants.dart';
+import '../model/ble_model.dart';
 import 'blue_tooth_manager.dart';
 
 enum BLEDataType {
@@ -14,6 +15,7 @@ enum BLEDataType {
   remainTime,
   millisecond,
   targetIn,
+  speed;
 }
 class ResponseCMDType {
   static const int deviceInfo = 0x20; // 设备信息，包含开机状态、电量等
@@ -31,7 +33,7 @@ bool isNew = true;
 /*蓝牙数据解析类*/
 class BluetoothDataParse {
   // 数据解析
-  static parseData(List<int> data) {
+  static parseData(List<int> data,BLEModel model) {
     if (data.contains(kBLEDataFrameHeader)) {
       List<List<int>> _datas = splitData(data);
       _datas.forEach((element) {
@@ -64,6 +66,15 @@ class BluetoothDataParse {
         }
       });
     } else {
+      print('model.device.name=${model.device.name}');
+      if(model.device.name == kBLEDevice_Name){
+        // 如果是测速仪器
+        int speed = data[0];
+        BluetoothManager().gameData.speed = speed;
+        BluetoothManager().triggerCallback(type: BLEDataType.speed);
+        print('-------');
+        return;
+      }
         bleNotAllData.addAll(data);
         if(bleNotAllData[0] - 1 == bleNotAllData.length){
           print('组包2----${data}');
@@ -93,7 +104,7 @@ class BluetoothDataParse {
         } else if (parameter_data == 0x02) {
           // 电量
           BluetoothManager().gameData.powerValue = statu_data;
-          BluetoothManager().triggerCallback(type: BLEDataType.dviceInfo);
+          BluetoothManager().triggerDeviceInfoCallback (type: BLEDataType.dviceInfo);
         }
         break;
       case ResponseCMDType.targetResponse:

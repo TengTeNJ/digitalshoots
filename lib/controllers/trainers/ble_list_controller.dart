@@ -37,7 +37,7 @@ class _BLEListControllerState extends State<BLEListController> {
                 child: Container(
                   width: Constants.screenWidth(context) - 32,
               decoration: BoxDecoration(
-                color: Constants.baseGreyStyleColor,
+                color: Constants.geryBGColor,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -57,13 +57,13 @@ class _BLEListControllerState extends State<BLEListController> {
                       children: [
                         SizedBox(height: 12,),
                         Expanded(child: BluetoothManager().deviceList.length > 0 ?  ListView.separated(itemBuilder: (context,index){
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          return Padding(padding: EdgeInsets.only(left: 10,right: 10),child:  Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              BluetoothManager().deviceList[index].hasConected == true ?  Constants.customTextWidget(BluetoothManager().deviceList[index].device.name, 16, '#00ff00') : Constants.mediumGreyTextWidget(BluetoothManager().deviceList[index].device.name, 16),
+                              BluetoothManager().deviceList[index].hasConected == true ?  Constants.customTextWidget(BluetoothManager().deviceList[index].device.name, 16, '#25821e') : Constants.mediumGreyTextWidget(BluetoothManager().deviceList[index].device.name, 16),
                               Image(image: BluetoothManager().deviceList[index].hasConected == true  ? AssetImage('images/蓝牙连接图标.png') : AssetImage('images/蓝牙未连接图标.png'),width: 42,height: 18,)
                             ],
-                          );
+                          ),);
                         }, separatorBuilder: (context,index)=>SizedBox(height: 8,), itemCount: BluetoothManager().deviceListLength.value ) : EmptyView()),
                         SizedBox(height: 12,),
                       ],
@@ -72,7 +72,7 @@ class _BLEListControllerState extends State<BLEListController> {
                   SizedBox(
                     height: 12,
                   ),
-                  Container(
+                  GestureDetector(child: Container(
                     width: 150,
                     height: 44,
                     decoration: BoxDecoration(
@@ -80,6 +80,14 @@ class _BLEListControllerState extends State<BLEListController> {
                     child: Center(
                       child: Constants.customTextWidget('SCAN', 18, '#ff0000'),
                     ),
+                  ),
+                    behavior: HitTestBehavior.opaque,
+                    onTap: (){
+                    // 根据数据刷新列表
+                    setState(() {
+
+                    });
+                    },
                   ),
                   SizedBox(height: 12,)
                 ],

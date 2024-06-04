@@ -263,6 +263,7 @@ class _BattleControllerState extends State<BattleController> {
     _countdownTimer.stop();
     _countdownTimer.dispose();
     subscription.cancel();
+    BLESendUtil.blueLightBlink();
     //  WidgetsBinding.instance.removeObserver(this);
   }
 }

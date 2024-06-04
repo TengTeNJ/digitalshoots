@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:robot/model/ble_model.dart';
+
 import '../constants/constants.dart';
 import 'ble_data.dart';
 import 'blue_tooth_manager.dart';
@@ -10,7 +12,7 @@ class BLESendUtil {
   /*心跳相应*/
   static heartBeatResponse() {
     BluetoothManager().writerDataToDevice(
-        BluetoothManager().hasConnectedDeviceList[0], heartBeatResponseData());
+        getWriterDevice(), heartBeatResponseData());
   }
 
   /*打开所有蓝灯*/
@@ -20,7 +22,7 @@ class BLESendUtil {
     }
     await closeAllLight(); // 先关闭所有的灯 再打开。防止红蓝同时打开
     return await BluetoothManager().writerDataToDevice(
-        BluetoothManager().hasConnectedDeviceList[0], openAllBlueLightData());
+        getWriterDevice(), openAllBlueLightData());
   }
 
   /*关闭所有蓝色灯光*/
@@ -29,7 +31,7 @@ class BLESendUtil {
       return;
     }
     return await BluetoothManager().writerDataToDevice(
-        BluetoothManager().hasConnectedDeviceList[0], closeAllBlueLightData());
+        getWriterDevice(), closeAllBlueLightData());
   }
 
   /*关闭所有红色灯光*/
@@ -47,24 +49,24 @@ class BLESendUtil {
       return;
     }
     return await BluetoothManager().writerDataToDevice(
-        BluetoothManager().hasConnectedDeviceList[0], closeAllLightData());
+        getWriterDevice(), closeAllLightData());
   }
 
   static preGame(int number) {
     BluetoothManager().writerDataToDevice(
-        BluetoothManager().hasConnectedDeviceList[0], preGameData(number));
+        getWriterDevice(), preGameData(number));
   }
 
   // showGoData
   static showGo(int number) {
     BluetoothManager().writerDataToDevice(
-        BluetoothManager().hasConnectedDeviceList[0], showGoData());
+        getWriterDevice(), showGoData());
   }
 
 /*关闭蓝灯*/
   static Future<void> closeBlueLights(List<int> targets) async {
     return await BluetoothManager().writerDataToDevice(
-        BluetoothManager().hasConnectedDeviceList[0],
+        getWriterDevice(),
         closeBlueLightsData(targets));
   }
 
@@ -74,7 +76,7 @@ class BLESendUtil {
       return;
     }
     BluetoothManager().writerDataToDevice(
-        BluetoothManager().hasConnectedDeviceList[0], noviceShakeData());
+        getWriterDevice(), noviceShakeData());
   }
 
   static juniorShake() {
@@ -82,7 +84,7 @@ class BLESendUtil {
       return;
     }
     BluetoothManager().writerDataToDevice(
-        BluetoothManager().hasConnectedDeviceList[0], noviceShakeData());
+        getWriterDevice(), noviceShakeData());
   }
 
   // 退出APP模式
@@ -91,7 +93,7 @@ class BLESendUtil {
       return;
     }
     BluetoothManager().writerDataToDevice(
-        BluetoothManager().hasConnectedDeviceList[0], offLineData());
+        getWriterDevice(), offLineData());
   }
 
   /*Junior 模式的每次灯光控制*/
@@ -109,10 +111,10 @@ class BLESendUtil {
       BluetoothManager().juniorBlueIndex = blue_index;
       BluetoothManager().juniorRedIndex = red_index;
       BluetoothManager().writerDataToDevice(
-          BluetoothManager().hasConnectedDeviceList[0],
+           getWriterDevice(),
           openJuniorBlueLightData(kJuniorBluetargets[blue_index]));
       BluetoothManager().writerDataToDevice(
-          BluetoothManager().hasConnectedDeviceList[0],
+          getWriterDevice(),
           openJuniorRedLightData(kJuniorRedtargets[red_index]));
     } else {
       // 说明不是第一次取随机数 所以先判断取出来的和上次一样不,一样的话就重新取
@@ -129,12 +131,17 @@ class BLESendUtil {
       BluetoothManager().juniorBlueIndex = blue_index;
 
       BluetoothManager().writerDataToDevice(
-          BluetoothManager().hasConnectedDeviceList[0],
+          getWriterDevice(),
           openJuniorBlueLightData(kJuniorBluetargets[blue_index]));
       BluetoothManager().writerDataToDevice(
-          BluetoothManager().hasConnectedDeviceList[0],
+          getWriterDevice(),
           openJuniorRedLightData(kJuniorRedtargets[red_index]));
     }
+  }
+
+  static BLEModel getWriterDevice() {
+    final model =    BluetoothManager().hasConnectedDeviceList.firstWhere((element) => element.notifyCharacteristic != null);
+    return model;
   }
 
   /*battle模式下控制红灯*/
@@ -161,7 +168,7 @@ class BLESendUtil {
       } while (redLightIndex == battleTargets[red_index]);
       BluetoothManager().battleRedIndex = battleTargets[red_index];
       await BluetoothManager().writerDataToDevice(
-          BluetoothManager().hasConnectedDeviceList[0],
+          getWriterDevice(),
           openJuniorRedLightData(battleTargets[red_index]));
       BluetoothManager().battleTargetNumbers.remove(battleTargets[red_index]);
     });
@@ -192,7 +199,7 @@ class BLESendUtil {
      } while (redLightIndex == battleTargets[blue_index]);
      BluetoothManager().battleBlueIndex = battleTargets[blue_index];
      await BluetoothManager().writerDataToDevice(
-         BluetoothManager().hasConnectedDeviceList[0],
+         getWriterDevice(),
          openJuniorBlueLightData(battleTargets[blue_index]));
      BluetoothManager().battleTargetNumbers.remove(battleTargets[blue_index]);
    });
@@ -203,23 +210,23 @@ class BLESendUtil {
   static Future<dynamic> blueLightBlink() async {
     final List<Future<dynamic>> futures = [];
     futures.add(closeAllLight());
-    futures.add(Future.delayed(Duration(milliseconds: 600), () async {
+    futures.add(Future.delayed(Duration(milliseconds: 500), () async {
       print('1-----');
       await openAllBlueLight();
     }));
-    futures.add(Future.delayed(Duration(milliseconds: 1200), () async {
+    futures.add(Future.delayed(Duration(milliseconds: 1000), () async {
       print('2-----');
       await closeAllLight();
     }));
-    futures.add(Future.delayed(Duration(milliseconds: 1800), () async {
+    futures.add(Future.delayed(Duration(milliseconds: 1500), () async {
       print('3-----');
       await openAllBlueLight();
     }));
-    futures.add(Future.delayed(Duration(milliseconds: 2400), () async {
+    futures.add(Future.delayed(Duration(milliseconds: 2000), () async {
       print('4-----');
       await closeAllLight();
     }));
-    futures.add(Future.delayed(Duration(milliseconds: 3000), () async {
+    futures.add(Future.delayed(Duration(milliseconds: 2500), () async {
       print('5-----');
       await openAllBlueLight();
     }));

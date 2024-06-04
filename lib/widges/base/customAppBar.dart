@@ -30,7 +30,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    BluetoothManager().dataChange = (BLEDataType type) async {
+    BluetoothManager().deviceinfoChange = (BLEDataType type) async {
+      print('---------======');
       if(type == BLEDataType.dviceInfo){
         // 电池电量改变
         batteryLevel = GameDataUtil.powerValueToBatteryImageLevel(BluetoothManager().gameData.powerValue);
