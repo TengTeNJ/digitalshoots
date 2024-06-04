@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:robot/constants/constants.dart';
 
 class MyStatsBottomView extends StatelessWidget {
-  const MyStatsBottomView({super.key});
+  int level;
+  double marginLeft;
+   MyStatsBottomView({this.level = 1,this.marginLeft = 5});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,7 @@ class MyStatsBottomView extends StatelessWidget {
         children: [
           Positioned(
             child:
-                Constants.boldBlackItalicTextWidget('YOU\'RE IN PROGRESS', 20),
+                Constants.customItalicTextWidget('YOU\'RE IN PROGRESS', 20,Constants.baseGreenStyleColor,fontWeight: FontWeight.bold),
             left: 0,
             right: 0,
             top: 24,
@@ -40,9 +42,9 @@ class MyStatsBottomView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  margin: EdgeInsets.only(left: 5),
+                  margin: EdgeInsets.only(left: marginLeft),
                   child: Image(
-                    image: AssetImage('images/triangle-1.png'),
+                    image: AssetImage('images/triangle-${level}.png'),
                     height: 10,
                     fit: BoxFit.fitHeight,
                   ),

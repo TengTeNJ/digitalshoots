@@ -30,6 +30,8 @@ class Constants {
   // 底部导航栏高度 默认为56像素
   static double tabBarHeight = kBottomNavigationBarHeight;
 
+  static int kMaxVideoCount = 20; // 本地存储的视频的最大数量
+
  // 导航栏的高度
   static double navigationBarHeight = 44;
 
@@ -43,6 +45,8 @@ class Constants {
   static Color darkControllerColor = Color.fromRGBO(57, 57, 75, 1);
   static Color baseControllerColor = Color.fromRGBO(41, 41, 54, 1);
   static Color geryBGColor = Color.fromRGBO(247, 242, 244, 1);
+  static Color baseGreenStyleColor = Color.fromRGBO(116, 193, 165, 1);
+
   static Text regularBaseTextWidget(String text, double fontSize,
       {int maxLines = 1,
       TextAlign textAlign = TextAlign.center,
@@ -278,6 +282,28 @@ class Constants {
         fontWeight: FontWeight.w600);
   }
 
+  static Text customItalicTextWidget(String text, double fontSize, Color color,
+      {int? maxLines,
+        TextAlign textAlign = TextAlign.center,
+        double height = 1.0,
+        FontWeight? fontWeight,
+        TextOverflow? overflow}) {
+    return Text(
+      textAlign: textAlign,
+      maxLines: maxLines ?? null,
+      text,
+      style: TextStyle(
+          overflow: overflow,
+          height: height,
+          fontFamily: 'SanFranciscoDisplay',
+          fontWeight: fontWeight,
+          color: color,
+          fontStyle: FontStyle.italic, // 设置字体为斜体
+          fontSize: fontSize),
+    );
+  }
+
+
   static double fontSize(BuildContext context, double size) {
     return Constants.screenWidth(context) / 375 * size;
   }
@@ -356,6 +382,9 @@ const kJuniorGameEnd = 'junior_game_end'; // junior一轮游戏结束
 
 const kTabBarPageChange = 'change_tab_bar_page'; // 底部tabbar切换
 const kTabBarPageChangeToRoot= 'change_tab_bar_page_to_root'; //
+const kUpdateAvatar = 'update_avatar'; // 切换头像
+const kStatsToTracking = 'stats_to_tracking'; // stats页面点击tracking跳转到tracking页面
+const kStatsToAccount = 'stats_to_account'; // stats页面点击tracking跳转到account页面
 
 const Map<String,Map<String,String>> kGameSceneAndModelMap = {
   "1" :{

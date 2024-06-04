@@ -11,6 +11,7 @@ import 'package:robot/utils/color.dart';
 import 'package:device_screen_recorder/device_screen_recorder.dart';
 import 'package:robot/utils/string_util.dart';
 import 'package:robot/utils/toast.dart';
+import 'package:robot/views/base/avatar_view.dart';
 
 import '../../model/game_model.dart';
 import '../../utils/ble_data_service.dart';
@@ -153,7 +154,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
   void _startCountdown() {
     setState(() {
       BLESendUtil.preGame(_secondsRemaining);
-      _score = _secondsRemaining.toString();
+      _countDownString = _secondsRemaining.toString();
       _secondsRemaining--; // 每秒递减
     });
     Timer.periodic(Duration(seconds: 1), (timer) async{
@@ -211,11 +212,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
                                 'DIGITAL SHOTS', 20),
                             Column(
                               children: [
-                                Image(
-                                  image: AssetImage('images/header.png'),
-                                  width: 50,
-                                  height: 50,
-                                ),
+                               AvatarView(),
                                 SizedBox(
                                   height: 6,
                                 ),

@@ -39,7 +39,7 @@ class StringUtil {
  /*当前时间字符串*/
   static String currentTimeString() {
     DateTime now = DateTime.now();
-    String formattedDate = DateFormat('yyyyMMddHH:mm:ss').format(now);
+    String formattedDate = DateFormat('yyyyMMddHHmmss').format(now);
     return formattedDate;
   }
 
@@ -125,5 +125,28 @@ class StringUtil {
     } catch (error) {
       return '-';
     }
+  }
+
+  static int compareTimeString(String dateStringA,String dateStringB){
+    String timeString1 = dateStringA.replaceAll(':', '');
+    String timeString2 = dateStringB.replaceAll(':', '');
+    DateTime? parsedTime1 = DateTime.tryParse(timeString1);
+    DateTime? parsedTime2 = DateTime.tryParse(timeString2);
+    // 比较两个时间
+    if (parsedTime1 != null && parsedTime2 != null) {
+      int comparison = parsedTime1.compareTo(parsedTime2);
+      if (comparison < 0) {
+        print("$timeString1 在 $timeString2 之前");
+        return 1;
+      } else if (comparison > 0) {
+        print("$timeString1 在 $timeString2 之后");
+        return 0;
+      } else {
+        print("两个时间相同");
+      }
+    } else {
+      print("一个或两个时间字符串格式不正确");
+    }
+    return 0;
   }
 }

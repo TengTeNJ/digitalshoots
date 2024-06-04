@@ -74,6 +74,7 @@ class DatabaseHelper {
   /*插入游戏数据*/
   Future<int> insertData(String table, Gamemodel data) async {
     Database db = await database;
+    print('插入游戏数据=${ data.path}');
     print('插入游戏数据=${ data.toJson}');
     return await db.insert(table, data.toJson());
   }
@@ -87,6 +88,7 @@ class DatabaseHelper {
   Future<int> updateData(
       String table, Map<String, dynamic> data, int id) async {
       Database db = await database;
+      print('更新数据-----');
     return await db.update(table, data, where: 'id = ?', whereArgs: [id]);
   }
 
@@ -103,10 +105,11 @@ class DatabaseHelper {
 
   Future<List<Gamemodel>> getData(String table) async {
     Database db = await database;
-    final _datas = await db.query(table);
+    final _datas = await db.rawQuery('SELECT * FROM ${table}');
     List<Gamemodel> array = [];
-    _datas.forEach((element) {
+    _datas.asMap().forEach((index,element) {
       Gamemodel model = Gamemodel.modelFromJson(element);
+      model.indexString = (index+1).toString();
       array.add(model);
     });
     return array;

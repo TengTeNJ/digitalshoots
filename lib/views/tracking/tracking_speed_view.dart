@@ -3,6 +3,8 @@ import 'package:robot/views/tracking/bar_view.dart';
 
 import '../../constants/constants.dart';
 import '../../model/game_model.dart';
+import '../../utils/local_data_util.dart';
+import '../base/avatar_view.dart';
 
 class TrackingSpeedView extends StatefulWidget {
   const TrackingSpeedView({super.key});
@@ -12,6 +14,22 @@ class TrackingSpeedView extends StatefulWidget {
 }
 
 class _TrackingSpeedViewState extends State<TrackingSpeedView> {
+  List<Gamemodel> _datas = [];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getBestHistotyDatas();
+  }
+
+  getBestHistotyDatas() async{
+    final _list =  await  LocalDataUtil.getHistoryBestTenDatas();
+    _datas.addAll(_list);
+    setState(() {
+
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,11 +44,7 @@ class _TrackingSpeedViewState extends State<TrackingSpeedView> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Constants.boldBlackItalicTextWidget('SPEED', 20),
-                Image(
-                  image: AssetImage('images/header.png'),
-                  width: 50,
-                  height: 50,
-                )
+                AvatarView()
               ],
             ),
           ),
@@ -59,7 +73,7 @@ class _TrackingSpeedViewState extends State<TrackingSpeedView> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Constants.boldWhiteTextWidget('100', 20,height: 0.8),
+                          Constants.boldWhiteTextWidget(_datas.length > 0 ? _datas.first.speed : '-', 20,height: 0.8),
                           SizedBox(width: 8,),
                            Constants.boldWhiteTextWidget('km/h', 12,height: 1.0),
                         ],
@@ -114,10 +128,7 @@ class _TrackingSpeedViewState extends State<TrackingSpeedView> {
               child: Padding(
             padding: EdgeInsets.only(left: 16, right: 16),
             child: MyStatsBarChatView(
-              datas: [
-                Gamemodel(score: '100', indexString: '1', speed: '30'),
-                Gamemodel(score: '56', indexString: '2', speed: '200')
-              ],
+              datas: _datas,
             ),
           )),
           SizedBox(

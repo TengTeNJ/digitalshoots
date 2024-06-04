@@ -1,14 +1,27 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:robot/constants/constants.dart';
 import 'package:robot/controllers/base/base_view_controller.dart';
+import 'package:robot/model/game_model.dart';
 import 'package:robot/model/user_info.dart';
+import 'package:robot/route/route.dart';
+import 'package:robot/utils/data_base.dart';
+import 'package:robot/utils/game_data_util.dart';
+import 'package:robot/utils/local_data_util.dart';
+import 'package:robot/utils/navigator_util.dart';
 import 'package:robot/utils/nsuserdefault_util.dart';
 import 'package:robot/utils/string_util.dart';
+import 'package:robot/utils/toast.dart';
 import 'package:robot/utils/tt_dialog.dart';
+import 'package:robot/views/my/my_table_view.dart';
 import 'package:robot/views/my/stars_view.dart';
+import 'dart:io';
 
+import '../../utils/notification_bloc.dart';
 class MyAccountController extends StatefulWidget {
   const MyAccountController({super.key});
 
@@ -17,6 +30,10 @@ class MyAccountController extends StatefulWidget {
 }
 
 class _MyAccountControllerState extends State<MyAccountController> {
+  late StreamSubscription subscription;
+  Gamemodel maxModel = Gamemodel(score: '0', indexString: '1');
+  String fileImagePath = '';
+  List<String> datas = ['-','-','-'];
   DateTime selectedDate = DateTime.now();
   Future<void> _selectDate(BuildContext context) async {
     DateTime? picked = await showDatePicker(
@@ -34,6 +51,52 @@ class _MyAccountControllerState extends State<MyAccountController> {
       });
     }
   }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    subscription = EventBus().stream.listen((event) async{
+      if(event == kUpdateAvatar){
+      // 需要先清空一次这个变量 要不然因为路径没变化 刷新UI的话头像不会重新渲染
+        setState(() {
+          fileImagePath = '';
+        });
+        Future.delayed(Duration(milliseconds: 50),(){
+        queryAvatar();
+        });
+      }
+    });
+    queryMaxModel();
+    queryAvatar();
+  }
+  /*查询历史最大数据*/
+  queryMaxModel() async{
+    final _model = await  LocalDataUtil.getHistoryMaxScore();
+    maxModel = _model;
+    datas = [_model.createTime,_model.score, _model.speed];
+    if(mounted){
+      setState(() {
+
+      });
+    }
+  }
+  // 查询本地存储的头像
+  queryAvatar() async{
+    final directory =  await getApplicationDocumentsDirectory();
+    final imagePath = '${directory.path}/user.png';
+    final file = File(imagePath);
+    if(file.existsSync()){
+      // 头像存在
+      fileImagePath = imagePath;
+      if(mounted){
+        setState(() {
+
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseViewController(
@@ -68,30 +131,51 @@ class _MyAccountControllerState extends State<MyAccountController> {
                       )),
                   Container(height: 0.5,color: Constants.baseGreyStyleColor,),
                   SizedBox(height: 32,),
-                  StarsView(starPoint: 1)
+                  StarsView(starPoint: GameDataUtil.scoreToStar(maxModel.score)),
+                  SizedBox(height: 24,),
+                  MyTableView(data: datas,playVideo: (){
+                    print('maxModel=${maxModel.path.length}');
+                    if(maxModel.path.length > 0){
+                      NavigatorUtil.push(Routes.videoplay,arguments: maxModel.path);
+                    }else{
+                      TTToast.showToast('No video');
+                    }
+                  },)
                 ],
               ),),
             ),
             left: 16,
             right: 16,
-            top: 44,
+            top: 64,
             bottom: 32,
           ),
           Positioned(
-              left: 0,
-              right: 0,
-              top: 30,
+              left: (Constants.screenWidth(context) - 50) / 2.0,
+              right: (Constants.screenWidth(context) - 50) / 2.0,
+              top: 39,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: Image(
-                  image: AssetImage('images/good.png'),
-                  width: 30,
-                  height: 30,
+                borderRadius: BorderRadius.circular(25),
+                child: GestureDetector(child: fileImagePath.length > 0 ? Image.file(File(fileImagePath),width: 50,height: 50,) : Image(
+                  image: AssetImage('images/header.png'),
+                  width: 50,
+                  height: 50,
+                ),
+                  behavior: HitTestBehavior.opaque,
+                  onTap: (){
+                  TTDialog.showBottomSheetCameraAndGallery(context);
+                  },
                 ),
               ))
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    subscription.cancel();
   }
   
   Widget _itemBuilder(BuildContext context, int index) {
@@ -130,7 +214,13 @@ class _MyAccountControllerState extends State<MyAccountController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Constants.boldBlackItalicTextWidget(_titles[index], 16),
-                  Constants.regularGreyTextWidget([userModel.team,userModel.userName, StringUtil.serviceStringToShowDateString(userModel.brith) ][index],14),
+                   Row(
+                     children: [
+                       Constants.regularGreyTextWidget([userModel.team,userModel.userName, StringUtil.serviceStringToShowDateString(userModel.brith) ][index],14),
+                       SizedBox(width: 4,),
+                       Icon(Icons.arrow_forward_ios,size: 14,color: Constants.baseGreyStyleColor,)
+                     ],
+                   ),
                 ],
               ),
               ),
@@ -141,7 +231,8 @@ class _MyAccountControllerState extends State<MyAccountController> {
       ),
     );
   }
-  
+
+
 }
 
 

@@ -19,7 +19,7 @@ class CustomRingPainter extends CustomPainter {
 
     for (int i = 0; i < this.count; i++) {
       Paint paint = Paint()
-        ..color =    i > currentLeve ? Constants.baseGreyStyleColor : Colors.green
+        ..color =    i+1 > currentLeve ? Constants.baseGreyStyleColor : Colors.green
         ..style = PaintingStyle.stroke
         ..strokeWidth = strokeWidth;
 

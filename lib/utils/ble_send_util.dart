@@ -70,6 +70,9 @@ class BLESendUtil {
 
   // noviceShakeData
   static noviceShake() {
+    if (BluetoothManager().hasConnectedDeviceList.isEmpty) {
+      return;
+    }
     BluetoothManager().writerDataToDevice(
         BluetoothManager().hasConnectedDeviceList[0], noviceShakeData());
   }

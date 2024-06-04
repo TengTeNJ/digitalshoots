@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:robot/constants/constants.dart';
 import 'package:robot/model/game_model.dart';
+import 'package:robot/utils/local_data_util.dart';
+import 'package:robot/views/base/avatar_view.dart';
 import 'package:robot/views/tracking/line_area_view.dart';
-
+import 'dart:io';
 class TrackingScoreView extends StatefulWidget {
   const TrackingScoreView({super.key});
 
@@ -11,6 +14,22 @@ class TrackingScoreView extends StatefulWidget {
 }
 
 class _TrackingScoreViewState extends State<TrackingScoreView> {
+   List<Gamemodel> _datas = [];
+
+   @override
+   void initState() {
+    // TODO: implement initState
+    super.initState();
+    getBestHistotyDatas();
+  }
+
+  getBestHistotyDatas() async{
+     final _list =  await  LocalDataUtil.getHistoryBestTenDatas();
+     _datas.addAll(_list);
+     setState(() {
+
+     });
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,11 +44,7 @@ class _TrackingScoreViewState extends State<TrackingScoreView> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Constants.boldBlackItalicTextWidget('PROFILE', 20),
-                Image(
-                  image: AssetImage('images/header.png'),
-                  width: 50,
-                  height: 50,
-                )
+               AvatarView(),
               ],
             ),
           ),
@@ -54,7 +69,7 @@ class _TrackingScoreViewState extends State<TrackingScoreView> {
                       SizedBox(
                         height: 16,
                       ),
-                      Constants.boldWhiteTextWidget('0', 16),
+                      Constants.boldWhiteTextWidget(_datas.length > 0 ? _datas.first.score : '-', 16),
                     ],
                   ),
                   Column(
@@ -102,7 +117,7 @@ class _TrackingScoreViewState extends State<TrackingScoreView> {
               child: Padding(
                 padding: EdgeInsets.only(left: 16,right: 16),
                 child: MyStatsLineAreaView(
-                  datas: [Gamemodel(score: '100',indexString: '1'), Gamemodel(score: '56',indexString: '2')],
+                  datas: _datas,
                 ),
               )),
           SizedBox(height: 24,)

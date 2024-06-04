@@ -30,34 +30,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     'Trainers',
     'Tracking',
     'My Stats',
-    'My Account0'
-  ];
-
-  final _items = [
-    BottomNavigationBarItem(
-        icon: Image(
-          image: AssetImage('images/data.png'),
-          width: 20,
-        ),
-        label: 'Trainers'),
-    BottomNavigationBarItem(
-        icon: Image(
-          image: AssetImage('images/tracking.png'),
-          width: 20,
-        ),
-        label: 'Tracking'),
-    BottomNavigationBarItem(
-        icon: Image(
-          image: AssetImage('images/stats.png'),
-          width: 20,
-        ),
-        label: 'My Stats'),
-    BottomNavigationBarItem(
-        icon: Image(
-          image: AssetImage('images/account.png'),
-          width: 20,
-        ),
-        label: 'My Account'),
+    'My Account'
   ];
 
   @override
@@ -65,13 +38,20 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     // TODO: implement initState
     super.initState();
     subscription = EventBus().stream.listen((event) {
+      GameUtil gameUtil = GetIt.instance<GameUtil>();
       if (event == kTabBarPageChangeToRoot) {
-        GameUtil gameUtil = GetIt.instance<GameUtil>();
         print('gameUtil.currentPage;=${gameUtil.currentPage}');
         if (mounted) {
           setState(() {
             this.currentIndex = gameUtil.currentPage;
           });
+        }
+      }else if(event == kStatsToTracking || event == kStatsToAccount) {
+        if (mounted) {
+          setState(() {
+            this.currentIndex = gameUtil.currentPage;
+          });
+          EventBus().sendEvent(kTabBarPageChange);
         }
       }
     });

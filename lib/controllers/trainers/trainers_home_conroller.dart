@@ -4,6 +4,7 @@ import 'package:robot/constants/constants.dart';
 import 'package:robot/controllers/base/base_view_controller.dart';
 import 'package:robot/route/route.dart';
 import 'package:robot/utils/navigator_util.dart';
+import 'package:robot/views/base/avatar_view.dart';
 import 'package:video_player/video_player.dart';
 
 class TrainersHomeController extends StatefulWidget {
@@ -66,10 +67,7 @@ class _TrainersHomeControllerState extends State<TrainersHomeController> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Image(image: AssetImage('images/good.png'),width: 30,height: 30,),
-                  ),
+                 AvatarView(),
                   SizedBox(height: 32,),
                   Text('DIGITAL TRAINERS',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.white),)
                 ],

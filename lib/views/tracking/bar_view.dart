@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:robot/model/game_model.dart';
+import 'package:robot/views/base/empty_view.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../utils/color.dart';
@@ -52,7 +53,7 @@ class _MyStatsBarChatViewState extends State<MyStatsBarChatView> {
 
   @override
   Widget build(BuildContext context) {
-    return SfCartesianChart(
+    return widget.datas.length > 0 ? SfCartesianChart(
         margin:EdgeInsets.only(left: 0,right: 0,top: 10),
         plotAreaBorderWidth: 0,
         // 设置绘图区域的边框宽度为0，隐藏边框
@@ -132,7 +133,7 @@ class _MyStatsBarChatViewState extends State<MyStatsBarChatView> {
               int.parse(data.speed) > 100 ? 100 :  int.parse(data.speed),
               pointColorMapper: (Gamemodel data, _) =>
                   hexStringToColor('#F8850B'))
-        ]);
+        ]) : EmptyView();
   }
 
   @override

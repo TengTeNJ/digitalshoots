@@ -89,10 +89,11 @@ class BluetoothDataParse {
         int statu_data = element[3];
         if (parameter_data == 0x01) {
           // 开关机
-         // BluetoothManager().gameData.powerOn = (statu_data == 0x01);
+         BluetoothManager().gameData.powerOn = (statu_data == 0x01);
         } else if (parameter_data == 0x02) {
           // 电量
-          //BluetoothManager().gameData.powerValue = statu_data;
+          BluetoothManager().gameData.powerValue = statu_data;
+          BluetoothManager().triggerCallback(type: BLEDataType.dviceInfo);
         }
         break;
       case ResponseCMDType.targetResponse:

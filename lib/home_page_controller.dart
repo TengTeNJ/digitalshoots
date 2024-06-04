@@ -10,6 +10,7 @@ import 'package:robot/controllers/tracking/tracking_controller.dart';
 import 'package:robot/controllers/trainers/trainers_home_conroller.dart';
 import 'package:robot/utils/blue_tooth_manager.dart';
 import 'package:robot/utils/global.dart';
+import 'package:robot/utils/local_data_util.dart';
 import 'package:robot/utils/navigator_util.dart';
 import 'package:robot/utils/notification_bloc.dart';
 import 'package:robot/widges/base/customAppBar.dart';
@@ -30,8 +31,10 @@ class _HomePageControllerState extends State<HomePageController> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    // 确认有没有需要删除的视频
+    LocalDataUtil.getDeletedVideoPath();
     // 开市搜索蓝牙设备
-   // BluetoothManager().startScan();
+    // BluetoothManager().startScan();
     subscription = EventBus().stream.listen((event) {
       if (event == kTabBarPageChange) {
         GameUtil gameUtil = GetIt.instance<GameUtil>();
