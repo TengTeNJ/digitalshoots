@@ -3,7 +3,8 @@ import 'package:robot/constants/constants.dart';
 
 class StarsView extends StatelessWidget {
   int starPoint = 1; // 几星
-  StarsView({required this.starPoint});
+  Function? onClick;
+  StarsView({required this.starPoint,this.onClick});
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +37,22 @@ class StarsView extends StatelessWidget {
               ),
             ],
           ),
-          Container(
-            height: 30,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: Constants.baseStyleColor),
-            child: Center(
-              child: Padding(padding: EdgeInsets.all(6),child: Constants.boldWhiteItalicTextWidget('High Scores', 18),),
+          GestureDetector(
+            child: Container(
+              height: 44,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Constants.baseStyleColor),
+              child: Center(
+                child: Padding(padding: EdgeInsets.all(12),child: Constants.boldWhiteItalicTextWidget('High Scores', 18),),
+              ),
             ),
+            behavior: HitTestBehavior.opaque,
+            onTap: (){
+              if(onClick != null){
+                onClick!();
+              }
+            },
           )
         ],
       ),

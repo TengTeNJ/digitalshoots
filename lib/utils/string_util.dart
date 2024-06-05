@@ -105,6 +105,20 @@ class StringUtil {
     }
   }
 
+  static createTimeStringToShowString(String timeString){
+    String temp = '';
+    if(timeString.length >8){
+      temp += timeString.substring(0,4);
+      temp += '-';
+      temp += timeString.substring(4,6);
+      temp += '-';
+      temp += timeString.substring(6,8);
+    }
+    DateTime date = DateTime.parse(temp);
+    String formattedDate = DateFormat('MMMM,yyyy').format(date);
+    return formattedDate;
+  }
+
   /*数据分析页面自定义时间展示*/
   static String serviceStringMyStatuDateString(String timeString) {
     try {

@@ -10,7 +10,7 @@ class MyTableView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: Constants.screenWidth(context) - 64 - 12,
-      height: 90,
+      height: 96,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: Constants.baseStyleColor, width: 1)),
@@ -43,6 +43,7 @@ class MyTableView extends StatelessWidget {
             height: 10,
           ),
           Container(
+            margin: EdgeInsets.only(left: 4,right: 4),
             height: 1,
             color: Constants.baseStyleColor,
           ),
@@ -86,6 +87,7 @@ class MyTableView extends StatelessWidget {
             height: 12,
           ),
           Container(
+            margin: EdgeInsets.only(left: 4,right: 4),
             height: 1,
             color: Constants.baseStyleColor,
           ),

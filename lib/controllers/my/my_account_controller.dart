@@ -31,6 +31,7 @@ class MyAccountController extends StatefulWidget {
 
 class _MyAccountControllerState extends State<MyAccountController> {
   late StreamSubscription subscription;
+  bool showTableView = false;
   Gamemodel maxModel = Gamemodel(score: '0', indexString: '1');
   String fileImagePath = '';
   List<String> datas = ['-','-','-'];
@@ -74,7 +75,7 @@ class _MyAccountControllerState extends State<MyAccountController> {
   queryMaxModel() async{
     final _model = await  LocalDataUtil.getHistoryMaxScore();
     maxModel = _model;
-    datas = [_model.createTime,_model.score, _model.speed];
+    datas = [StringUtil.createTimeStringToShowString(_model.createTime),_model.score, _model.speed];
     if(mounted){
       setState(() {
 
@@ -131,16 +132,24 @@ class _MyAccountControllerState extends State<MyAccountController> {
                       )),
                   Container(height: 0.5,color: Constants.baseGreyStyleColor,),
                   SizedBox(height: 32,),
-                  StarsView(starPoint: GameDataUtil.scoreToStar(maxModel.score)),
+                  StarsView(starPoint: GameDataUtil.scoreToStar(maxModel.score),onClick: (){
+                    if(showTableView) {
+                      return;
+                    }
+                    showTableView = true;
+                    setState(() {
+
+                    });
+                  },),
                   SizedBox(height: 24,),
-                  MyTableView(data: datas,playVideo: (){
+                 showTableView ? MyTableView(data: datas,playVideo: (){
                     print('maxModel=${maxModel.path.length}');
                     if(maxModel.path.length > 0){
                       NavigatorUtil.push(Routes.videoplay,arguments: maxModel.path);
                     }else{
                       TTToast.showToast('No video');
                     }
-                  },)
+                  },) :Container()
                 ],
               ),),
             ),
