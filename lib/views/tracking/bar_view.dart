@@ -54,7 +54,10 @@ class _MyStatsBarChatViewState extends State<MyStatsBarChatView> {
   @override
   Widget build(BuildContext context) {
     return widget.datas.length > 0 ? SfCartesianChart(
-        margin:EdgeInsets.only(left: 0,right: 0,top: 10),
+        title: ChartTitle(
+            text: 'TOP 10 RECORDS TODAY',
+            textStyle:
+            TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),        margin:EdgeInsets.only(left: 0,right: 0,top: 10),
         plotAreaBorderWidth: 0,
         // 设置绘图区域的边框宽度为0，隐藏边框
         plotAreaBorderColor: Colors.transparent,

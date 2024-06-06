@@ -64,25 +64,30 @@ class _NoviceControllerState extends State<NoviceController>
         } else {
           if (begainGame) {
             int targetNumber = BluetoothManager().gameData.targetNumber;
-            doneLights.add(targetNumber - 1);
-            // 更新得分
-            _score = doneLights.length.toString();
-            //  每次击中 则关闭此灯
-            BLESendUtil.closeBlueLights(doneLights);
-            // 6个全部击中 则一轮游戏结束
-            if (doneLights.length == 6) {
-              // 一轮游戏结束
-              initStatu();
-              _countdownTimer.stop();
+            if (!doneLights.contains(targetNumber - 1)) {
+              doneLights.add(targetNumber - 1);
+              // 更新得分
+              _score = doneLights.length.toString();
+              //  每次击中 则关闭此灯
+              BLESendUtil.closeBlueLights(doneLights);
+              setState(() {});
+              // 6个全部击中 则一轮游戏结束
+              if (doneLights.length == 6) {
+                // 一轮游戏结束
+                _countdownTimer.stop();
+                await BLESendUtil.blueLightBlink();
+                await BLESendUtil.openAllBlueLight();
+                initStatu();
+              }
             }
           }
         }
       } else if (type == BLEDataType.speed) {
         // 速度
-        _speed = BluetoothManager().gameData.speed.toString();
-        setState(() {
-
-        });
+        if (begainGame) {
+          _speed = BluetoothManager().gameData.speed.toString();
+          setState(() {});
+        }
       }
     };
   }
@@ -193,7 +198,7 @@ class _NoviceControllerState extends State<NoviceController>
               SizedBox(
                 height: 16,
               ),
-              SpeedView(speed: _speed.padLeft(3,'0')),
+              SpeedView(speed: _speed.padLeft(3, '0')),
               SizedBox(
                 height: 32,
               ),
@@ -208,6 +213,7 @@ class _NoviceControllerState extends State<NoviceController>
     super.dispose();
     _countdownTimer.stop();
     _countdownTimer.dispose();
+    BLESendUtil.blueLightBlink();
     //  WidgetsBinding.instance.removeObserver(this);
   }
 }

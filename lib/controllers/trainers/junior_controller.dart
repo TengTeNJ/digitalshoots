@@ -41,8 +41,9 @@ class _JuniorControllerState extends State<JuniorController> {
       if (event == kJuniorGameEnd){
         if (mounted) {
           resetTimer();
+          await BLESendUtil.blueLightBlink();
           await BLESendUtil.openAllBlueLight();
-          // 先保存数据
+          // 保存数据
           Gamemodel model =
               Gamemodel.modelFromJson({'score': _score.toString()});
           model.speed = maxSpeed.toString();
@@ -80,11 +81,11 @@ class _JuniorControllerState extends State<JuniorController> {
             _score = '0';
           }
           if (begainGame) {
-            // 先取消自动刷新的定时器
-            timer?.cancel();
             int targetNumber = BluetoothManager().gameData.targetNumber;
             if (targetNumber ==
                 kJuniorBluetargets[BluetoothManager().juniorBlueIndex]) {
+              // 先取消自动刷新的定时器
+              timer?.cancel();
               // 击中了蓝灯
               _score = (kTargetAndScoreMap[targetNumber]! + int.parse(_score))
                   .toString();
@@ -182,6 +183,9 @@ class _JuniorControllerState extends State<JuniorController> {
   Widget build(BuildContext context) {
     return BaseViewController(
         paused: () {
+          _countdownTimer.stop();
+          _countdownTimer.dispose();
+          subscription.cancel();
           BLESendUtil.appOffLine();
           BLESendUtil.blueLightBlink();
           NavigatorUtil.popToRoot();
@@ -245,6 +249,7 @@ class _JuniorControllerState extends State<JuniorController> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    timer?.cancel();
     _countdownTimer.stop();
     _countdownTimer.dispose();
     subscription.cancel();

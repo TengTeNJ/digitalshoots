@@ -20,6 +20,7 @@ import '../../utils/blue_tooth_manager.dart';
 import '../../utils/count_down_75_timer.dart';
 import '../../utils/data_base.dart';
 import '../../utils/global.dart';
+import '../../utils/navigator_util.dart';
 import '../../utils/notification_bloc.dart';
 
 class JuniorRecordController extends StatefulWidget {
@@ -59,8 +60,8 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
           TTToast.showLoading();
           final _path = await DeviceScreenRecorder.stopRecordScreen();
           print('视频保存路径:${_path}');
-          await BLESendUtil.openAllBlueLight();
-          // DeviceScreenRecorder
+          await BLESendUtil.blueLightBlink();
+          await BLESendUtil.openAllBlueLight();          // DeviceScreenRecorder
           // 先保存数据
           Gamemodel model = Gamemodel.modelFromJson(
               {'score': _score.toString(), 'path': _path});
@@ -100,11 +101,11 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
             _countDownString = '00:00';
           }
           if (begainGame) {
-            // 先取消自动刷新的定时器
-            timer?.cancel();
             int targetNumber = BluetoothManager().gameData.targetNumber;
             if (targetNumber ==
                 kJuniorBluetargets[BluetoothManager().juniorBlueIndex]) {
+              // 先取消自动刷新的定时器
+              timer?.cancel();
               // 击中了蓝灯
               _score = (kTargetAndScoreMap[targetNumber]! + int.parse(_score))
                   .toString();
@@ -206,6 +207,17 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
   @override
   Widget build(BuildContext context) {
     return BaseViewController(
+      paused: (){
+        DeviceScreenRecorder.stopRecordScreen();
+        _countdownTimer.stop();
+        _countdownTimer.dispose();
+        timer?.cancel();
+        subscription.cancel();
+        _controller.dispose();
+        BLESendUtil.appOffLine();
+        BLESendUtil.blueLightBlink();
+        NavigatorUtil.popToRoot();
+      },
       child: Container(
         margin: EdgeInsets.only(left: 16, right: 16, top: 24, bottom: 32),
         child: FutureBuilder(
@@ -340,6 +352,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    timer?.cancel();
     DeviceScreenRecorder.stopRecordScreen();
     BLESendUtil.blueLightBlink();
     _countdownTimer.stop();

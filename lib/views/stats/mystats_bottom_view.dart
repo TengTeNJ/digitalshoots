@@ -23,7 +23,7 @@ class MyStatsBottomView extends StatelessWidget {
         children: [
           Positioned(
             child:
-                Constants.customItalicTextWidget('YOU\'RE IN PROGRESS', 20,Constants.baseGreenStyleColor,fontWeight: FontWeight.bold),
+                Constants.customItalicTextWidget('YOU\'RE IN PROGRESS...', 20,Constants.baseGreenStyleColor,fontWeight: FontWeight.bold),
             left: 0,
             right: 0,
             top: 24,

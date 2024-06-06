@@ -1,6 +1,5 @@
 import 'dart:io';
-
-import 'package:robot/controllers/base/base_view_controller.dart';
+import 'package:chewie/chewie.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
 
@@ -13,35 +12,36 @@ class VideoPlayController extends StatefulWidget {
 }
 
 class _VideoPlayControllerState extends State<VideoPlayController> {
-  late VideoPlayerController _controller;
-
+  late final VideoPlayerController _controller;
+  late ChewieController _chewieController;
+  bool _loading = true;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller = VideoPlayerController.file(File(widget.videopath));
-    _controller.addListener(() {
-      setState(() {});
-    });
+    File file = File(widget.videopath);
+    _controller = VideoPlayerController.file(file)
+      ..initialize().then((value) {
+        // 加载完成
+        // _controller.play();
+        _loading = false;
+        setState(() {});
+      });
     _controller.setLooping(true);
     _controller.initialize().then((_) => setState(() {}));
     _controller.play();
+    _chewieController = ChewieController(
+      videoPlayerController: _controller,
+    );
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:  Container(
-        child: AspectRatio(
-          aspectRatio: _controller.value.aspectRatio,
-          child: Stack(
-            alignment: Alignment.bottomCenter,
-            children: <Widget>[
-              VideoPlayer(_controller),
-              VideoProgressIndicator(_controller, allowScrubbing: true),
-            ],
-          ),
-        ),
+      body:  _loading
+          ? Center(
+        child: CircularProgressIndicator(),
       )
+          :   Chewie(controller: _chewieController)
     );
   }
 

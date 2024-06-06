@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+
+import 'global.dart';
 
 class NavigatorUtil {
   static late BuildContext utilContext;
@@ -15,15 +18,21 @@ class NavigatorUtil {
 
   //  出栈（pop）
   static pop() {
+    GameUtil gameUtil = GetIt.instance<GameUtil>();
+    gameUtil.pageDepth -= 1;
     return Navigator.of(NavigatorUtil.utilContext).pop();
   }
 
   static popAndThenPush(String routeName,{Object arguments = const Object()}){
+    GameUtil gameUtil = GetIt.instance<GameUtil>();
+    gameUtil.pageDepth -= 1;
     return Navigator.of(NavigatorUtil.utilContext).popAndPushNamed(routeName,arguments: arguments);
   }
 
   //  模态效果
   static present(Widget widget) {
+    GameUtil gameUtil = GetIt.instance<GameUtil>();
+    gameUtil.pageDepth += 1;
     showModalBottomSheet(
       isScrollControlled: true, // 设置为false话 弹窗的高度就会固定
       context: NavigatorUtil.utilContext,
@@ -38,6 +47,8 @@ class NavigatorUtil {
 
   // 跳转到根试图
   static popToRoot(){
+    GameUtil gameUtil = GetIt.instance<GameUtil>();
+    gameUtil.pageDepth = 0;
     Navigator.of(NavigatorUtil.utilContext).popUntil((route) => route.isFirst);
   }
 }

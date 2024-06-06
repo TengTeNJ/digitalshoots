@@ -65,6 +65,7 @@ class _TrackingScoreViewState extends State<TrackingScoreView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Constants.boldWhiteTextWidget('Score', 26),

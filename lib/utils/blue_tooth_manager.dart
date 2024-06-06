@@ -168,7 +168,7 @@ class BluetoothManager {
           // if (gameUtil.nowISGamePage) {
           //   BluetoothDataParse.parseData(data);
           // }
-          print('更新数据===${data}');
+         // print('更新数据===${data}');
           BluetoothDataParse.parseData(data,model);
         });
       } else if (connectionStateUpdate.connectionState ==

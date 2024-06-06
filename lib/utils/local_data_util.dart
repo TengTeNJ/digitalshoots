@@ -23,10 +23,29 @@ class LocalDataUtil {
     }
   }
 
-  /*获取历史成绩最好的10条数据*/
+  /*获取历史成绩最好的10条数据 只需要今天的*/
   static Future<List<Gamemodel>> getHistoryBestTenDatas() async {
-    final _list = await DatabaseHelper().getData(kDataBaseTableName);
+    String _currentTimeString = StringUtil.currentTimeString(); // 获取当前的时间字符串
+    _currentTimeString = _currentTimeString.substring(0, 8); // 截取仅仅需要到年月日
+    // 把最近的数据靠前展示 先顺序反转
+    List<Gamemodel> _list = await DatabaseHelper().getData(kDataBaseTableName);
+    _list = List.generate(
+      _list.length,
+      (index) => _list[_list.length - 1 - index],
+    );
+    // 只需要今天的数据
+    _list = _list.where((element) {
+      String elementTime = element.createTime;
+      if (elementTime.length > 8) {
+        elementTime = elementTime.substring(0, 8);
+      }
+      return _currentTimeString == elementTime;
+    }).toList();
+
     if (_list.length < 10) {
+      _list.forEach((element) {
+        element.indexString = (_list.indexOf(element) + 1).toString();
+      });
       return _list;
     } else {
       // 如果数据超过10条 就进行score排序
@@ -81,7 +100,8 @@ class LocalDataUtil {
           print('删除文件---${model.path}');
           file.deleteSync();
           model.path = '';
-          DatabaseHelper().updateData(kDataBaseTableName, model.toJson(), int.parse(model.id));
+          DatabaseHelper().updateData(
+              kDataBaseTableName, model.toJson(), int.parse(model.id));
         }
       } else {
         // 删除 倒数第二条
@@ -92,7 +112,8 @@ class LocalDataUtil {
             print('删除文件---${model.path}');
             file.deleteSync();
             model.path = '';
-            DatabaseHelper().updateData(kDataBaseTableName, model.toJson(), int.parse(model.id));
+            DatabaseHelper().updateData(
+                kDataBaseTableName, model.toJson(), int.parse(model.id));
           }
         }
       }

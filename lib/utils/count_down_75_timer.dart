@@ -4,8 +4,8 @@ import 'package:robot/constants/constants.dart';
 import 'package:robot/utils/notification_bloc.dart';
 
 class Countdown75Timer {
-  int _minutes = 0;
-  int _seconds = 30;
+  int _minutes = 1;
+  int _seconds = 15;
   Timer? _timer;
 
   // 回调函数，用于更新UI

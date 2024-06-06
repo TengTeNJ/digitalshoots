@@ -115,7 +115,27 @@ class StringUtil {
       temp += timeString.substring(6,8);
     }
     DateTime date = DateTime.parse(temp);
-    String formattedDate = DateFormat('MMMM,yyyy').format(date);
+    String formattedDate = DateFormat('MMMM dd').format(date);
+    return formattedDate;
+  }
+
+  static createTimeStringToTipShowString(String timeString){
+    String temp = '';
+    if(timeString.length >13){
+      temp += timeString.substring(0,4);
+      temp += '-';
+      temp += timeString.substring(4,6);
+      temp += '-';
+      temp += timeString.substring(6,8);
+      temp += ' ';
+      temp += timeString.substring(8,10);
+      temp += ':';
+      temp += timeString.substring(10,12);
+      temp += ':';
+      temp += timeString.substring(12,14);
+    }
+    DateTime date = DateTime.parse(temp);
+    String formattedDate = DateFormat('MMMM dd,yyyy HH:mm:ss').format(date);
     return formattedDate;
   }
 
@@ -142,25 +162,21 @@ class StringUtil {
   }
 
   static int compareTimeString(String dateStringA,String dateStringB){
-    String timeString1 = dateStringA.replaceAll(':', '');
-    String timeString2 = dateStringB.replaceAll(':', '');
-    DateTime? parsedTime1 = DateTime.tryParse(timeString1);
-    DateTime? parsedTime2 = DateTime.tryParse(timeString2);
+    int time1 = int.parse(dateStringA);
+    int time2 = int.parse(dateStringB);
     // 比较两个时间
-    if (parsedTime1 != null && parsedTime2 != null) {
-      int comparison = parsedTime1.compareTo(parsedTime2);
+
+      int comparison = time1 - time2;
       if (comparison < 0) {
-        print("$timeString1 在 $timeString2 之前");
+        print("$dateStringA 在 $dateStringA 之前");
         return 1;
       } else if (comparison > 0) {
-        print("$timeString1 在 $timeString2 之后");
+        print("$dateStringA 在 $dateStringA 之后");
         return 0;
       } else {
         print("两个时间相同");
       }
-    } else {
-      print("一个或两个时间字符串格式不正确");
-    }
+
     return 0;
   }
 }

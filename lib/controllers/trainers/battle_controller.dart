@@ -37,8 +37,9 @@ class _BattleControllerState extends State<BattleController> {
         if (mounted) {
           resetTimer();
           resetRedTimer();
-          initStatu();
+          await BLESendUtil.blueLightBlink();
           await BLESendUtil.openAllBlueLight();
+          initStatu();
         }
       }
     });
@@ -96,6 +97,7 @@ class _BattleControllerState extends State<BattleController> {
               // 先取消自动刷新的定时器
               resetRedTimer();
               // 击中了红灯
+              print('击中红灯targetNumber=${targetNumber}');
               _redScore = (kTargetAndScoreMap[targetNumber]! + int.parse(_redScore))
                   .toString();
               setState(() {});
@@ -192,8 +194,11 @@ class _BattleControllerState extends State<BattleController> {
     final _height = Constants.screenHeight(context) - Constants.tabBarHeight - Constants.navigationBarHeight - 32 - 16  - 60 - 16 - 80 - 32;
     return BaseViewController(
         paused: () {
-          BLESendUtil.appOffLine();
+          _countdownTimer.stop();
+          _countdownTimer.dispose();
+          subscription.cancel();
           BLESendUtil.blueLightBlink();
+          BLESendUtil.appOffLine();
           NavigatorUtil.popToRoot();
         },
         child: Padding(
@@ -250,9 +255,9 @@ class _BattleControllerState extends State<BattleController> {
               SizedBox(
                 height: 16,
               ),
-              SpeedView(speed: '0'),
+              // SpeedView(speed: '0'),
               SizedBox(
-                height: 32,
+                height: 112,
               ),
             ],
           ),
@@ -260,6 +265,7 @@ class _BattleControllerState extends State<BattleController> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    timer?.cancel();
     _countdownTimer.stop();
     _countdownTimer.dispose();
     subscription.cancel();
