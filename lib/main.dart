@@ -11,6 +11,7 @@ import 'model/user_info.dart';
 void main() {
   GetIt.I.registerSingleton<GameUtil>(GameUtil()); // 注册GameUtil实例
   runApp(UserProvider(child: const MyApp()));
+
  // runApp(const MyApp());
 }
 

@@ -114,7 +114,6 @@ class _BattleControllerState extends State<BattleController> {
   autoRefreshControl() {
     resetTimer();
     timer = Timer.periodic(Duration(milliseconds: kAutoRefreshDuration), (Timer t) async{
-     print('自动刷新蓝色执行------');
      await  BLESendUtil.battleControlBlueLight();
     });
   }
@@ -122,7 +121,6 @@ class _BattleControllerState extends State<BattleController> {
   autoRedRefreshControl() {
     resetRedTimer();
     redTimer = Timer.periodic(Duration(milliseconds: kAutoRefreshDuration), (Timer t) async{
-      print('自动刷新红色执行------');
       await BLESendUtil.battleControlRedLight();
     });
   }
@@ -194,6 +192,8 @@ class _BattleControllerState extends State<BattleController> {
     final _height = Constants.screenHeight(context) - Constants.tabBarHeight - Constants.navigationBarHeight - 32 - 16  - 60 - 16 - 80 - 32;
     return BaseViewController(
         paused: () {
+          timer?.cancel();
+          redTimer?.cancel();
           _countdownTimer.stop();
           _countdownTimer.dispose();
           subscription.cancel();
@@ -266,6 +266,7 @@ class _BattleControllerState extends State<BattleController> {
     // TODO: implement dispose
     super.dispose();
     timer?.cancel();
+    redTimer?.cancel();
     _countdownTimer.stop();
     _countdownTimer.dispose();
     subscription.cancel();

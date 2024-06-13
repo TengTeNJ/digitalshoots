@@ -18,6 +18,33 @@ class GameModeController extends StatefulWidget {
 
 class _GameModeControllerState extends State<GameModeController> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    preLoadImage();
+    GameUtil gameUtil = GetIt.instance<GameUtil>();
+    gameUtil.selectRecord = false;
+  }
+
+  preLoadImage() {
+    // 预加载下个页面的的游戏数据显示的试图的背景图片 防止每次启动初次打开加载会闪屏的显现象 应该是图片过大影响的
+    Future.delayed(Duration(milliseconds: 100), () {
+      precacheImage(
+        ExactAssetImage('images/gamemodel/计分栏蓝色底带红框.png'),
+        context,
+      );
+      precacheImage(
+        ExactAssetImage('images/gamemodel/single_bg.png'),
+        context,
+      );
+      precacheImage(
+        ExactAssetImage('images/gamemodel/battle_bg.png'),
+        context,
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BaseViewController(
       child: Padding(

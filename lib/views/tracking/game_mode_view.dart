@@ -42,7 +42,7 @@ class GameModeView extends StatelessWidget {
                   Constants.customTextWidget('75 Seconds', 16, 'ff0000')
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Row(
@@ -54,7 +54,7 @@ class GameModeView extends StatelessWidget {
                   Text('')
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Row(
@@ -69,7 +69,7 @@ class GameModeView extends StatelessWidget {
                   Text('')
                 ],
               ),
-              SizedBox(
+              const  SizedBox(
                 height: 10,
               ),
               Image(
@@ -77,7 +77,7 @@ class GameModeView extends StatelessWidget {
                 height: 36,
                 fit: BoxFit.fitHeight,
               ),
-              SizedBox(height: 4,),
+              const SizedBox(height: 4,),
               containRecording == true ? RecordingCheckView(onSelected: (value){
                 if(recordSelect!=null){
                   recordSelect!(value);

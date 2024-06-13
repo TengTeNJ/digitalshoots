@@ -108,6 +108,9 @@ class _JuniorControllerState extends State<JuniorController> {
           }
         }
       }else if (type == BLEDataType.speed) {
+        if(!begainGame){
+          return;
+        }
         // 速度
         _speed = BluetoothManager().gameData.speed.toString();
         if(maxSpeed < BluetoothManager().gameData.speed){
@@ -183,6 +186,7 @@ class _JuniorControllerState extends State<JuniorController> {
   Widget build(BuildContext context) {
     return BaseViewController(
         paused: () {
+           timer?.cancel();
           _countdownTimer.stop();
           _countdownTimer.dispose();
           subscription.cancel();

@@ -128,6 +128,9 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
           }
         }
       }else if (type == BLEDataType.speed) {
+        if(!begainGame){
+          return;
+        }
         // 速度
         _speed = BluetoothManager().gameData.speed.toString();
         if(maxSpeed < BluetoothManager().gameData.speed){
@@ -143,7 +146,6 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
   autoRefreshControl() {
     resetTimer();
     timer = Timer.periodic(Duration(seconds: 5), (Timer t) {
-      print('自动刷新执行------');
       BLESendUtil.juniorControlLight();
     });
   }

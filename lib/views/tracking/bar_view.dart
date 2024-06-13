@@ -4,7 +4,11 @@ import 'package:robot/model/game_model.dart';
 import 'package:robot/views/base/empty_view.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+import '../../constants/constants.dart';
+import '../../route/route.dart';
 import '../../utils/color.dart';
+import '../../utils/navigator_util.dart';
+import '../../utils/string_util.dart';
 
 class MyStatsBarChatView extends StatefulWidget {
   List<Gamemodel> datas = [];
@@ -35,8 +39,46 @@ class _MyStatsBarChatViewState extends State<MyStatsBarChatView> {
       enable: true,
       builder: (dynamic data, dynamic point, dynamic series, int pointIndex,
           int seriesIndex) {
-        // MyStatsModel model = data as MyStatsModel;
-        return Container();
+        Gamemodel model = data as Gamemodel;
+        return Container(
+          width: 240,
+          height: 100,
+          color: Colors.white,
+          child: Padding(
+            padding: EdgeInsets.all(4),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Expanded(child:  Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Constants.boldBlackItalicTextWidget('Speed', 18),
+                    Constants.mediumBaseTextWidget(model.speed, 18),
+                  ],
+                )),
+                Expanded(child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Constants.boldBlackItalicTextWidget('Date', 18),
+                    Constants.mediumBaseTextWidget( StringUtil.createTimeStringToTipShowString(model.createTime), 18),
+                  ],
+                )),
+                model.path.length > 0 ?  GestureDetector(child: Row(
+                  children: [
+                    Icon(Icons.play_circle_fill_sharp,size: 40,color: Constants.baseStyleColor,)
+                  ],
+                ),behavior: HitTestBehavior.opaque,onTap: (){
+                  print('model.path=${model.path}');
+                  NavigatorUtil.push(Routes.videoplay,arguments: model.path);
+                },) :Container(
+                  child: Center(
+                    child: Constants.regularGreyTextWidget('No video', 20),
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
       },
     );
   }
@@ -136,7 +178,7 @@ class _MyStatsBarChatViewState extends State<MyStatsBarChatView> {
               int.parse(data.speed) > 100 ? 100 :  int.parse(data.speed),
               pointColorMapper: (Gamemodel data, _) =>
                   hexStringToColor('#F8850B'))
-        ]) : EmptyView();
+        ]) : EmptyView(title: 'There is no data for today.',);
   }
 
   @override

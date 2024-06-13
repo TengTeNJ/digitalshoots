@@ -8,8 +8,6 @@ class LocalDataUtil {
   /*获取历史最高分*/
   static Future<Gamemodel> getHistoryMaxScore() async {
     final _list = await DatabaseHelper().getData(kDataBaseTableName);
-    print('_list.first=${_list.first.score}');
-    print('_list.first=${_list.first.path}');
     if (_list.isEmpty) {
       return Gamemodel(score: '0', indexString: '1');
     } else {

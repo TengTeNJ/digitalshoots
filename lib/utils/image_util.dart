@@ -27,6 +27,9 @@ openGallery() {
 }
 
 editImage(XFile pickedFile) async {
+  if(pickedFile == null){
+    return;
+  }
   final croppedFile = await ImageCropper().cropImage(
     maxHeight: 50,
     maxWidth: 50,

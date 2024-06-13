@@ -24,12 +24,31 @@ class _TrainersHomeControllerState extends State<TrainersHomeController> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print('-------');
+
     _controller = VideoPlayerController.asset('images/splash.mp4')..initialize().then((value) => (){
-      print('---splash----');
       _controller.play();
     });
     _controller.play();
+    preLoadImage();
+  }
+
+  preLoadImage(){
+    // 预加载下个页面的的几个模式的背景图片 防止每次启动初次加载会闪屏的显现象 应该是图片过大影响的
+    Future.delayed(Duration(milliseconds: 100),(){
+      precacheImage(
+        ExactAssetImage('images/gamemodel/model1.png'),
+        context,
+      );
+      precacheImage(
+        ExactAssetImage('images/gamemodel/model2.png'),
+        context,
+      );
+      precacheImage(
+        ExactAssetImage('images/gamemodel/model3.png'),
+        context,
+      );
+    });
+
   }
 
   @override

@@ -167,6 +167,6 @@ class _MyStatsLineAreaViewState extends State<MyStatsLineAreaView> {
                           : int.parse(data.score)),
             ],
           )
-        : EmptyView();
+        : EmptyView(title: 'There is no data for today.',);
   }
 }
