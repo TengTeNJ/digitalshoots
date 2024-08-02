@@ -22,6 +22,7 @@ import '../../utils/data_base.dart';
 import '../../utils/global.dart';
 import '../../utils/navigator_util.dart';
 import '../../utils/notification_bloc.dart';
+import 'package:tt_screen_record_plugin/tt_screen_record_plugin.dart';
 
 class JuniorRecordController extends StatefulWidget {
   CameraDescription camera;
@@ -47,19 +48,23 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
   bool begainGame = false;
   int maxSpeed = 0;
 
+  final _ttScreenRecordPlugin = TtScreenRecordPlugin();
+
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     initCamera();
-    //  DeviceScreenRecorder.startRecordScreen(name: 'example');
     subscription = EventBus().stream.listen((event) async {
       if (event == kJuniorGameEnd) {
         if (mounted) {
           resetTimer();
           TTToast.showLoading();
-          final _path = await DeviceScreenRecorder.stopRecordScreen();
+          Map result = await _ttScreenRecordPlugin.stopRecording();
+          final _path = result['path'];
           print('视频保存路径:${_path}');
+
           await BLESendUtil.blueLightBlink();
           await BLESendUtil.openAllBlueLight();          // DeviceScreenRecorder
           // 先保存数据
@@ -186,7 +191,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
         _countDownString = 'GO';
         setState(() {});
         // 开始录屏
-        await DeviceScreenRecorder.startRecordScreen(name: 'example');
+        bool result = await _ttScreenRecordPlugin.startRecording();
         begainGame = true;
         BLESendUtil.juniorControlLight();
         autoRefreshControl();
@@ -210,7 +215,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
   Widget build(BuildContext context) {
     return BaseViewController(
       paused: (){
-        DeviceScreenRecorder.stopRecordScreen();
+        _ttScreenRecordPlugin.stopRecording();
         _countdownTimer.stop();
         _countdownTimer.dispose();
         timer?.cancel();
@@ -355,7 +360,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
     // TODO: implement dispose
     super.dispose();
     timer?.cancel();
-    DeviceScreenRecorder.stopRecordScreen();
+    _ttScreenRecordPlugin.stopRecording();
     BLESendUtil.blueLightBlink();
     _countdownTimer.stop();
     _countdownTimer.dispose();
