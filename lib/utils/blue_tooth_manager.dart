@@ -102,6 +102,10 @@ class BluetoothManager {
           if (!hasDevice(event.id)) {
             this.deviceList.add(BLEModel(device: event));
             deviceListLength.value = this.deviceList.length;
+            if(conectedDeviceCount.value <2){
+              // 已经连接的设备少于两个 则自动连接
+              conectToDevice(this.deviceList.last);
+            }
           } else {
             // 设备列表数组中已有，则忽略
           }
