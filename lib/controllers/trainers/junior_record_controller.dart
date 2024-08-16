@@ -360,12 +360,19 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
     // TODO: implement dispose
     super.dispose();
     timer?.cancel();
-    _ttScreenRecordPlugin.stopRecording();
+    stopRecording();
     BLESendUtil.blueLightBlink();
     _countdownTimer.stop();
     _countdownTimer.dispose();
     timer?.cancel();
     subscription.cancel();
     _controller.dispose();
+  }
+
+  stopRecording() async{
+    bool _result = await  _ttScreenRecordPlugin.recording();
+    if(_result){
+      _ttScreenRecordPlugin.stopRecording();
+    }
   }
 }
