@@ -134,17 +134,27 @@ class BluetoothManager {
         // 已连接
         model.hasConected = true;
         // 保存读写特征值
-        final notifyCharacteristic = QualifiedCharacteristic(
-            serviceId: Uuid.parse(kBLE_SERVICE_NOTIFY_UUID),
-            characteristicId: Uuid.parse(kBLE_CHARACTERISTIC_NOTIFY_UUID),
-            deviceId: model.device.id);
-
-        model.notifyCharacteristic = notifyCharacteristic;
-        // 确保不是测速仪
-        if(model.device.name != kBLEDevice_Name){
+        late final notifyCharacteristic;
+        if(model.device.name == kBLEDevice_NewName){
+          // digital shoots
+           notifyCharacteristic = QualifiedCharacteristic(
+              serviceId: Uuid.parse(kBLE_270_SERVICE_UUID),
+              characteristicId: Uuid.parse(kBLE_270_CHARACTERISTIC_NOTIFY_UUID),
+              deviceId: model.device.id);
+          model.notifyCharacteristic = notifyCharacteristic;
+        }else{
+          // 测速仪
+          notifyCharacteristic = QualifiedCharacteristic(
+              serviceId: Uuid.parse(kBLE_SERVICE_NOTIFY_UUID),
+              characteristicId: Uuid.parse(kBLE_CHARACTERISTIC_NOTIFY_UUID),
+              deviceId: model.device.id);
+          model.notifyCharacteristic = notifyCharacteristic;
+        }
+        // 确保是digital shoots
+        if(model.device.name == kBLEDevice_NewName){
           final writerCharacteristic = QualifiedCharacteristic(
-              serviceId: Uuid.parse(kBLE_SERVICE_WRITER_UUID),
-              characteristicId: Uuid.parse(kBLE_CHARACTERISTIC_WRITER_UUID),
+              serviceId: Uuid.parse(kBLE_270_SERVICE_UUID),
+              characteristicId: Uuid.parse(kBLE_270_CHARACTERISTIC_WRITER_UUID),
               deviceId: model.device.id);
           model.writerCharacteristic = writerCharacteristic;
         }
@@ -166,7 +176,7 @@ class BluetoothManager {
        //// EasyLoading.showSuccess('Bluetooth connection successful');
         // 监听数据
         _ble.subscribeToCharacteristic(notifyCharacteristic).listen((data) {
-         // print("deviceId =${model.device.id}---上报来的数据data = $data");
+         print("deviceId =${model.device.id}---上报来的数据data = $data");
           GameUtil gameUtil = GetIt.instance<GameUtil>();
           // 在游戏页面 才处理数据
           // if (gameUtil.nowISGamePage) {

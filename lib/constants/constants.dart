@@ -329,6 +329,10 @@ const kBLE_SERVICE_NOTIFY_UUID = "ffe0";
 const kBLE_SERVICE_WRITER_UUID = "ffe5";
 const kBLE_CHARACTERISTIC_NOTIFY_UUID = "ffe4";
 const kBLE_CHARACTERISTIC_WRITER_UUID = "ffe9";
+// 新版本的digital shoots和270的蓝牙模块保持一致
+const kBLE_270_SERVICE_UUID = "fff0";
+const kBLE_270_CHARACTERISTIC_NOTIFY_UUID = "fff1";
+const kBLE_270_CHARACTERISTIC_WRITER_UUID = "fff2";
 
 const kPageLimit = 10; // 数据分页每页显示的数据量
 const kAutoRefreshDuration = 4500; // 游戏自动刷新的时间间隔
@@ -336,7 +340,8 @@ const kAutoRefreshDuration = 4500; // 游戏自动刷新的时间间隔
 const kBLEDevice_Names = [
   kBLEDevice_Name,
   kBLEDevice_NewName,
-  kFiveBallHandler_Name
+  kFiveBallHandler_Name,
+  // 'Dangler-M-7293'
 ];
 
 const kBLEDataFrameHeader = 0xA5; // 蓝牙数据帧头
