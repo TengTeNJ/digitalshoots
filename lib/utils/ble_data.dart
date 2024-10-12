@@ -127,6 +127,41 @@ List<int> closeBlueLightsData(List<int> targets) {
   return values;
 }
 
+// 打开紫灯
+List<int> openPurpleLightsData(int targetNumber) {
+  String pre_data = '11';
+  List<int> values = [0, 0, 0, 0, 0, 0];
+  int targetIndex = (targetNumber - 1 - 5).abs();
+  values[targetIndex] = 1;
+  values.forEach((element) {
+    pre_data += element.toString();
+  });
+  int data = int.parse(pre_data, radix: 2);
+  print('打开紫灯${data}');
+  //  开灯
+  int v = 0xA5 + 0x07 + 0x27 + 0x01 + targetNumber;
+  List<int> targetDatas = [0xA5, 0x07, 0x27,0x01, targetNumber ,v ,0xAA];
+  print('打开某个紫灯:${pre_data}');
+  return targetDatas;
+}
+// 关闭紫灯
+List<int> closePurpleLightsData(int targetNumber) {
+  String pre_data = '11';
+  List<int> values = [0, 0, 0, 0, 0, 0];
+  int targetIndex = (targetNumber - 1 - 5).abs();
+  values[targetIndex] = 1;
+  values.forEach((element) {
+    pre_data += element.toString();
+  });
+  int data = int.parse(pre_data, radix: 2);
+  print('关闭紫灯${data}');
+  // 0x00 关灯
+  int v = 0xA5 + 0x07 + 0x27 + 0x00 + targetNumber;
+  List<int> targetDatas = [0xA5, 0x07, 0x27,0x00, targetNumber ,v ,0xAA];
+  print('关闭某个紫灯:${pre_data}');
+  return targetDatas;
+}
+
 /*Junior模式打开某个蓝灯*/
 List<int> openJuniorBlueLightData(int targetNumber) {
   String pre_data = '10';
