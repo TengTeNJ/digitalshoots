@@ -148,6 +148,13 @@ class BluetoothDataParse {
         //  print('毫秒刷新---${data}');
         BluetoothManager().triggerCallback(type: BLEDataType.millisecond);
         break;
+      case ResponseCMDType.speed:
+        int data = element[2];
+        BluetoothManager().gameData.speed = data;
+        print('速度---${data}');
+        BluetoothManager().triggerCallback(type: BLEDataType.speed);
+
+        break;
       case ResponseCMDType.targetIn:
         // mcu主动上报击中
         int data = element[2];

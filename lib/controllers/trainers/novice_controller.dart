@@ -83,10 +83,13 @@ class _NoviceControllerState extends State<NoviceController>
           }
         }
       } else if (type == BLEDataType.speed) {
+        print('novice_speed123');
         // 速度
         if (begainGame) {
-          _speed = BluetoothManager().gameData.speed.toString();
-          setState(() {});
+          print('novice_speed456${_speed}');
+          setState(() {
+            _speed = BluetoothManager().gameData.speed.toString();
+          });
         }
       }
     };
