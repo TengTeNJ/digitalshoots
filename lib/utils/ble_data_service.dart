@@ -1,5 +1,7 @@
 /*响应数据的CMD*/
 
+import 'dart:async';
+
 import 'package:robot/utils/ble_send_util.dart';
 
 import '../constants/constants.dart';
@@ -34,69 +36,86 @@ class ResponseCMDType {
 
 List<int> bleNotAllData = []; // 不完整数据 被分包发送的蓝牙数据
 bool isNew = true;
+Timer? delayTimer;
+
 /*蓝牙数据解析类*/
 class BluetoothDataParse {
   // 数据解析
   static parseData(List<int> data,BLEModel model) {
-    if (data.contains(kBLEDataFrameHeader)) {
-      List<List<int>> _datas = splitData(data);
-      _datas.forEach((element) {
-        if (element == null || element.length == 0) {
-          // 空数组
-         // print('问题数据${element}');
-        } else {
-          // 先获取长度
-          int length = element[0] - 1; // 获取长度 去掉了枕头
-          if(length != element.length ){
-            // 说明不是完整数据
-            bleNotAllData.addAll(element);
-            if(bleNotAllData[0] - 1 == bleNotAllData.length){
-              print('组包1----${element}');
-              handleData(bleNotAllData);
-              isNew = true;
-              bleNotAllData.clear();
-            }else{
-              isNew = false;
-              Future.delayed(Duration(milliseconds: 10),(){
-                if(!isNew){
-                  bleNotAllData.clear();
-                }
-              });
-            }
-          }else{
-            handleData(element);
-          }
+    if (data.isEmpty) {
+      return;
+    }
+    if (data.length >= 2 && data[0] == kBLEDataFrameHeader) {
+      // 取出来数据的长度标识位
+      int length = data[1];
+      // 通过 帧头 帧尾 length数据位的值和实际的数据包length进行匹配
+      if (data.length >= length && data[length - 1] == kBLEDataFramerFoot) {
+        List<int> rightData = data.sublist(0, length);
+        handleData(rightData, model); // 完整的一帧数据
+        List<int> othersData = data.sublist(length, data.length);
+        isNew = true;
+        bleNotAllData.clear();
+        if (delayTimer != null) {
+          delayTimer!.cancel();
+        }
+        if (!othersData.isEmpty) {
+          parseData(othersData, model);
+        }
+      } else {
+        handleNotFullData(data, model);
+      }
+    } else {
+      handleNotFullData(data, model);
+    }
+  }
 
+  static handleNotFullData(List<int> data, BLEModel model) {
+    bleNotAllData.addAll(data);
+    //print('handleNotFullData1${data.map((toElement) => toElement.toRadixString(16)).toList()}');
+    //print('handleNotFullData12 ${isNew}');
+    if (isNew) {
+      isNew = false;
+      delayTimer = Timer(Duration(milliseconds: 150), () {
+        if (!isNew) {
+          print(
+              '解析数据超时 ${bleNotAllData.map((toElement) => toElement.toRadixString(16)).toList()}');
+          // print(Œ
+          //     'bleNotAllData.toString()} == ${bleNotAllData.map((toElement) => toElement.toRadixString(16)).toList()}}');
+          bleNotAllData.clear();
+          isNew = true;
         }
       });
     } else {
-      print('model.device.name=${model.device.name}');
-      if(model.device.name == kBLEDevice_Name){
-        // 如果是测速仪器
-        int speed = data[0];
-        BluetoothManager().gameData.speed = speed;
-        BluetoothManager().triggerCallback(type: BLEDataType.speed);
-        print('-------');
-        return;
-      }
-        bleNotAllData.addAll(data);
-        if(bleNotAllData[0] - 1 == bleNotAllData.length){
-          print('组包2----${data}');
-          handleData(bleNotAllData);
+      // print('handleNotFullData3${bleNotAllData.map((toElement) => toElement.toRadixString(16)).toList()}');
+      if (bleNotAllData.length >= 4 &&
+          bleNotAllData[0] == kBLEDataFrameHeader) {
+        int length = bleNotAllData[3];
+        if (bleNotAllData.length >= length &&
+            bleNotAllData[length - 1] == kBLEDataFramerFoot) {
+          List<int> rightData = bleNotAllData.sublist(0, length);
+          handleData(rightData, model); // 完整的一帧数据
+          List<int> othersData =
+          bleNotAllData.sublist(length, bleNotAllData.length);
           isNew = true;
           bleNotAllData.clear();
-        }else{
-          isNew = false;
-          Future.delayed(Duration(milliseconds: 10),(){
-            if(!isNew){
-              bleNotAllData.clear();
-            }
-          });
+          if (delayTimer != null) {
+            delayTimer!.cancel();
+          }
+          if (!othersData.isEmpty) {
+            parseData(othersData, model);
+          }
         }
-      print('蓝牙设备响应数据不合法=${data}');
+      }
     }
   }
-  static handleData(List<int> element){
+
+  static handleData(List<int> element,BLEModel mode){
+    if (element.length < 4) {
+      // print('解析数据出错');
+      return;
+    }
+    // 去除帧头
+    element = element.sublist(1, element.length);
     int cmd = element[1];
     switch (cmd) {
       case ResponseCMDType.deviceInfo:
