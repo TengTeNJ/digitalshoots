@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:robot/route/route.dart';
 import 'package:robot/utils/game_data_util.dart';
+import 'package:robot/widges/base/battery_view.dart';
 import '../../constants/constants.dart';
 import '../../utils/ble_data_service.dart';
 import '../../utils/blue_tooth_manager.dart';
@@ -27,6 +28,13 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _CustomAppBarState extends State<CustomAppBar> {
   int batteryLevel = 100; // 电池电量等级
+  String firstName = 'green';
+  String secondName = 'green';
+  String thirdName = 'green';
+  String fourName = 'green';
+  String fiveName = 'green';
+  String sixName = 'green';
+
   @override
   void initState() {
     // TODO: implement initState
@@ -39,6 +47,21 @@ class _CustomAppBarState extends State<CustomAppBar> {
         if (mounted) {
           setState(() {});
         }
+        print('电量666${batteryLevel}');
+      } else if (type == BLEDataType.boardBattery) {
+        firstName = GameDataUtil.boardPowerValueToBatteryImageLevel(BluetoothManager().gameData.firstPower);
+        secondName = GameDataUtil.boardPowerValueToBatteryImageLevel(BluetoothManager().gameData.secondPower);
+        thirdName = GameDataUtil.boardPowerValueToBatteryImageLevel(BluetoothManager().gameData.thirdPower);
+        fourName = GameDataUtil.boardPowerValueToBatteryImageLevel(BluetoothManager().gameData.fourPower);
+        fiveName = GameDataUtil.boardPowerValueToBatteryImageLevel(BluetoothManager().gameData.fivePower);
+        sixName = GameDataUtil.boardPowerValueToBatteryImageLevel(BluetoothManager().gameData.sixPower);
+
+        print('1号板电量${BluetoothManager().gameData.firstPower}');
+        print('2号板电量${BluetoothManager().gameData.secondPower}');
+        print('3号板电量${BluetoothManager().gameData.thirdPower}');
+        print('4号板电量${BluetoothManager().gameData.fourPower}');
+        print('5号板电量${BluetoothManager().gameData.fivePower}');
+        print('6号板电量${BluetoothManager().gameData.sixPower}');
       }
     };
     BluetoothManager().conectedDeviceCount.addListener(() {
@@ -91,13 +114,17 @@ class _CustomAppBarState extends State<CustomAppBar> {
         ),
       ),
       actions: [
-        BluetoothManager().conectedDeviceCount.value > 0
-            ? Image(
-                image: AssetImage('images/battery/${batteryLevel}.png'),
-                width: 37,
-                height: 18.5,
-              )
-            : Container()
+        BluetoothManager().conectedDeviceCount.value > 0 ?
+        BatteryView(batteryImageNames: ['images/battery/battery_${firstName}.png',
+      'images/battery/battery_${secondName}.png',
+      'images/battery/battery_${thirdName}.png',
+      'images/battery/battery_${fourName}.png',
+      'images/battery/battery_${fiveName}.png',
+      'images/battery/battery_${sixName}.png'
+      ],)
+       :Container()
+
+        // ),
       ],
       title: Image(
         image: AssetImage('images/topLogo.png'),

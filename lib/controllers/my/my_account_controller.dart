@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -92,7 +91,6 @@ class _MyAccountControllerState extends State<MyAccountController> {
       fileImagePath = imagePath;
       if(mounted){
         setState(() {
-
         });
       }
     }

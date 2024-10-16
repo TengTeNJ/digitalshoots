@@ -89,10 +89,20 @@ class _JuniorControllerState extends State<JuniorController> {
               // 击中了蓝灯
               _score = (kTargetAndScoreMap[targetNumber]! + int.parse(_score))
                   .toString();
+              print('击打了蓝灯');
+              // 打开紫灯
+              BLESendUtil.openPurpleLights(targetNumber);
+              // 关闭紫灯
+              Future.delayed(Duration(milliseconds: 500),(){
+                BLESendUtil.closePurpleLights(targetNumber);
+                // 然后再随机点亮红和蓝灯各一个
+                BLESendUtil.juniorControlLight();
+                autoRefreshControl();
+              });
+
+
               setState(() {});
-              // 然后再随机点亮红和蓝灯各一个
-              BLESendUtil.juniorControlLight();
-              autoRefreshControl();
+
             } else if (targetNumber ==
                 kJuniorRedtargets[BluetoothManager().juniorRedIndex]) {
               // 先取消自动刷新的定时器
@@ -100,10 +110,20 @@ class _JuniorControllerState extends State<JuniorController> {
               // 击中了红灯
               _score = (kTargetAndScoreMap[targetNumber]! + int.parse(_score))
                   .toString();
+              print('击打了红灯');
+
+              // 打开紫灯
+              BLESendUtil.openPurpleLights(targetNumber);
+              // 关闭紫灯
+              Future.delayed(Duration(milliseconds: 500),(){
+                BLESendUtil.closePurpleLights(targetNumber);
+                // 然后再随机点亮红和蓝灯各一个
+                BLESendUtil.juniorControlLight();
+                autoRefreshControl();
+
+              });
+
               setState(() {});
-              // 然后再随机点亮红和蓝灯各一个
-              BLESendUtil.juniorControlLight();
-              autoRefreshControl();
             }
           }
         }

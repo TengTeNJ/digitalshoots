@@ -68,6 +68,24 @@ class BLESendUtil {
         .writerDataToDevice(getWriterDevice(), closeBlueLightsData(targets));
   }
 
+  /*打开紫灯*/
+  static Future<void> openPurpleLights(int number) async {
+    return await BluetoothManager()
+        .writerDataToDevice(getWriterDevice(), openPurpleLightsData(number));
+  }
+
+/*关闭紫灯*/
+  static Future<void> closePurpleLights(int number) async {
+    return await BluetoothManager()
+        .writerDataToDevice(getWriterDevice(), closePurpleLightsData(number));
+  }
+
+  // static Future<void> closeLights(int number) async {
+  //   return await BluetoothManager()
+  //       .writerDataToDevice(getWriterDevice(), closeLightsData(number));
+  // }
+
+
   // noviceShakeData
   static noviceShake() {
     if (BluetoothManager().hasConnectedDeviceList.isEmpty) {
@@ -91,43 +109,48 @@ class BLESendUtil {
     BluetoothManager().writerDataToDevice(getWriterDevice(), offLineData());
   }
 
+
   /*Junior 模式的每次灯光控制*/
   static juniorControlLight() {
     if (BluetoothManager().hasConnectedDeviceList.isEmpty) {
       return;
     }
-    closeAllLightData(); // 先关闭所有灯光
-    int _blueIndex = BluetoothManager().juniorBlueIndex;
-    int _redIndex = BluetoothManager().juniorRedIndex;
-    if (_blueIndex == -1 || _redIndex == -1) {
-      // 说明游戏刚开始 先随机取出来一个随机数
-      int red_index = Random().nextInt(3);
-      int blue_index = Random().nextInt(3);
-      BluetoothManager().juniorBlueIndex = blue_index;
-      BluetoothManager().juniorRedIndex = red_index;
-      BluetoothManager().writerDataToDevice(getWriterDevice(),
-          openJuniorBlueLightData(kJuniorBluetargets[blue_index]));
-      BluetoothManager().writerDataToDevice(getWriterDevice(),
-          openJuniorRedLightData(kJuniorRedtargets[red_index]));
-    } else {
-      // 说明不是第一次取随机数 所以先判断取出来的和上次一样不,一样的话就重新取
-      int red_index;
-      int blue_index;
-      do {
-        red_index = Random().nextInt(3);
-      } while (BluetoothManager().juniorRedIndex == red_index);
-      BluetoothManager().juniorRedIndex = red_index;
+   // closeAllLightData(); // 先关闭所有灯光
+   Future.delayed(Duration(milliseconds: 200),(){
+     int _blueIndex = BluetoothManager().juniorBlueIndex;
+     int _redIndex = BluetoothManager().juniorRedIndex;
+     if (_blueIndex == -1 || _redIndex == -1) {
+       // 说明游戏刚开始 先随机取出来一个随机数
+       int red_index = Random().nextInt(3);
+       int blue_index = Random().nextInt(3);
+       BluetoothManager().juniorBlueIndex = blue_index;
+       BluetoothManager().juniorRedIndex = red_index;
+       BluetoothManager().writerDataToDevice(getWriterDevice(),
+           openJuniorBlueLightData(kJuniorBluetargets[blue_index]));
+       BluetoothManager().writerDataToDevice(getWriterDevice(),
+           openJuniorRedLightData(kJuniorRedtargets[red_index]));
+     } else {
+       // 说明不是第一次取随机数 所以先判断取出来的和上次一样不,一样的话就重新取
+       int red_index;
+       int blue_index;
+       do {
+         red_index = Random().nextInt(3);
+       } while (BluetoothManager().juniorRedIndex == red_index);
+       BluetoothManager().juniorRedIndex = red_index;
 
-      do {
-        blue_index = Random().nextInt(3);
-      } while (BluetoothManager().juniorBlueIndex == blue_index);
-      BluetoothManager().juniorBlueIndex = blue_index;
+       do {
+         blue_index = Random().nextInt(3);
+       } while (BluetoothManager().juniorBlueIndex == blue_index);
+       BluetoothManager().juniorBlueIndex = blue_index;
 
-      BluetoothManager().writerDataToDevice(getWriterDevice(),
-          openJuniorBlueLightData(kJuniorBluetargets[blue_index]));
-      BluetoothManager().writerDataToDevice(getWriterDevice(),
-          openJuniorRedLightData(kJuniorRedtargets[red_index]));
-    }
+       BluetoothManager().writerDataToDevice(getWriterDevice(),
+           openJuniorBlueLightData(kJuniorBluetargets[blue_index]));
+     Future.delayed(Duration(milliseconds: 200),(){
+       BluetoothManager().writerDataToDevice(getWriterDevice(),
+           openJuniorRedLightData(kJuniorRedtargets[red_index]));
+     });
+     }
+   });
   }
 
   static BLEModel getWriterDevice() {

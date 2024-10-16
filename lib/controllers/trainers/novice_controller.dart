@@ -69,7 +69,21 @@ class _NoviceControllerState extends State<NoviceController>
               // 更新得分
               _score = doneLights.length.toString();
               //  每次击中 则关闭此灯
-              BLESendUtil.closeBlueLights(doneLights);
+             BLESendUtil.closeBlueLights(doneLights);
+             // BLESendUtil.closeAllBlueLight(doneights);
+
+              // 打开紫灯
+              print('击中的灯的索引${targetNumber}');
+              print('已经关闭的灯的索引${doneLights}');
+              Future.delayed(Duration(milliseconds: 10),(){
+                BLESendUtil.openPurpleLights(targetNumber);
+              });
+
+              // 关闭紫灯
+              Future.delayed(Duration(milliseconds: 500),(){
+                BLESendUtil.closePurpleLights(targetNumber);
+              });
+
               setState(() {});
               // 6个全部击中 则一轮游戏结束
               if (doneLights.length == 6) {
@@ -201,7 +215,8 @@ class _NoviceControllerState extends State<NoviceController>
               SizedBox(
                 height: 16,
               ),
-              SpeedView(speed: _speed.padLeft(3, '0')),
+             // SpeedView(speed: _speed.padLeft(1, '100')),
+              SpeedView(speed: _speed),
               SizedBox(
                 height: 32,
               ),
@@ -217,6 +232,7 @@ class _NoviceControllerState extends State<NoviceController>
     _countdownTimer.stop();
     _countdownTimer.dispose();
     BLESendUtil.blueLightBlink();
+    print('novice 界面退出');
     //  WidgetsBinding.instance.removeObserver(this);
   }
 }

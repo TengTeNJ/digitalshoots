@@ -4,6 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:get_it/get_it.dart';
 import 'package:robot/utils/ble_data.dart';
+import 'package:robot/utils/ble_send_util.dart';
 import '../constants/constants.dart';
 import '../model/ble_model.dart';
 import '../model/game_data.dart';
@@ -129,6 +130,9 @@ class BluetoothManager {
       print('connectionStateUpdate = ${connectionStateUpdate.connectionState}');
       if (connectionStateUpdate.connectionState ==
           DeviceConnectionState.connected) {
+        // 连接成功主动发送心跳回复响应(获取准确电量)
+       // BLESendUtil.heartBeatResponse();
+
         // 连接设备数量+1
         conectedDeviceCount.value++;
         // 已连接

@@ -88,6 +88,7 @@ class _BattleControllerState extends State<BattleController> {
               // 击中了蓝灯
               _score = (kTargetAndScoreMap[targetNumber]! + int.parse(_score))
                   .toString();
+              print('击中了蓝灯');
               setState(() {});
               // 然后再随机点亮一个蓝灯
              await BLESendUtil.battleControlBlueLight();
@@ -97,7 +98,7 @@ class _BattleControllerState extends State<BattleController> {
               // 先取消自动刷新的定时器
               resetRedTimer();
               // 击中了红灯
-              print('击中红灯targetNumber=${targetNumber}');
+              print('击中了红灯targetNumber=${targetNumber}');
               _redScore = (kTargetAndScoreMap[targetNumber]! + int.parse(_redScore))
                   .toString();
               setState(() {});
@@ -107,7 +108,9 @@ class _BattleControllerState extends State<BattleController> {
             }
           }
         }
-      } else {}
+      } else if(type == BLEDataType.speed)  {
+            BluetoothManager().gameData.speed;
+      };
     };
   }
 
@@ -169,14 +172,17 @@ class _BattleControllerState extends State<BattleController> {
         setState(() {});
         begainGame = true;
         // 正式开始游戏
+        await  BLESendUtil.battleControlRedLight();
+        autoRedRefreshControl();
+
+        // 红色
+      Future.delayed(Duration(milliseconds: 1000),()async{
         // 蓝色
         await BLESendUtil.battleControlBlueLight();
         autoRefreshControl();
-        // 红色
-        await  BLESendUtil.battleControlRedLight();
-        autoRedRefreshControl();
         // 正式开始游戏
         _countdownTimer.start();
+      });
       }
     });
   }

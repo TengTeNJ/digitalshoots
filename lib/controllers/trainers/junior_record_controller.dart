@@ -115,9 +115,16 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
               _score = (kTargetAndScoreMap[targetNumber]! + int.parse(_score))
                   .toString();
               setState(() {});
-              // 然后再随机点亮红和蓝灯各一个
-              BLESendUtil.juniorControlLight();
-              autoRefreshControl();
+              // 打开紫灯
+              BLESendUtil.openPurpleLights(targetNumber);
+              Future.delayed(Duration(milliseconds: 500),(){
+                BLESendUtil.closePurpleLights(targetNumber);
+                // 然后再随机点亮红和蓝灯各一个
+                BLESendUtil.juniorControlLight();
+                autoRefreshControl();
+
+              });
+
             } else if (targetNumber ==
                 kJuniorRedtargets[BluetoothManager().juniorRedIndex]) {
               // 先取消自动刷新的定时器
@@ -126,9 +133,15 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
               _score = (kTargetAndScoreMap[targetNumber]! + int.parse(_score))
                   .toString();
               setState(() {});
-              // 然后再随机点亮红和蓝灯各一个
-              BLESendUtil.juniorControlLight();
-              autoRefreshControl();
+              // 打开紫灯
+              BLESendUtil.openPurpleLights(targetNumber);
+              Future.delayed(Duration(milliseconds: 500),(){
+                BLESendUtil.closePurpleLights(targetNumber);
+                // 然后再随机点亮红和蓝灯各一个
+                BLESendUtil.juniorControlLight();
+                autoRefreshControl();
+              });
+
             }
           }
         }
@@ -142,7 +155,6 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
           maxSpeed = BluetoothManager().gameData.speed;
         }
         setState(() {
-
         });
       }
     };

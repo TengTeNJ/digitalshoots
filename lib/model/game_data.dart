@@ -8,6 +8,13 @@ class GameData  extends ChangeNotifier{
   int _speed = 0; // 速度
   bool _gameStart = false; // 游戏状态
   int _powerValue = 100; // 电量值
+  int _firstPower = 100; // 1号板电量
+  int _secondPower = 100; // 2号板电量
+  int _thirdPower = 100; // 3号板电量
+  int _fourPower = 100; // 4号板电量
+  int _fivePower = 100; // 5号板电量
+  int _sixPower = 100; // 6号板电量
+
   int _remainTime = 45; // 剩余时长
   int _millSecond= 0; // 剩余时长
   int _targetNumber = 1; // mcu主动上报击中的标靶
@@ -18,6 +25,14 @@ class GameData  extends ChangeNotifier{
   int get score => _score;
   int get speed => _speed;
   int get powerValue => _powerValue;
+  int get firstPower => _firstPower;
+  int get secondPower => _secondPower;
+  int get thirdPower => _thirdPower;
+  int get fourPower => _fourPower;
+  int get fivePower => _fivePower;
+  int get sixPower => _sixPower;
+
+
   bool get gameStart => _gameStart;
   int get remainTime => _remainTime;
   int get millSecond => _millSecond;
@@ -43,6 +58,30 @@ class GameData  extends ChangeNotifier{
 
   set powerValue(int powerValue){
     _powerValue = powerValue;
+  }
+
+  set firstPower(int firstPower) {
+    _firstPower = firstPower;
+  }
+
+  set secondPower(int secondPower) {
+    _secondPower = secondPower;
+  }
+
+  set thirdPower(int thirdPower) {
+    _thirdPower = thirdPower;
+  }
+
+  set fourPower(int fourPower) {
+    _fourPower = fourPower;
+  }
+
+  set fivePower(int fivePower) {
+    _fivePower = fivePower;
+  }
+
+  set sixPower(int sixPower) {
+    _sixPower = sixPower;
   }
 
   set gameStart(bool gameStart){

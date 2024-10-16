@@ -9,6 +9,7 @@ import 'blue_tooth_manager.dart';
 enum BLEDataType {
   none,
   dviceInfo,
+  boardBattery,
   targetResponse,
   score,
   gameStatu,
@@ -19,6 +20,9 @@ enum BLEDataType {
 }
 class ResponseCMDType {
   static const int deviceInfo = 0x20; // 设备信息，包含开机状态、电量等
+  static const int speed = 0x25; // 速度
+  static const int boardBattery = 0x24; // 从板电量上报
+
   static const int targetResponse = 0x26; // 标靶响应
   static const int score = 0x28; // 得分
   static const int gameStatu = 0x2A; // 游戏状态:开始和结束
@@ -105,9 +109,31 @@ class BluetoothDataParse {
           // 电量
           BluetoothManager().gameData.powerValue = statu_data;
           BluetoothManager().triggerDeviceInfoCallback (type: BLEDataType.dviceInfo);
+          print('电量---${statu_data}');
         }
         break;
-      case ResponseCMDType.targetResponse:
+      case ResponseCMDType.boardBattery:
+        int board_index = element[2];
+        int online_status = element[3];
+        int battery = element[4];
+        if (board_index == 1) {
+          BluetoothManager().gameData.firstPower = battery;
+        } else if (board_index == 2) {
+          BluetoothManager().gameData.secondPower = battery;
+        } else if (board_index == 3) {
+          BluetoothManager().gameData.thirdPower = battery;
+        }  else if (board_index == 4) {
+          BluetoothManager().gameData.fourPower = battery;
+        }  else if (board_index == 5) {
+          BluetoothManager().gameData.fivePower = battery;
+        }  else if (board_index == 6) {
+          BluetoothManager().gameData.sixPower = battery;
+        }
+        BluetoothManager().triggerDeviceInfoCallback(type: BLEDataType.boardBattery);
+        print('从板board_index---${board_index}');
+        print('从板online_status---${online_status}');
+        print('从板battery---${battery}');
+        case ResponseCMDType.targetResponse:
         int data = element[2];
        // print('------data=${element}');
         String binaryString = data.toRadixString(2); // 转换成二进制字符串

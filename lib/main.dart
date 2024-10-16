@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       onGenerateRoute: Routes.onGenerateRoute,
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         // This is the theme of your application.
         //

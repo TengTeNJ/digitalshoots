@@ -124,4 +124,17 @@ class GameDataUtil {
     }
   }
 
+  static String boardPowerValueToBatteryImageLevel(int powerValue ){
+    if(powerValue<=20){
+      return 'red';
+    }else if( powerValue>= 20 && powerValue<=70){
+      return 'yellow';
+    }else if( powerValue>70){
+      return 'green';
+    } else {
+      return 'green';
+    }
+  }
+
+
 }
