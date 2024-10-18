@@ -172,17 +172,14 @@ class _BattleControllerState extends State<BattleController> {
         setState(() {});
         begainGame = true;
         // 正式开始游戏
-        await  BLESendUtil.battleControlRedLight();
-        autoRedRefreshControl();
-
-        // 红色
-      Future.delayed(Duration(milliseconds: 1000),()async{
         // 蓝色
         await BLESendUtil.battleControlBlueLight();
         autoRefreshControl();
+        // 红色
+        await  BLESendUtil.battleControlRedLight();
+        autoRedRefreshControl();
         // 正式开始游戏
         _countdownTimer.start();
-      });
       }
     });
   }
