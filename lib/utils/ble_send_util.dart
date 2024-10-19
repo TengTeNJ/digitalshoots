@@ -145,7 +145,7 @@ class BLESendUtil {
 
        BluetoothManager().writerDataToDevice(getWriterDevice(),
            openJuniorBlueLightData(kJuniorBluetargets[blue_index]));
-     Future.delayed(Duration(milliseconds: 200),(){
+       Future.delayed(Duration(milliseconds: 100),(){
        BluetoothManager().writerDataToDevice(getWriterDevice(),
            openJuniorRedLightData(kJuniorRedtargets[red_index]));
      });
@@ -183,9 +183,11 @@ class BLESendUtil {
         red_index = Random().nextInt(battleTargets.length);
       } while (redLightIndex == battleTargets[red_index]);
       BluetoothManager().battleRedIndex = battleTargets[red_index];
-      await BluetoothManager().writerDataToDevice(
-          getWriterDevice(), openJuniorRedLightData(battleTargets[red_index]));
+      print('自动跳灯开红灯${battleTargets[red_index]}');
       BluetoothManager().battleTargetNumbers.remove(battleTargets[red_index]);
+
+      await BluetoothManager().writerDataToDevice(
+          getWriterDevice(), openJuniorRedLightData(BluetoothManager().battleRedIndex));
     });
   }
 
@@ -211,10 +213,13 @@ class BLESendUtil {
       do {
         blue_index = Random().nextInt(battleTargets.length);
       } while (redLightIndex == battleTargets[blue_index]);
+
+      print('自动跳灯开蓝灯${battleTargets[blue_index]}');
       BluetoothManager().battleBlueIndex = battleTargets[blue_index];
-      await BluetoothManager().writerDataToDevice(getWriterDevice(),
-          openJuniorBlueLightData(battleTargets[blue_index]));
       BluetoothManager().battleTargetNumbers.remove(battleTargets[blue_index]);
+
+        BluetoothManager().writerDataToDevice(getWriterDevice(),
+            openJuniorBlueLightData(BluetoothManager().battleBlueIndex ));
     });
   }
 
