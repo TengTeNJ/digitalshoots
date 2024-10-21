@@ -216,6 +216,7 @@ class BluetoothManager {
       // TTToast.showErrorInfo('Please connect your device first');
       return;
     }
+    sleep(Duration(milliseconds: 50));
    return await _ble.writeCharacteristicWithoutResponse(model.writerCharacteristic!,
         value: data);
   }

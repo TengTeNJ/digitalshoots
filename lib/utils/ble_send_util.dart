@@ -20,7 +20,8 @@ class BLESendUtil {
     if (BluetoothManager().hasConnectedDeviceList.isEmpty) {
       return;
     }
-    await closeAllLight(); // 先关闭所有的灯 再打开。防止红蓝同时打开
+    print('all------------');
+   // await closeAllLight(); // 先关闭所有的灯 再打开。防止红蓝同时打开
     return await BluetoothManager()
         .writerDataToDevice(getWriterDevice(), openAllBlueLightData());
   }
@@ -166,7 +167,7 @@ class BLESendUtil {
       return;
     }
     // 先关闭所有红灯
-    await closeAllRedLight();
+   // await closeAllRedLight();
     // 获取当前红灯target
     final Lock lock = Lock();
     await lock.synchronized(() async {
@@ -197,7 +198,7 @@ class BLESendUtil {
       return;
     }
     // 先关闭所有蓝灯
-    await closeAllBlueLight();
+   // await closeAllBlueLight();
     final Lock lock = Lock();
     await lock.synchronized(() async {
       // 获取当前蓝灯target
