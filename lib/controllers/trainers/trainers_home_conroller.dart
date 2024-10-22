@@ -24,7 +24,6 @@ class _TrainersHomeControllerState extends State<TrainersHomeController> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
     _controller = VideoPlayerController.asset('images/splash.mp4')..initialize().then((value) => (){_controller.play();
     });
     _controller.play();

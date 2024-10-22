@@ -44,6 +44,9 @@ class _JuniorControllerState extends State<JuniorController> {
           await BLESendUtil.blueLightBlink();
           await BLESendUtil.openAllBlueLight();
           // 保存数据
+          if(_score == 'GO'){
+            _score = '0';
+          }
           Gamemodel model =
               Gamemodel.modelFromJson({'score': _score.toString()});
           model.speed = maxSpeed.toString();
@@ -99,8 +102,6 @@ class _JuniorControllerState extends State<JuniorController> {
                 BLESendUtil.juniorControlLight();
                 autoRefreshControl();
               });
-
-
               setState(() {});
 
             } else if (targetNumber ==

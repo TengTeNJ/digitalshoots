@@ -3,6 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:robot/controllers/base/video_play_controller.dart';
+import 'package:robot/controllers/my/debug_controller.dart';
 import 'package:robot/controllers/trainers/battle_controller.dart';
 import 'package:robot/controllers/trainers/ble_list_controller.dart';
 import 'package:robot/controllers/trainers/game_mode_controller.dart';
@@ -22,6 +23,7 @@ class Routes {
   static const String battle = 'battle'; // battle游戏模式页面
   static const String juniorrecord = 'juniorRecord'; // junior游戏模式 选择录屏
   static const String videoplay = 'videoplay'; // 视频播放页面
+  static const String debug = 'debug'; // debug设备页面
 
   //GameFinishController VideoPlayController
   static RouteFactory onGenerateRoute = (settings) {
@@ -44,6 +46,8 @@ class Routes {
       case videoplay:
         final  String videopath = settings.arguments as String;
         return MaterialPageRoute(builder: (_) => VideoPlayController(videopath: videopath,));
+      case debug:
+        return MaterialPageRoute(builder: (_) => DebugController());
       default:
         return _errorRoute();
     }

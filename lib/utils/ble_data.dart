@@ -1,3 +1,5 @@
+const kChannel = 0x29; // 信道相关
+const kReset = 0x32; // 重置相关
 /*APP上线*/
 List<int> onLineData() {
   int v = 0xA5 + 0x07 + 0x22 + 0x01 + 0x01;
@@ -210,5 +212,23 @@ List<int> noviceShakeData() {
 List<int> juniorShakeData() {
   int v = 0xA5 + 0x06 + 0x05 + 0x1E;
   List<int> values = [0xA5, 0x06, 0x05, 0x1E, v, 0xAA];
+  return values;
+}
+
+/*切换信道*/
+List<int> changeChannel(int value) {
+  // 0x80 = 10000000
+  int v = 0xA5 + 0x06 + 0x29 + value;
+  List<int> values = [0xA5, 0x06, 0x29, value, v, 0xAA];
+  print('切换信道:${value}');
+  return values;
+}
+
+/*重置*/
+List<int> reset() {
+  // 0x80 = 10000000
+  int v = 0xA5 + 0x06 + kReset + 1;
+  List<int> values = [0xA5, 0x06, kReset, 1, v, 0xAA];
+  print('重置:${values}');
   return values;
 }

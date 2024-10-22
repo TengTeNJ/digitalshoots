@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../utils/color.dart';
 
@@ -356,6 +355,8 @@ const kDataBaseTVideoableName = 'video_table'; // 视频路径数据库的表名
 
 const kGameDuration = 45; // 游戏时常
 
+const kChannelArray = [1,2,3,4,5,6,7,8,9];
+
 double kFontSize(BuildContext context, double size) {
   double font =Constants.screenWidth(context) / 375 * size;
   return font;
@@ -439,3 +440,5 @@ const Map<int,int> kTargetAndScoreMap = {
   5:23,
   6:9
 }; // 标靶和得分映射表
+
+// const preShowSwitch = false; // 游戏 3 2 1倒计时开关

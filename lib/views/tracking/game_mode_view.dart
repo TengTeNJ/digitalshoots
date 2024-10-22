@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:robot/constants/constants.dart';
+import 'package:robot/route/route.dart';
+import 'package:robot/utils/navigator_util.dart';
 import 'package:robot/views/tracking/recording_check_view.dart';
 import 'package:robot/widges/base/rich_span_text.dart';
 
@@ -12,18 +14,22 @@ class GameModeView extends StatelessWidget {
   final _middle_titles = ['Single Play', 'Blue Target 15', 'Guest Blue'];
   final _bottom_titles = ['Blue Target', 'Red Target 20', 'Guest Red'];
 
-  GameModeView({required this.modeID,this.play,this.containRecording = false,this.recordSelect});
+  GameModeView(
+      {required this.modeID,
+      this.play,
+      this.containRecording = false,
+      this.recordSelect});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-       onTap: (){
-        if(play != null){
+      onTap: () {
+        if (play != null) {
           // 进入到游戏页面
           play!();
         }
-       },
+      },
       child: Container(
         decoration: BoxDecoration(
           // borderRadius: BorderRadius.circular(2),
@@ -38,8 +44,15 @@ class GameModeView extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Constants.customTextWidget(_titles[modeID - 1], 16, '#ffffff'),
-                  Constants.customTextWidget('75 Seconds', 16, 'ff0000')
+                  Constants.customTextWidget(
+                      _titles[modeID - 1], 16, '#ffffff'),
+                  GestureDetector(
+                    onLongPress: () {
+                      NavigatorUtil.push(Routes.debug);
+                    },
+                    child:
+                        Constants.customTextWidget('75 Seconds', 16, 'ff0000'),
+                  )
                 ],
               ),
               const SizedBox(
@@ -59,17 +72,19 @@ class GameModeView extends StatelessWidget {
               ),
               Row(
                 children: [
-                  modeID == 1 ?  RichSpanText(
-                      text: _bottom_titles[modeID - 1],
-                      filterText: 'Blue',
-                      filterTextColor: Colors.blue) : RichSpanText(
-                      text: _bottom_titles[modeID - 1],
-                      filterText: 'Red',
-                      filterTextColor: Colors.red),
+                  modeID == 1
+                      ? RichSpanText(
+                          text: _bottom_titles[modeID - 1],
+                          filterText: 'Blue',
+                          filterTextColor: Colors.blue)
+                      : RichSpanText(
+                          text: _bottom_titles[modeID - 1],
+                          filterText: 'Red',
+                          filterTextColor: Colors.red),
                   Text('')
                 ],
               ),
-              const  SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Image(
@@ -77,12 +92,18 @@ class GameModeView extends StatelessWidget {
                 height: 36,
                 fit: BoxFit.fitHeight,
               ),
-              const SizedBox(height: 4,),
-              containRecording == true ? RecordingCheckView(onSelected: (value){
-                if(recordSelect!=null){
-                  recordSelect!(value);
-                }
-              },) : Container()
+              const SizedBox(
+                height: 4,
+              ),
+              containRecording == true
+                  ? RecordingCheckView(
+                      onSelected: (value) {
+                        if (recordSelect != null) {
+                          recordSelect!(value);
+                        }
+                      },
+                    )
+                  : Container()
             ],
           ),
         ),
