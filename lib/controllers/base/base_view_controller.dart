@@ -1,3 +1,4 @@
+import 'package:cupertino_will_pop_scope/cupertino_will_pop_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:robot/constants/constants.dart';
@@ -9,16 +10,23 @@ import 'package:robot/widges/base/custom_tab_bar.dart';
 import '../../utils/global.dart';
 
 class BaseViewController extends StatefulWidget {
-   Widget? child;
-   bool showBottomBar;
-   bool resizeToAvoidBottomInset;
-   Function?paused;
-   BaseViewController({this.child,this.resizeToAvoidBottomInset = false,this.showBottomBar = true,this.paused});
+  Widget? child;
+  bool showBottomBar;
+  bool resizeToAvoidBottomInset;
+  Function? paused;
+
+  BaseViewController(
+      {this.child,
+      this.resizeToAvoidBottomInset = false,
+      this.showBottomBar = true,
+      this.paused});
+
   @override
   State<BaseViewController> createState() => _BaseViewControllerState();
 }
 
-class _BaseViewControllerState extends State<BaseViewController>  with WidgetsBindingObserver{
+class _BaseViewControllerState extends State<BaseViewController>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     // TODO: implement initState
@@ -36,7 +44,7 @@ class _BaseViewControllerState extends State<BaseViewController>  with WidgetsBi
     if (state == AppLifecycleState.paused) {
       GameUtil gameUtil = GetIt.instance<GameUtil>();
       // 进入到后台 如果在游戏界面 直接退出游戏页面 并且退出app模式
-      if(widget.paused != null){
+      if (widget.paused != null) {
         widget.paused!();
       }
       print('App entered background');
@@ -48,45 +56,51 @@ class _BaseViewControllerState extends State<BaseViewController>  with WidgetsBi
 
   @override
   Widget build(BuildContext context) {
-    return widget.showBottomBar ? Scaffold(
-      resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
-      appBar: CustomAppBar(),
-      bottomNavigationBar: CustomBottomNavigationBar(),
-      body: WillPopScope(child: Container(
-        width: Constants.screenWidth(context),
-        child:  DecoratedBox(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('images/background.png'), // 替换为你的图片路径
-              fit: BoxFit.cover, // 根据需要调整图片的适应方式
+    return widget.showBottomBar
+        ? Scaffold(
+            resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
+            appBar: CustomAppBar(),
+            bottomNavigationBar: CustomBottomNavigationBar(),
+            body: ConditionalWillPopScope(
+                shouldAddCallback: true,
+                child: Container(
+                  width: Constants.screenWidth(context),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('images/background.png'), // 替换为你的图片路径
+                        fit: BoxFit.cover, // 根据需要调整图片的适应方式
+                      ),
+                    ),
+                    child: widget.child,
+                  ),
+                ),
+                onWillPop: () async {
+                  print('返回按钮和手势---');
+                  GameUtil gameUtil = GetIt.instance<GameUtil>();
+                  gameUtil.pageDepth -= 1; // 页面深度加1
+                  if (gameUtil.pageDepth < 0) {
+                    gameUtil.pageDepth = 0;
+                  }
+                  return true;
+                }),
+          )
+        : Scaffold(
+            resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
+            appBar: CustomAppBar(),
+            body: Container(
+              width: Constants.screenWidth(context),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('images/background.png'), // 替换为你的图片路径
+                    fit: BoxFit.cover, // 根据需要调整图片的适应方式
+                  ),
+                ),
+                child: widget.child,
+              ),
             ),
-          ),
-          child: widget.child,
-        ),
-      ), onWillPop: () async{
-        GameUtil gameUtil = GetIt.instance<GameUtil>();
-        gameUtil.pageDepth -= 1; // 页面深度加1
-        if(gameUtil.pageDepth<0){
-          gameUtil.pageDepth = 0;
-        }
-        return true;
-      }),
-    ) :Scaffold(
-      resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
-      appBar: CustomAppBar(),
-      body: Container(
-        width: Constants.screenWidth(context),
-        child:  DecoratedBox(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('images/background.png'), // 替换为你的图片路径
-              fit: BoxFit.cover, // 根据需要调整图片的适应方式
-            ),
-          ),
-          child: widget.child,
-        ),
-      ),
-    );
+          );
   }
 
   @override
