@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cupertino_will_pop_scope/cupertino_will_pop_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:robot/constants/constants.dart';
@@ -37,20 +38,21 @@ class _JuniorControllerState extends State<JuniorController> {
     super.initState();
     // WidgetsBinding.instance.addObserver(this);
 
-    subscription = EventBus().stream.listen((event) async{
-      if (event == kJuniorGameEnd){
+    subscription = EventBus().stream.listen((event) async {
+      if (event == kJuniorGameEnd) {
         if (mounted) {
           resetTimer();
           await BLESendUtil.blueLightBlink();
           await BLESendUtil.openAllBlueLight();
           // 保存数据
-          if(_score == 'GO'){
+          if (_score == 'GO') {
             _score = '0';
           }
           Gamemodel model =
               Gamemodel.modelFromJson({'score': _score.toString()});
           model.speed = maxSpeed.toString();
-          await DatabaseHelper().insertData(kDataBaseTableName, model); // 数据存入数据库
+          await DatabaseHelper()
+              .insertData(kDataBaseTableName, model); // 数据存入数据库
           // 初始化状态
           initStatu();
         }
@@ -68,7 +70,9 @@ class _JuniorControllerState extends State<JuniorController> {
     GameUtil gameUtil = GetIt.instance<GameUtil>();
     gameUtil.nowISGamePage = true;
     // 进入页面打开所有蓝灯
-    BLESendUtil.openAllBlueLight();
+   Future.delayed(Duration(milliseconds: 200),(){
+     BLESendUtil.openAllBlueLight();
+   });
     // 蓝牙数据监听
     BluetoothManager().dataChange = (BLEDataType type) async {
       if (type == BLEDataType.targetIn) {
@@ -76,7 +80,7 @@ class _JuniorControllerState extends State<JuniorController> {
           _speed = '0';
           firsthit = true;
           // 熄灭所有的灯光
-          BLESendUtil.closeAllLight();
+            BLESendUtil.closeAllBlueLight();
           // 3 2 1 Go 然后开开始游戏
           _startCountdown();
         } else {
@@ -93,17 +97,17 @@ class _JuniorControllerState extends State<JuniorController> {
               _score = (kTargetAndScoreMap[targetNumber]! + int.parse(_score))
                   .toString();
               print('击打了蓝灯');
+              resetTimer();
               // 打开紫灯
               BLESendUtil.openPurpleLights(targetNumber);
               // 关闭紫灯
-              Future.delayed(Duration(milliseconds: 500),(){
+              Future.delayed(Duration(milliseconds: 500), () {
                 BLESendUtil.closePurpleLights(targetNumber);
                 // 然后再随机点亮红和蓝灯各一个
                 BLESendUtil.juniorControlLight();
                 autoRefreshControl();
               });
               setState(() {});
-
             } else if (targetNumber ==
                 kJuniorRedtargets[BluetoothManager().juniorRedIndex]) {
               // 先取消自动刷新的定时器
@@ -112,34 +116,31 @@ class _JuniorControllerState extends State<JuniorController> {
               _score = (kTargetAndScoreMap[targetNumber]! + int.parse(_score))
                   .toString();
               print('击打了红灯');
-
+              resetTimer();
               // 打开紫灯
               BLESendUtil.openPurpleLights(targetNumber);
               // 关闭紫灯
-              Future.delayed(Duration(milliseconds: 500),(){
+              Future.delayed(Duration(milliseconds: 500), () {
                 BLESendUtil.closePurpleLights(targetNumber);
                 // 然后再随机点亮红和蓝灯各一个
                 BLESendUtil.juniorControlLight();
                 autoRefreshControl();
-
               });
 
               setState(() {});
             }
           }
         }
-      }else if (type == BLEDataType.speed) {
-        if(!begainGame){
+      } else if (type == BLEDataType.speed) {
+        if (!begainGame) {
           return;
         }
         // 速度
         _speed = BluetoothManager().gameData.speed.toString();
-        if(maxSpeed < BluetoothManager().gameData.speed){
+        if (maxSpeed < BluetoothManager().gameData.speed) {
           maxSpeed = BluetoothManager().gameData.speed;
         }
-        setState(() {
-
-        });
+        setState(() {});
       }
     };
   }
@@ -153,7 +154,7 @@ class _JuniorControllerState extends State<JuniorController> {
   }
 
   /*重置定时器*/
-  resetTimer(){
+  resetTimer() {
     if (timer != null) {
       if (timer!.isActive) {
         timer!.cancel();
@@ -205,70 +206,84 @@ class _JuniorControllerState extends State<JuniorController> {
 
   @override
   Widget build(BuildContext context) {
-    return BaseViewController(
-        paused: () {
-           timer?.cancel();
-          _countdownTimer.stop();
-          _countdownTimer.dispose();
-          subscription.cancel();
-          BLESendUtil.appOffLine();
-          BLESendUtil.blueLightBlink();
-          NavigatorUtil.popToRoot();
+    return ConditionalWillPopScope(
+        onWillPop: () async {
+          print('------');
+          GameUtil gameUtil = GetIt.instance<GameUtil>();
+          gameUtil.pageDepth -= 1; // 页面深度减1
+          if (gameUtil.pageDepth < 0) {
+            gameUtil.pageDepth = 0;
+          }
+          return true;
         },
-        child: Padding(
-          padding: EdgeInsets.only(left: 32, right: 32),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 32,
-              ),
-              Constants.regularBaseTextWidget('GAME TIME', 16),
-              StopWatchView(
-                formaterText: _countdownTimer.formattedTime,
-              ),
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage('images/gamemodel/single_bg.png'),
-                          fit: BoxFit.fill)),
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        child: Container(
-                          child: Center(
-                            child: Constants.digiRegularWhiteTextWidget(
-                                _score == 'GO' ? 'GO' : _score.padLeft(3, '0'),
-                                160,
-                                textAlign: TextAlign.center),
-                          ),
-                        ),
-                        left: 0,
-                        right: 0,
-                        top: 0,
-                        bottom: 0,
-                      ),
-                      Positioned(
-                        child: Constants.boldWhiteTextWidget('SCORE', 16,
-                            textAlign: TextAlign.end),
-                        left: 0,
-                        right: 32,
-                        bottom: 32,
-                      )
-                    ],
+        shouldAddCallback: false,
+        child: BaseViewController(
+            paused: () {
+              timer?.cancel();
+              _countdownTimer.stop();
+              _countdownTimer.dispose();
+              subscription.cancel();
+              BLESendUtil.appOffLine();
+              BLESendUtil.blueLightBlink();
+              NavigatorUtil.popToRoot();
+            },
+            child: Padding(
+              padding: EdgeInsets.only(left: 32, right: 32),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 32,
                   ),
-                ),
+                  Constants.regularBaseTextWidget('GAME TIME', 16),
+                  StopWatchView(
+                    formaterText: _countdownTimer.formattedTime,
+                  ),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image:
+                                  AssetImage('images/gamemodel/single_bg.png'),
+                              fit: BoxFit.fill)),
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            child: Container(
+                              child: Center(
+                                child: Constants.digiRegularWhiteTextWidget(
+                                    _score == 'GO'
+                                        ? 'GO'
+                                        : _score.padLeft(3, '0'),
+                                    160,
+                                    textAlign: TextAlign.center),
+                              ),
+                            ),
+                            left: 0,
+                            right: 0,
+                            top: 0,
+                            bottom: 0,
+                          ),
+                          Positioned(
+                            child: Constants.boldWhiteTextWidget('SCORE', 16,
+                                textAlign: TextAlign.end),
+                            left: 0,
+                            right: 32,
+                            bottom: 32,
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  SpeedView(speed: _speed.padLeft(3, '0')),
+                  SizedBox(
+                    height: 32,
+                  ),
+                ],
               ),
-              SizedBox(
-                height: 16,
-              ),
-              SpeedView(speed: _speed.padLeft(3,'0')),
-              SizedBox(
-                height: 32,
-              ),
-            ],
-          ),
-        ));
+            )));
   }
 
   void dispose() {

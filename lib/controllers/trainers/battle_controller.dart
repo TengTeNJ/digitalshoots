@@ -16,6 +16,7 @@ import '../../utils/global.dart';
 import '../../utils/navigator_util.dart';
 import '../../utils/notification_bloc.dart';
 import 'dart:math' as math;
+
 class BattleController extends StatefulWidget {
   const BattleController({super.key});
 
@@ -28,12 +29,13 @@ class _BattleControllerState extends State<BattleController> {
   late StreamSubscription subscription;
   Timer? timer;
   Timer? redTimer;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    subscription = EventBus().stream.listen((event) async{
-      if (event == kJuniorGameEnd){
+    subscription = EventBus().stream.listen((event) async {
+      if (event == kJuniorGameEnd) {
         if (mounted) {
           resetTimer();
           resetRedTimer();
@@ -55,7 +57,9 @@ class _BattleControllerState extends State<BattleController> {
     GameUtil gameUtil = GetIt.instance<GameUtil>();
     gameUtil.nowISGamePage = true;
     // 进入页面打开所有蓝灯
-    BLESendUtil.openAllBlueLight();
+    Future.delayed(Duration(milliseconds: 200), () {
+      BLESendUtil.openAllBlueLight();
+    });
     // 蓝牙数据监听
     BluetoothManager().dataChange = (BLEDataType type) async {
       if (type == BLEDataType.targetIn) {
@@ -69,21 +73,12 @@ class _BattleControllerState extends State<BattleController> {
           if (_score == 'GO') {
             _score = '0';
             _redScore = '0';
-            setState(() {
-
-            });
+            setState(() {});
           }
           if (begainGame) {
             // 先取消自动刷新的定时器
             int targetNumber = BluetoothManager().gameData.targetNumber;
-
-            // print('BluetoothManager().battleTargetNumbers= ${BluetoothManager().battleTargetNumbers}');
-            // print('targetNumber=${targetNumber}');
-            // print('BluetoothManager().battleBlueIndex=${BluetoothManager().battleBlueIndex}');
-            // print('BluetoothManager().battleRedIndex=${BluetoothManager().battleRedIndex}');
-
-            if (targetNumber ==
-                BluetoothManager().battleBlueIndex) {
+            if (targetNumber == BluetoothManager().battleBlueIndex) {
               resetTimer();
               // 击中了蓝灯
               _score = (kTargetAndScoreMap[targetNumber]! + int.parse(_score))
@@ -91,44 +86,57 @@ class _BattleControllerState extends State<BattleController> {
               print('击中了蓝灯');
               setState(() {});
               // 然后再随机点亮一个蓝灯
-             await BLESendUtil.battleControlBlueLight();
-              autoRefreshControl();
-            } else if (targetNumber ==
-                BluetoothManager().battleRedIndex) {
+              // 打开紫灯
+              BLESendUtil.openPurpleLights(targetNumber);
+              Future.delayed(Duration(milliseconds: 500), () async {
+                BLESendUtil.closePurpleLights(targetNumber);
+                BLESendUtil.battleControlBlueLight();
+                autoRefreshControl();
+              });
+            } else if (targetNumber == BluetoothManager().battleRedIndex) {
               // 先取消自动刷新的定时器
               resetRedTimer();
               // 击中了红灯
               print('击中了红灯targetNumber=${targetNumber}');
-              _redScore = (kTargetAndScoreMap[targetNumber]! + int.parse(_redScore))
-                  .toString();
+              _redScore =
+                  (kTargetAndScoreMap[targetNumber]! + int.parse(_redScore))
+                      .toString();
               setState(() {});
+              BLESendUtil.openPurpleLights(targetNumber);
               // 然后再随机点亮一个红灯
-             await BLESendUtil.battleControlRedLight();
-              autoRedRefreshControl();
+              Future.delayed(Duration(milliseconds: 500), () async {
+                BLESendUtil.closePurpleLights(targetNumber);
+                BLESendUtil.battleControlRedLight();
+                autoRedRefreshControl();
+              });
             }
           }
         }
-      } else if(type == BLEDataType.speed)  {
-            BluetoothManager().gameData.speed;
-      };
+      } else if (type == BLEDataType.speed) {
+        BluetoothManager().gameData.speed;
+      }
+      ;
     };
   }
 
   autoRefreshControl() {
     resetTimer();
-    timer = Timer.periodic(Duration(milliseconds: kAutoRefreshDuration), (Timer t) async{
-     await  BLESendUtil.battleControlBlueLight();
+    timer = Timer.periodic(Duration(milliseconds: kAutoRefreshDuration),
+        (Timer t) async {
+      await BLESendUtil.battleControlBlueLight();
     });
   }
 
   autoRedRefreshControl() {
     resetRedTimer();
-    redTimer = Timer.periodic(Duration(milliseconds: kAutoRefreshDuration), (Timer t) async{
+    redTimer = Timer.periodic(Duration(milliseconds: kAutoRefreshDuration),
+        (Timer t) async {
       await BLESendUtil.battleControlRedLight();
     });
   }
+
   /*重置定时器*/
-  resetTimer(){
+  resetTimer() {
     if (timer != null) {
       if (timer!.isActive) {
         timer!.cancel();
@@ -137,7 +145,7 @@ class _BattleControllerState extends State<BattleController> {
     }
   }
 
-  resetRedTimer(){
+  resetRedTimer() {
     if (redTimer != null) {
       if (redTimer!.isActive) {
         redTimer!.cancel();
@@ -159,7 +167,7 @@ class _BattleControllerState extends State<BattleController> {
       _score = _secondsRemaining.toString();
       _secondsRemaining--; // 每秒递减
     });
-    Timer.periodic(Duration(seconds: 1), (timer) async{
+    Timer.periodic(Duration(seconds: 1), (timer) async {
       if (_secondsRemaining > 0) {
         setState(() {
           BLESendUtil.preGame(_secondsRemaining);
@@ -176,10 +184,12 @@ class _BattleControllerState extends State<BattleController> {
         await BLESendUtil.battleControlBlueLight();
         autoRefreshControl();
         // 红色
-        await  BLESendUtil.battleControlRedLight();
-        autoRedRefreshControl();
-        // 正式开始游戏
-        _countdownTimer.start();
+        Future.delayed(Duration(milliseconds: 100), () async {
+          await BLESendUtil.battleControlRedLight();
+          autoRedRefreshControl();
+          // 正式开始游戏
+          _countdownTimer.start();
+        });
       }
     });
   }
@@ -189,10 +199,19 @@ class _BattleControllerState extends State<BattleController> {
   String _redScore = '0'; // 红方得分
   bool firsthit = false; // 首次击中
   bool begainGame = false;
+
   @override
   Widget build(BuildContext context) {
     final _width = Constants.screenWidth(context) - 64;
-    final _height = Constants.screenHeight(context) - Constants.tabBarHeight - Constants.navigationBarHeight - 32 - 16  - 60 - 16 - 80 - 32;
+    final _height = Constants.screenHeight(context) -
+        Constants.tabBarHeight -
+        Constants.navigationBarHeight -
+        32 -
+        16 -
+        60 -
+        16 -
+        80 -
+        32;
     return BaseViewController(
         paused: () {
           timer?.cancel();
@@ -225,23 +244,27 @@ class _BattleControllerState extends State<BattleController> {
                     children: [
                       Positioned(
                         child: Container(
-                          child: Constants.boldWhiteTextWidget(_score, 80,height: 1.0),
+                          child: Constants.boldWhiteTextWidget(_score, 80,
+                              height: 1.0),
                           // color: Colors.green,
                         ),
                         left: 0,
-                        right: _width/2.0,
-                        top: _height/2.0 - 100,
-                     //   bottom: _height/2.0 - 80,
+                        right: _width / 2.0,
+                        top: _height / 2.0 - 100,
+                        //   bottom: _height/2.0 - 80,
                       ),
                       Positioned(
                         child: Container(
                           // color: Colors.green,
-                          child: Center(child: Constants.boldWhiteTextWidget(_redScore, 80,height: 1.0),),
+                          child: Center(
+                            child: Constants.boldWhiteTextWidget(_redScore, 80,
+                                height: 1.0),
+                          ),
                           // color: Colors.green,
                         ),
-                        left: _width/2.0,
+                        left: _width / 2.0,
                         right: 0,
-                        bottom: _height/2.0 - 100,
+                        bottom: _height / 2.0 - 100,
                         //   bottom: _height/2.0 - 80,
                       ),
                       Positioned(
@@ -264,7 +287,9 @@ class _BattleControllerState extends State<BattleController> {
               ),
             ],
           ),
-        ));  }
+        ));
+  }
+
   void dispose() {
     // TODO: implement dispose
     super.dispose();

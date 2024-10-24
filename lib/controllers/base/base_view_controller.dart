@@ -14,12 +14,14 @@ class BaseViewController extends StatefulWidget {
   bool showBottomBar;
   bool resizeToAvoidBottomInset;
   Function? paused;
+  Function? onWillPop;
 
   BaseViewController(
       {this.child,
       this.resizeToAvoidBottomInset = false,
       this.showBottomBar = true,
-      this.paused});
+      this.paused,
+      this.onWillPop});
 
   @override
   State<BaseViewController> createState() => _BaseViewControllerState();
@@ -61,29 +63,18 @@ class _BaseViewControllerState extends State<BaseViewController>
             resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
             appBar: CustomAppBar(),
             bottomNavigationBar: CustomBottomNavigationBar(),
-            body: ConditionalWillPopScope(
-                shouldAddCallback: true,
-                child: Container(
-                  width: Constants.screenWidth(context),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('images/background.png'), // 替换为你的图片路径
-                        fit: BoxFit.cover, // 根据需要调整图片的适应方式
-                      ),
-                    ),
-                    child: widget.child,
+            body: Container(
+              width: Constants.screenWidth(context),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('images/background.png'), // 替换为你的图片路径
+                    fit: BoxFit.cover, // 根据需要调整图片的适应方式
                   ),
                 ),
-                onWillPop: () async {
-                  print('返回按钮和手势---');
-                  GameUtil gameUtil = GetIt.instance<GameUtil>();
-                  gameUtil.pageDepth -= 1; // 页面深度加1
-                  if (gameUtil.pageDepth < 0) {
-                    gameUtil.pageDepth = 0;
-                  }
-                  return true;
-                }),
+                child: widget.child,
+              ),
+            ),
           )
         : Scaffold(
             resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,

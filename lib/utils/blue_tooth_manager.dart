@@ -132,7 +132,10 @@ class BluetoothManager {
           DeviceConnectionState.connected) {
         // 连接成功主动发送心跳回复响应(获取准确电量)
        // BLESendUtil.heartBeatResponse();
-
+        if(Platform.isAndroid){
+          // 请求高优先级连接
+          _ble.requestConnectionPriority(deviceId: model.device!.id, priority: ConnectionPriority.highPerformance);
+        }
         // 连接设备数量+1
         conectedDeviceCount.value++;
         // 已连接

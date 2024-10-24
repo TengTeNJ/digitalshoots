@@ -131,8 +131,10 @@ class BLESendUtil {
         BluetoothManager().juniorRedIndex = red_index;
         BluetoothManager().writerDataToDevice(getWriterDevice(),
             openJuniorBlueLightData(kJuniorBluetargets[blue_index]));
-        BluetoothManager().writerDataToDevice(getWriterDevice(),
-            openJuniorRedLightData(kJuniorRedtargets[red_index]));
+        Future.delayed(Duration(milliseconds: 100), () {
+          BluetoothManager().writerDataToDevice(getWriterDevice(),
+              openJuniorRedLightData(kJuniorRedtargets[red_index]));
+        });
       } else {
         // 说明不是第一次取随机数 所以先判断取出来的和上次一样不,一样的话就重新取
         int red_index;
@@ -186,14 +188,15 @@ class BLESendUtil {
       int red_index;
       do {
         red_index = Random().nextInt(battleTargets.length);
-      } while (redLightIndex == battleTargets[red_index]);
+      } while (redLightIndex == battleTargets[red_index] || battleTargets[red_index] == BluetoothManager().battleBlueIndex);
       BluetoothManager().battleRedIndex = battleTargets[red_index];
       print('自动跳灯开红灯${battleTargets[red_index]}');
       BluetoothManager().battleTargetNumbers.remove(battleTargets[red_index]);
-
-      await BluetoothManager().writerDataToDevice(
-          getWriterDevice(),
-          openJuniorRedLightData(BluetoothManager().battleRedIndex));
+   Future.delayed(Duration(milliseconds: 100),() async{
+     await BluetoothManager().writerDataToDevice(
+         getWriterDevice(),
+         openJuniorRedLightData(BluetoothManager().battleRedIndex));
+   });
     });
   }
 
@@ -219,13 +222,14 @@ class BLESendUtil {
       int blue_index;
       do {
         blue_index = Random().nextInt(battleTargets.length);
-      } while (redLightIndex == battleTargets[blue_index]);
+      } while (redLightIndex == battleTargets[blue_index] || battleTargets[blue_index] == BluetoothManager().battleRedIndex);
 
       print('自动跳灯开蓝灯${battleTargets[blue_index]}');
       BluetoothManager().battleBlueIndex = battleTargets[blue_index];
       BluetoothManager().battleTargetNumbers.remove(battleTargets[blue_index]);
-
-      BluetoothManager().writerDataToDevice(getWriterDevice(),
+    });
+    Future.delayed(Duration(milliseconds: 100),() async{
+    await  BluetoothManager().writerDataToDevice(getWriterDevice(),
           openJuniorBlueLightData(BluetoothManager().battleBlueIndex));
     });
   }
