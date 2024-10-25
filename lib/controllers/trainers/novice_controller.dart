@@ -37,7 +37,6 @@ class _NoviceControllerState extends State<NoviceController>
     // TODO: implement initState
     super.initState();
     // WidgetsBinding.instance.addObserver(this);
-
     // 初始化秒表倒计时
     _countdownTimer = CountdownTimer(
       onTick: () {
@@ -69,18 +68,23 @@ class _NoviceControllerState extends State<NoviceController>
               // 更新得分
               _score = doneLights.length.toString();
               //  每次击中 则关闭此灯
-             BLESendUtil.closeBlueLights(doneLights);
-             // BLESendUtil.closeAllBlueLight(doneights);
-
+              BLESendUtil.closeBlueLights(doneLights);
+              // BLESendUtil.closeAllBlueLight(doneights);
               // 打开紫灯
               print('击中的灯的索引${targetNumber}');
               print('已经关闭的灯的索引${doneLights}');
-              Future.delayed(Duration(milliseconds: 10),(){
+              Future.delayed(Duration(milliseconds: 10), () {
                 BLESendUtil.openPurpleLights(targetNumber);
               });
-
+              // 显示得分
+              Future.delayed(Duration(milliseconds: 100),(){
+                BLESendUtil.showScore(int.parse(_score));
+              });
+              Future.delayed(Duration(milliseconds: 200), () {
+                BLESendUtil.showScore(int.parse(_score));
+              });
               // 关闭紫灯
-              Future.delayed(Duration(milliseconds: 500),(){
+              Future.delayed(Duration(milliseconds: 500), () {
                 BLESendUtil.closePurpleLights(targetNumber);
               });
 
@@ -90,7 +94,6 @@ class _NoviceControllerState extends State<NoviceController>
                 // 一轮游戏结束
                 _countdownTimer.stop();
                 await BLESendUtil.blueLightBlink();
-                await BLESendUtil.openAllBlueLight();
                 initStatu();
               }
             }
@@ -135,9 +138,12 @@ class _NoviceControllerState extends State<NoviceController>
         _score = 'GO';
         setState(() {});
         begainGame = true;
-        BLESendUtil.openAllBlueLight();
-        // 正式开始游戏
-        _countdownTimer.start();
+        BLESendUtil.showGo();
+        Future.delayed(Duration(milliseconds: 100), () {
+          BLESendUtil.openAllBlueLight();
+          // 正式开始游戏
+          _countdownTimer.start();
+        });
       }
     });
   }
@@ -215,7 +221,7 @@ class _NoviceControllerState extends State<NoviceController>
               SizedBox(
                 height: 16,
               ),
-             // SpeedView(speed: _speed.padLeft(1, '100')),
+              // SpeedView(speed: _speed.padLeft(1, '100')),
               SpeedView(speed: _speed),
               SizedBox(
                 height: 32,

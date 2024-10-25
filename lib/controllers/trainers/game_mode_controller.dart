@@ -25,6 +25,7 @@ class _GameModeControllerState extends State<GameModeController> {
     preLoadImage();
     GameUtil gameUtil = GetIt.instance<GameUtil>();
     gameUtil.selectRecord = false;
+    BLESendUtil.queryMasterStatuControl();
   }
 
   preLoadImage() {

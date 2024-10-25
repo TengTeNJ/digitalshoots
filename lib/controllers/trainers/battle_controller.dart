@@ -88,6 +88,10 @@ class _BattleControllerState extends State<BattleController> {
               // 然后再随机点亮一个蓝灯
               // 打开紫灯
               BLESendUtil.openPurpleLights(targetNumber);
+              // 显示得分
+              Future.delayed(Duration(milliseconds: 100),(){
+                BLESendUtil.showScore(int.parse(_score));
+              });
               Future.delayed(Duration(milliseconds: 500), () async {
                 BLESendUtil.closePurpleLights(targetNumber);
                 BLESendUtil.battleControlBlueLight();
@@ -103,6 +107,10 @@ class _BattleControllerState extends State<BattleController> {
                       .toString();
               setState(() {});
               BLESendUtil.openPurpleLights(targetNumber);
+              // 显示得分
+              Future.delayed(Duration(milliseconds: 100),(){
+                BLESendUtil.showScore(int.parse(_score));
+              });
               // 然后再随机点亮一个红灯
               Future.delayed(Duration(milliseconds: 500), () async {
                 BLESendUtil.closePurpleLights(targetNumber);
@@ -179,16 +187,20 @@ class _BattleControllerState extends State<BattleController> {
         _score = 'GO';
         setState(() {});
         begainGame = true;
-        // 正式开始游戏
-        // 蓝色
-        await BLESendUtil.battleControlBlueLight();
-        autoRefreshControl();
-        // 红色
+        // 展示得分
+        await BLESendUtil.showGo();
         Future.delayed(Duration(milliseconds: 100), () async {
-          await BLESendUtil.battleControlRedLight();
-          autoRedRefreshControl();
           // 正式开始游戏
-          _countdownTimer.start();
+          // 蓝色
+          await BLESendUtil.battleControlBlueLight();
+          autoRefreshControl();
+          // 红色
+          Future.delayed(Duration(milliseconds: 100), () async {
+            await BLESendUtil.battleControlRedLight();
+            autoRedRefreshControl();
+            // 正式开始游戏
+            _countdownTimer.start();
+          });
         });
       }
     });

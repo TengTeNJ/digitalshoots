@@ -80,7 +80,7 @@ class BluetoothManager {
             if (!hasDevice(event.id)) {
               this.deviceList.add(BLEModel(device: event));
               deviceListLength.value = this.deviceList.length;
-              if(conectedDeviceCount.value <2){
+              if(conectedDeviceCount.value == 0){
                 // 已经连接的设备少于两个 则自动连接
                 conectToDevice(this.deviceList.last);
               }
@@ -197,6 +197,8 @@ class BluetoothManager {
    //     EasyLoading.showError('disconected');
         if(conectedDeviceCount.value > 0){
           conectedDeviceCount.value--;
+          GameUtil gameUtil = GetIt.instance<GameUtil>();
+          gameUtil.masterStatu = 0;
         }
         // 失去连接
         model.hasConected = false;
@@ -219,9 +221,11 @@ class BluetoothManager {
       // TTToast.showErrorInfo('Please connect your device first');
       return;
     }
-    sleep(Duration(milliseconds: 50));
-   return await _ble.writeCharacteristicWithoutResponse(model.writerCharacteristic!,
-        value: data);
+    Future.delayed(Duration(milliseconds: 50),() async{
+      return await _ble.writeCharacteristicWithResponse(model.writerCharacteristic!,
+          value: data);
+    });
+
   }
 
   /*判断是否已经被添加设备列表*/

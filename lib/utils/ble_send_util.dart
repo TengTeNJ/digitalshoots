@@ -62,8 +62,13 @@ class BLESendUtil {
   }
 
   // showGoData
-  static showGo(int number) {
+  static showGo() {
     BluetoothManager().writerDataToDevice(getWriterDevice(), showGoData());
+  }
+
+  /*展示得分*/
+  static showScore(int score){
+    BluetoothManager().writerDataToDevice(getWriterDevice(), showScoreGameData(score));
   }
 
 /*关闭蓝灯*/
@@ -111,6 +116,14 @@ class BLESendUtil {
       return;
     }
     BluetoothManager().writerDataToDevice(getWriterDevice(), offLineData());
+  }
+
+  // 进入APP模式
+  static appOnLine() {
+    if (BluetoothManager().hasConnectedDeviceList.isEmpty) {
+      return;
+    }
+    BluetoothManager().writerDataToDevice(getWriterDevice(), appOnLine());
   }
 
 
@@ -256,9 +269,12 @@ class BLESendUtil {
     futures.add(Future.delayed(Duration(milliseconds: 2000), () async {
       print('4-----');
       await closeAllLight();
+    }));
+    futures.add(Future.delayed(Duration(milliseconds: 2500), () async {
+      print('5-----');
+      await openAllBlueLight();
       EasyLoading.dismiss();
     }));
-
     return await Future.wait(futures);
   }
 
@@ -276,6 +292,14 @@ class BLESendUtil {
       return;
     }
     BluetoothManager().writerDataToDevice(getWriterDevice(), reset());
+  }
+
+  static queryMasterStatuControl() {
+    if (BluetoothManager().hasConnectedDeviceList.isEmpty) {
+      return;
+    }
+    BluetoothManager()
+        .writerDataToDevice(getWriterDevice(), queryMasterStatu());
   }
 
 }

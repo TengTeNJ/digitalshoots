@@ -2,11 +2,14 @@
 
 import 'dart:async';
 
+import 'package:get_it/get_it.dart';
 import 'package:robot/utils/ble_send_util.dart';
 
 import '../constants/constants.dart';
 import '../model/ble_model.dart';
+import 'ble_data.dart';
 import 'blue_tooth_manager.dart';
+import 'global.dart';
 
 enum BLEDataType {
   none,
@@ -20,6 +23,7 @@ enum BLEDataType {
   targetIn,
   speed;
 }
+
 class ResponseCMDType {
   static const int deviceInfo = 0x20; // 设备信息，包含开机状态、电量等
   static const int speed = 0x25; // 速度
@@ -32,6 +36,7 @@ class ResponseCMDType {
   static const int millisecond = 0x32; // 游戏毫秒时间同步
   static const int targetIn = 0x10; // 目标击中
   static const int heartBeatQuery = 0x30; // 心跳查询
+  static const masterStatu = kResponseMasterStatu; // 主机的状态
 }
 
 List<int> bleNotAllData = []; // 不完整数据 被分包发送的蓝牙数据
@@ -41,7 +46,7 @@ Timer? delayTimer;
 /*蓝牙数据解析类*/
 class BluetoothDataParse {
   // 数据解析
-  static parseData(List<int> data,BLEModel model) {
+  static parseData(List<int> data, BLEModel model) {
     if (data.isEmpty) {
       return;
     }
@@ -95,7 +100,7 @@ class BluetoothDataParse {
           List<int> rightData = bleNotAllData.sublist(0, length);
           handleData(rightData, model); // 完整的一帧数据
           List<int> othersData =
-          bleNotAllData.sublist(length, bleNotAllData.length);
+              bleNotAllData.sublist(length, bleNotAllData.length);
           isNew = true;
           bleNotAllData.clear();
           if (delayTimer != null) {
@@ -109,7 +114,7 @@ class BluetoothDataParse {
     }
   }
 
-  static handleData(List<int> element,BLEModel mode){
+  static handleData(List<int> element, BLEModel mode) {
     if (element.length < 4) {
       // print('解析数据出错');
       return;
@@ -123,11 +128,12 @@ class BluetoothDataParse {
         int statu_data = element[3];
         if (parameter_data == 0x01) {
           // 开关机
-         BluetoothManager().gameData.powerOn = (statu_data == 0x01);
+          BluetoothManager().gameData.powerOn = (statu_data == 0x01);
         } else if (parameter_data == 0x02) {
           // 电量
           BluetoothManager().gameData.powerValue = statu_data;
-          BluetoothManager().triggerDeviceInfoCallback (type: BLEDataType.dviceInfo);
+          BluetoothManager()
+              .triggerDeviceInfoCallback(type: BLEDataType.dviceInfo);
           print('电量---${statu_data}');
         }
         break;
@@ -141,20 +147,21 @@ class BluetoothDataParse {
           BluetoothManager().gameData.secondPower = battery;
         } else if (board_index == 3) {
           BluetoothManager().gameData.thirdPower = battery;
-        }  else if (board_index == 4) {
+        } else if (board_index == 4) {
           BluetoothManager().gameData.fourPower = battery;
-        }  else if (board_index == 5) {
+        } else if (board_index == 5) {
           BluetoothManager().gameData.fivePower = battery;
-        }  else if (board_index == 6) {
+        } else if (board_index == 6) {
           BluetoothManager().gameData.sixPower = battery;
         }
-        BluetoothManager().triggerDeviceInfoCallback(type: BLEDataType.boardBattery);
+        BluetoothManager()
+            .triggerDeviceInfoCallback(type: BLEDataType.boardBattery);
         print('从板board_index---${board_index}');
         print('从板online_status---${online_status}');
         print('从板battery---${battery}');
-        case ResponseCMDType.targetResponse:
+      case ResponseCMDType.targetResponse:
         int data = element[2];
-       // print('------data=${element}');
+        // print('------data=${element}');
         String binaryString = data.toRadixString(2); // 转换成二进制字符串
         if (binaryString != null && binaryString.length == 8) {
           // 前两位都是1，不区分红灯和蓝灯，截取后边6位，判断哪个灯在亮
@@ -171,8 +178,7 @@ class BluetoothDataParse {
         int data = element[2];
         BluetoothManager().gameData.score = data;
         // 通知
-        print(
-            'BluetoothManager().dataChange=${BluetoothManager().dataChange}');
+        print('BluetoothManager().dataChange=${BluetoothManager().dataChange}');
         BluetoothManager().triggerCallback(type: BLEDataType.score);
         // print('${data}:得分');
         break;
@@ -208,8 +214,14 @@ class BluetoothDataParse {
         print('mcu主动上报击中--${data}');
         break;
       case ResponseCMDType.heartBeatQuery:
-        // 收到心跳查询连续不响应 会导致游戏异常 比如任意集中标靶 收不到响应
-        BLESendUtil.heartBeatResponse();
+    // 收到心跳查询连续不响应 会导致游戏异常 比如任意集中标靶 收不到响应
+      BLESendUtil.heartBeatResponse();
+      break;
+      case ResponseCMDType.masterStatu:
+        int masterStatu = element[2];
+        GameUtil gameUtil = GetIt.instance<GameUtil>();
+        gameUtil.masterStatu = masterStatu;
+        print('主机的状态:${masterStatu}');
         break;
     }
   }

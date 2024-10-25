@@ -100,6 +100,10 @@ class _JuniorControllerState extends State<JuniorController> {
               resetTimer();
               // 打开紫灯
               BLESendUtil.openPurpleLights(targetNumber);
+              // 显示得分
+              Future.delayed(Duration(milliseconds: 200),(){
+                BLESendUtil.showScore(int.parse(_score));
+              });
               // 关闭紫灯
               Future.delayed(Duration(milliseconds: 500), () {
                 BLESendUtil.closePurpleLights(targetNumber);
@@ -119,6 +123,10 @@ class _JuniorControllerState extends State<JuniorController> {
               resetTimer();
               // 打开紫灯
               BLESendUtil.openPurpleLights(targetNumber);
+              // 显示得分
+              Future.delayed(Duration(milliseconds: 200),(){
+                BLESendUtil.showScore(int.parse(_score));
+              });
               // 关闭紫灯
               Future.delayed(Duration(milliseconds: 500), () {
                 BLESendUtil.closePurpleLights(targetNumber);
@@ -188,6 +196,7 @@ class _JuniorControllerState extends State<JuniorController> {
         timer.cancel(); // 倒计时结束，取消定时器
         _score = 'GO';
         setState(() {});
+        BLESendUtil.showGo();
         begainGame = true;
         BLESendUtil.juniorControlLight();
         autoRefreshControl();

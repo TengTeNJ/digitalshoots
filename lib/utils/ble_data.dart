@@ -1,5 +1,7 @@
 const kChannel = 0x29; // 信道相关
 const kReset = 0x32; // 重置相关
+const kQueryMasterStatu = 0x13; // 请求主机的状态
+const kResponseMasterStatu = 0x12; // 响应主机的状态
 /*APP上线*/
 List<int> onLineData() {
   int v = 0xA5 + 0x07 + 0x22 + 0x01 + 0x01;
@@ -229,6 +231,15 @@ List<int> reset() {
   // 0x80 = 10000000
   int v = 0xA5 + 0x06 + kReset + 1;
   List<int> values = [0xA5, 0x06, kReset, 1, v, 0xAA];
+  print('重置:${values}');
+  return values;
+}
+
+/*请求主机的状态*/
+List<int> queryMasterStatu() {
+  // 0x80 = 10000000
+  int v = 0xA5 + 0x05 + kQueryMasterStatu;
+  List<int> values = [0xA5, 0x05, kQueryMasterStatu, v, 0xAA];
   print('重置:${values}');
   return values;
 }
