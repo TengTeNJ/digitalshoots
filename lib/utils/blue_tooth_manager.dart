@@ -13,7 +13,9 @@ import 'global.dart';
 import 'navigator_util.dart';
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
+
 Timer? repeatTimer;
+
 class BluetoothManager {
   static final BluetoothManager _instance = BluetoothManager._internal();
 
@@ -29,8 +31,11 @@ class BluetoothManager {
   List<BLEModel> deviceList = [];
 
   // 已连接的蓝牙设备列表
-  List<BLEModel>  get hasConnectedDeviceList  {
-    return  this.deviceList.where((element) => element.hasConected == true).toList();
+  List<BLEModel> get hasConnectedDeviceList {
+    return this
+        .deviceList
+        .where((element) => element.hasConected == true)
+        .toList();
   }
 
   // 游戏数据
@@ -51,7 +56,14 @@ class BluetoothManager {
 
   int battleRedIndex = -1; // battle模式 随机点亮的红灯target 非索引
   int battleBlueIndex = -1; // battle模式 随机点亮的蓝灯target 非索引
-  List<int> battleTargetNumbers = [1,2,3,4,5,6]; // battle模式下 红蓝都支持1，2，3，4，5，6
+  List<int> battleTargetNumbers = [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ]; // battle模式下 红蓝都支持1，2，3，4，5，6
   /*开始扫描*/
   Future<void> startScan() async {
     // 不能重复扫描
@@ -59,12 +71,9 @@ class BluetoothManager {
       return;
     }
     if (Platform.isAndroid) {
-      PermissionStatus locationPermission =
-      await Permission.location.request();
-      PermissionStatus bleScan =
-      await Permission.bluetoothScan.request();
-      PermissionStatus bleConnect =
-      await Permission.bluetoothConnect.request();
+      PermissionStatus locationPermission = await Permission.location.request();
+      PermissionStatus bleScan = await Permission.bluetoothScan.request();
+      PermissionStatus bleConnect = await Permission.bluetoothConnect.request();
       if (locationPermission == PermissionStatus.granted &&
           bleScan == PermissionStatus.granted &&
           bleConnect == PermissionStatus.granted) {
@@ -75,12 +84,15 @@ class BluetoothManager {
         _scanStream!.listen((DiscoveredDevice event) {
           // 处理扫描到的蓝牙设备
           //print('event.name=${event.name}');
+          if (event.name.isEmpty) {
+            return;
+          }
           if (kBLEDevice_Names.indexOf(event.name) != -1) {
             // 如果设备列表数组中无，则添加
             if (!hasDevice(event.id)) {
               this.deviceList.add(BLEModel(device: event));
               deviceListLength.value = this.deviceList.length;
-              if(conectedDeviceCount.value == 0){
+              if (conectedDeviceCount.value == 0) {
                 // 已经连接的设备少于两个 则自动连接
                 conectToDevice(this.deviceList.last);
               }
@@ -103,7 +115,7 @@ class BluetoothManager {
           if (!hasDevice(event.id)) {
             this.deviceList.add(BLEModel(device: event));
             deviceListLength.value = this.deviceList.length;
-            if(conectedDeviceCount.value <2){
+            if (conectedDeviceCount.value == 0) {
               // 已经连接的设备少于两个 则自动连接
               conectToDevice(this.deviceList.last);
             }
@@ -113,7 +125,6 @@ class BluetoothManager {
         }
       });
     }
-
   }
 
   /*连接设备*/
@@ -131,10 +142,12 @@ class BluetoothManager {
       if (connectionStateUpdate.connectionState ==
           DeviceConnectionState.connected) {
         // 连接成功主动发送心跳回复响应(获取准确电量)
-       // BLESendUtil.heartBeatResponse();
-        if(Platform.isAndroid){
+        // BLESendUtil.heartBeatResponse();
+        if (Platform.isAndroid) {
           // 请求高优先级连接
-          _ble.requestConnectionPriority(deviceId: model.device!.id, priority: ConnectionPriority.highPerformance);
+          _ble.requestConnectionPriority(
+              deviceId: model.device!.id,
+              priority: ConnectionPriority.highPerformance);
         }
         // 连接设备数量+1
         conectedDeviceCount.value++;
@@ -142,23 +155,13 @@ class BluetoothManager {
         model.hasConected = true;
         // 保存读写特征值
         late final notifyCharacteristic;
-        if(model.device.name == kBLEDevice_NewName){
+        if (model.device.name == kBLEDevice_NewName) {
           // digital shoots
-           notifyCharacteristic = QualifiedCharacteristic(
+          notifyCharacteristic = QualifiedCharacteristic(
               serviceId: Uuid.parse(kBLE_270_SERVICE_UUID),
               characteristicId: Uuid.parse(kBLE_270_CHARACTERISTIC_NOTIFY_UUID),
               deviceId: model.device.id);
           model.notifyCharacteristic = notifyCharacteristic;
-        }else{
-          // 测速仪
-          notifyCharacteristic = QualifiedCharacteristic(
-              serviceId: Uuid.parse(kBLE_SERVICE_NOTIFY_UUID),
-              characteristicId: Uuid.parse(kBLE_CHARACTERISTIC_NOTIFY_UUID),
-              deviceId: model.device.id);
-          model.notifyCharacteristic = notifyCharacteristic;
-        }
-        // 确保是digital shoots
-        if(model.device.name == kBLEDevice_NewName){
           final writerCharacteristic = QualifiedCharacteristic(
               serviceId: Uuid.parse(kBLE_270_SERVICE_UUID),
               characteristicId: Uuid.parse(kBLE_270_CHARACTERISTIC_WRITER_UUID),
@@ -166,37 +169,40 @@ class BluetoothManager {
           model.writerCharacteristic = writerCharacteristic;
         }
         //  给digital shoots设备发送上线通知，不能给测速器发送
-       if(model.device.name == kBLEDevice_NewName){
-         writerDataToDevice(model, onLineData());
-         // 每五秒发送一次心跳指令
-         if(repeatTimer == null){
-           repeatTimer = Timer.periodic(Duration(seconds: 5), (timer) {
-             //print('这将每隔1秒执行一次');
-             writerDataToDevice(model, heartBeatData());
-             // 定时器执行完后的任务
-             // 如果需要停止定时器，可以调用 timer.cancel()
-           });
-         }
-
-       }
+        if (model.device.name == kBLEDevice_NewName) {
+          writerDataToDevice(model, onLineData());
+          // 每五秒发送一次心跳指令
+          if (repeatTimer == null) {
+            repeatTimer = Timer.periodic(Duration(seconds: 5), (timer) {
+              //print('这将每隔1秒执行一次');
+              writerDataToDevice(model, heartBeatData());
+              // 定时器执行完后的任务
+              // 如果需要停止定时器，可以调用 timer.cancel()
+            });
+          }
+        }
         // 连接成功弹窗
-       //// EasyLoading.showSuccess('Bluetooth connection successful');
+        //// EasyLoading.showSuccess('Bluetooth connection successful');
         // 监听数据
         _ble.subscribeToCharacteristic(notifyCharacteristic).listen((data) {
-         print("deviceId =${model.device.id}---上报来的数据data = $data");
+          print("deviceId =${model.device.id}---上报来的数据data = $data");
           GameUtil gameUtil = GetIt.instance<GameUtil>();
           // 在游戏页面 才处理数据
           // if (gameUtil.nowISGamePage) {
           //   BluetoothDataParse.parseData(data);
           // }
-         // print('更新数据===${data}');
-          BluetoothDataParse.parseData(data,model);
+          // print('更新数据===${data}');
+          BluetoothDataParse.parseData(data, model);
         });
       } else if (connectionStateUpdate.connectionState ==
           DeviceConnectionState.disconnected) {
-   //     EasyLoading.showError('disconected');
-        if(conectedDeviceCount.value > 0){
+        //     EasyLoading.showError('disconected');
+        print('失去连接----');
+        if (conectedDeviceCount.value > 0) {
           conectedDeviceCount.value--;
+          if(conectedDeviceCount.value == 0){
+            NavigatorUtil.popToRoot();
+          }
           GameUtil gameUtil = GetIt.instance<GameUtil>();
           gameUtil.masterStatu = 0;
         }
@@ -209,7 +215,10 @@ class BluetoothManager {
   }
 
   /*发送数据*/
- Future<void> writerDataToDevice(BLEModel model, List<int> data) async {
+  Future<void> writerDataToDevice(BLEModel model, List<int> data) async {
+    if(BluetoothManager().deviceList.isEmpty){
+      return;
+    }
     //  数据校验
     if (data == null || data.length == 0) {
       return;
@@ -221,11 +230,10 @@ class BluetoothManager {
       // TTToast.showErrorInfo('Please connect your device first');
       return;
     }
-    Future.delayed(Duration(milliseconds: 50),() async{
-      return await _ble.writeCharacteristicWithResponse(model.writerCharacteristic!,
-          value: data);
-    });
-
+    sleep(Duration(milliseconds: 10));
+    return await _ble.writeCharacteristicWithResponse(
+        model.writerCharacteristic!,
+        value: data);
   }
 
   /*判断是否已经被添加设备列表*/
@@ -243,8 +251,8 @@ class BluetoothManager {
   triggerCallback({BLEDataType type = BLEDataType.none}) {
     dataChange?.call(type);
   }
+
   triggerDeviceInfoCallback({BLEDataType type = BLEDataType.dviceInfo}) {
     deviceinfoChange?.call(type);
   }
-
 }

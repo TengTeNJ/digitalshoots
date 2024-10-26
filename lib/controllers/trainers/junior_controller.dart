@@ -37,13 +37,11 @@ class _JuniorControllerState extends State<JuniorController> {
     // TODO: implement initState
     super.initState();
     // WidgetsBinding.instance.addObserver(this);
-
     subscription = EventBus().stream.listen((event) async {
       if (event == kJuniorGameEnd) {
         if (mounted) {
           resetTimer();
           await BLESendUtil.blueLightBlink();
-          await BLESendUtil.openAllBlueLight();
           // 保存数据
           if (_score == 'GO') {
             _score = '0';
@@ -77,10 +75,16 @@ class _JuniorControllerState extends State<JuniorController> {
     BluetoothManager().dataChange = (BLEDataType type) async {
       if (type == BLEDataType.targetIn) {
         if (!firsthit) {
+          // 游戏保护期
+          lockGame(true);
           _speed = '0';
           firsthit = true;
           // 熄灭所有的灯光
             BLESendUtil.closeAllBlueLight();
+            // 游戏开始
+            Future.delayed(Duration(milliseconds: 1000),(){
+              BLESendUtil.setGameStatu(1);
+            });
           // 3 2 1 Go 然后开开始游戏
           _startCountdown();
         } else {
@@ -100,16 +104,20 @@ class _JuniorControllerState extends State<JuniorController> {
               resetTimer();
               // 打开紫灯
               BLESendUtil.openPurpleLights(targetNumber);
+              lockGame(true);
               // 显示得分
               Future.delayed(Duration(milliseconds: 200),(){
                 BLESendUtil.showScore(int.parse(_score));
               });
               // 关闭紫灯
               Future.delayed(Duration(milliseconds: 500), () {
-                BLESendUtil.closePurpleLights(targetNumber);
+                BLESendUtil.closeAllLight();
                 // 然后再随机点亮红和蓝灯各一个
-                BLESendUtil.juniorControlLight();
-                autoRefreshControl();
+                Future.delayed(Duration(milliseconds: 800),(){
+                  lockGame(false);
+                  BLESendUtil.juniorControlLight();
+                  autoRefreshControl();
+                });
               });
               setState(() {});
             } else if (targetNumber ==
@@ -122,6 +130,7 @@ class _JuniorControllerState extends State<JuniorController> {
               print('击打了红灯');
               resetTimer();
               // 打开紫灯
+              lockGame(true);
               BLESendUtil.openPurpleLights(targetNumber);
               // 显示得分
               Future.delayed(Duration(milliseconds: 200),(){
@@ -129,10 +138,13 @@ class _JuniorControllerState extends State<JuniorController> {
               });
               // 关闭紫灯
               Future.delayed(Duration(milliseconds: 500), () {
-                BLESendUtil.closePurpleLights(targetNumber);
+                BLESendUtil.closeAllLight();
                 // 然后再随机点亮红和蓝灯各一个
-                BLESendUtil.juniorControlLight();
-                autoRefreshControl();
+                Future.delayed(Duration(milliseconds: 800),(){
+                  lockGame(false);
+                  BLESendUtil.juniorControlLight();
+                  autoRefreshControl();
+                });
               });
 
               setState(() {});
@@ -198,6 +210,8 @@ class _JuniorControllerState extends State<JuniorController> {
         setState(() {});
         BLESendUtil.showGo();
         begainGame = true;
+        // 解除游戏保护期
+        lockGame(false);
         BLESendUtil.juniorControlLight();
         autoRefreshControl();
         // 正式开始游戏
@@ -217,7 +231,6 @@ class _JuniorControllerState extends State<JuniorController> {
   Widget build(BuildContext context) {
     return ConditionalWillPopScope(
         onWillPop: () async {
-          print('------');
           GameUtil gameUtil = GetIt.instance<GameUtil>();
           gameUtil.pageDepth -= 1; // 页面深度减1
           if (gameUtil.pageDepth < 0) {

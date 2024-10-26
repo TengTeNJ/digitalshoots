@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:math';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:robot/model/ble_model.dart';
+import 'package:robot/utils/global.dart';
 import 'package:robot/utils/toast.dart';
 import 'package:robot/utils/tt_dialog.dart';
 
@@ -67,8 +69,9 @@ class BLESendUtil {
   }
 
   /*展示得分*/
-  static showScore(int score){
-    BluetoothManager().writerDataToDevice(getWriterDevice(), showScoreGameData(score));
+  static showScore(int score) {
+    BluetoothManager()
+        .writerDataToDevice(getWriterDevice(), showScoreGameData(score));
   }
 
 /*关闭蓝灯*/
@@ -93,7 +96,6 @@ class BLESendUtil {
   //   return await BluetoothManager()
   //       .writerDataToDevice(getWriterDevice(), closeLightsData(number));
   // }
-
 
   // noviceShakeData
   static noviceShake() {
@@ -126,7 +128,6 @@ class BLESendUtil {
     BluetoothManager().writerDataToDevice(getWriterDevice(), appOnLine());
   }
 
-
   /*Junior 模式的每次灯光控制*/
   static juniorControlLight() {
     if (BluetoothManager().hasConnectedDeviceList.isEmpty) {
@@ -142,32 +143,36 @@ class BLESendUtil {
         int blue_index = Random().nextInt(3);
         BluetoothManager().juniorBlueIndex = blue_index;
         BluetoothManager().juniorRedIndex = red_index;
-        BluetoothManager().writerDataToDevice(getWriterDevice(),
-            openJuniorBlueLightData(kJuniorBluetargets[blue_index]));
-        Future.delayed(Duration(milliseconds: 100), () {
-          BluetoothManager().writerDataToDevice(getWriterDevice(),
-              openJuniorRedLightData(kJuniorRedtargets[red_index]));
-        });
+        //openJuniorTwoBlueLightData
+        BluetoothManager().writerDataToDevice(
+            getWriterDevice(),
+            openJuniorTwoBlueLightData([
+              kJuniorBluetargets[blue_index],
+              kJuniorRedtargets[red_index]
+            ]));
       } else {
         // 说明不是第一次取随机数 所以先判断取出来的和上次一样不,一样的话就重新取
         int red_index;
         int blue_index;
+        int currentRedIndex = BluetoothManager().juniorRedIndex;
+        int currentBlueIndex = BluetoothManager().juniorBlueIndex;
         do {
           red_index = Random().nextInt(3);
-        } while (BluetoothManager().juniorRedIndex == red_index);
+        } while (currentRedIndex == red_index || currentBlueIndex == red_index);
         BluetoothManager().juniorRedIndex = red_index;
 
         do {
           blue_index = Random().nextInt(3);
-        } while (BluetoothManager().juniorBlueIndex == blue_index);
+        } while (
+            currentBlueIndex == blue_index || currentRedIndex == blue_index);
         BluetoothManager().juniorBlueIndex = blue_index;
-
-        BluetoothManager().writerDataToDevice(getWriterDevice(),
-            openJuniorBlueLightData(kJuniorBluetargets[blue_index]));
-        Future.delayed(Duration(milliseconds: 100), () {
-          BluetoothManager().writerDataToDevice(getWriterDevice(),
-              openJuniorRedLightData(kJuniorRedtargets[red_index]));
-        });
+        //openJuniorTwoBlueLightData
+        BluetoothManager().writerDataToDevice(
+            getWriterDevice(),
+            openJuniorTwoBlueLightData([
+              kJuniorBluetargets[blue_index],
+              kJuniorRedtargets[red_index]
+            ]));
       }
     });
   }
@@ -191,8 +196,7 @@ class BLESendUtil {
     await lock.synchronized(() async {
       int redLightIndex = BluetoothManager().battleRedIndex;
       print(
-          '红色BluetoothManager().battleTargetNumbers=${BluetoothManager()
-              .battleTargetNumbers}');
+          '红色BluetoothManager().battleTargetNumbers=${BluetoothManager().battleTargetNumbers}');
       if (BluetoothManager().battleTargetNumbers.isEmpty) {
         // target数组为空的话则代表循环了一轮 重新添加
         BluetoothManager().battleTargetNumbers.addAll([1, 2, 3, 4, 5, 6]);
@@ -201,15 +205,15 @@ class BLESendUtil {
       int red_index;
       do {
         red_index = Random().nextInt(battleTargets.length);
-      } while (redLightIndex == battleTargets[red_index] || battleTargets[red_index] == BluetoothManager().battleBlueIndex);
+      } while (redLightIndex == battleTargets[red_index] ||
+          battleTargets[red_index] == BluetoothManager().battleBlueIndex);
       BluetoothManager().battleRedIndex = battleTargets[red_index];
       print('自动跳灯开红灯${battleTargets[red_index]}');
       BluetoothManager().battleTargetNumbers.remove(battleTargets[red_index]);
-   Future.delayed(Duration(milliseconds: 100),() async{
-     await BluetoothManager().writerDataToDevice(
-         getWriterDevice(),
-         openJuniorRedLightData(BluetoothManager().battleRedIndex));
-   });
+      Future.delayed(Duration(milliseconds: 100), () async {
+        await BluetoothManager().writerDataToDevice(getWriterDevice(),
+            openJuniorRedLightData(BluetoothManager().battleRedIndex));
+      });
     });
   }
 
@@ -225,8 +229,7 @@ class BLESendUtil {
       // 获取当前蓝灯target
       int redLightIndex = BluetoothManager().battleBlueIndex;
       print(
-          '蓝灯BluetoothManager().battleTargetNumbers=${BluetoothManager()
-              .battleTargetNumbers}');
+          '蓝灯BluetoothManager().battleTargetNumbers=${BluetoothManager().battleTargetNumbers}');
       if (BluetoothManager().battleTargetNumbers.isEmpty) {
         // target数组为空的话则代表循环了一轮 重新添加
         BluetoothManager().battleTargetNumbers.addAll([1, 2, 3, 4, 5, 6]);
@@ -235,14 +238,15 @@ class BLESendUtil {
       int blue_index;
       do {
         blue_index = Random().nextInt(battleTargets.length);
-      } while (redLightIndex == battleTargets[blue_index] || battleTargets[blue_index] == BluetoothManager().battleRedIndex);
+      } while (redLightIndex == battleTargets[blue_index] ||
+          battleTargets[blue_index] == BluetoothManager().battleRedIndex);
 
       print('自动跳灯开蓝灯${battleTargets[blue_index]}');
       BluetoothManager().battleBlueIndex = battleTargets[blue_index];
       BluetoothManager().battleTargetNumbers.remove(battleTargets[blue_index]);
     });
-    Future.delayed(Duration(milliseconds: 100),() async{
-    await  BluetoothManager().writerDataToDevice(getWriterDevice(),
+    Future.delayed(Duration(milliseconds: 100), () async {
+      await BluetoothManager().writerDataToDevice(getWriterDevice(),
           openJuniorBlueLightData(BluetoothManager().battleBlueIndex));
     });
   }
@@ -252,6 +256,7 @@ class BLESendUtil {
     EasyLoading.show(
       maskType: EasyLoadingMaskType.black,
     );
+    lockGame(true);
     final List<Future<dynamic>> futures = [];
     futures.add(closeAllLight());
     futures.add(Future.delayed(Duration(milliseconds: 500), () async {
@@ -274,6 +279,11 @@ class BLESendUtil {
       print('5-----');
       await openAllBlueLight();
       EasyLoading.dismiss();
+      lockGame(false);
+      // 游戏结束
+      Future.delayed(Duration(milliseconds: 500), () {
+        BLESendUtil.setGameStatu(2);
+      });
     }));
     return await Future.wait(futures);
   }
@@ -283,8 +293,8 @@ class BLESendUtil {
     if (BluetoothManager().hasConnectedDeviceList.isEmpty) {
       return;
     }
-    BluetoothManager().writerDataToDevice(
-        getWriterDevice(), changeChannel(value));
+    BluetoothManager()
+        .writerDataToDevice(getWriterDevice(), changeChannel(value));
   }
 
   static Future<void> resetControl() async {
@@ -294,6 +304,7 @@ class BLESendUtil {
     BluetoothManager().writerDataToDevice(getWriterDevice(), reset());
   }
 
+/*查询主机的状态*/
   static queryMasterStatuControl() {
     if (BluetoothManager().hasConnectedDeviceList.isEmpty) {
       return;
@@ -302,4 +313,16 @@ class BLESendUtil {
         .writerDataToDevice(getWriterDevice(), queryMasterStatu());
   }
 
+/*设置游戏状态
+* 0 idle
+* 1 开始
+* 2 结束
+* */
+  static setGameStatu(int statu) {
+    if (BluetoothManager().hasConnectedDeviceList.isEmpty) {
+      return;
+    }
+    BluetoothManager()
+        .writerDataToDevice(getWriterDevice(), setGameStatuData(statu));
+  }
 }

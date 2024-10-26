@@ -56,12 +56,12 @@ class _CustomAppBarState extends State<CustomAppBar> {
         fiveName = GameDataUtil.boardPowerValueToBatteryImageLevel(BluetoothManager().gameData.fivePower);
         sixName = GameDataUtil.boardPowerValueToBatteryImageLevel(BluetoothManager().gameData.sixPower);
 
-        print('1号板电量${BluetoothManager().gameData.firstPower}');
-        print('2号板电量${BluetoothManager().gameData.secondPower}');
-        print('3号板电量${BluetoothManager().gameData.thirdPower}');
-        print('4号板电量${BluetoothManager().gameData.fourPower}');
-        print('5号板电量${BluetoothManager().gameData.fivePower}');
-        print('6号板电量${BluetoothManager().gameData.sixPower}');
+        // print('1号板电量${BluetoothManager().gameData.firstPower}');
+        // print('2号板电量${BluetoothManager().gameData.secondPower}');
+        // print('3号板电量${BluetoothManager().gameData.thirdPower}');
+        // print('4号板电量${BluetoothManager().gameData.fourPower}');
+        // print('5号板电量${BluetoothManager().gameData.fivePower}');
+        // print('6号板电量${BluetoothManager().gameData.sixPower}');
       }
     };
     BluetoothManager().conectedDeviceCount.addListener(() {

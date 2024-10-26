@@ -2,6 +2,7 @@ const kChannel = 0x29; // 信道相关
 const kReset = 0x32; // 重置相关
 const kQueryMasterStatu = 0x13; // 请求主机的状态
 const kResponseMasterStatu = 0x12; // 响应主机的状态
+const kGameStatu = 0x33; // 游戏状态0 idle 1开始 2结束
 /*APP上线*/
 List<int> onLineData() {
   int v = 0xA5 + 0x07 + 0x22 + 0x01 + 0x01;
@@ -9,6 +10,7 @@ List<int> onLineData() {
   print('APP上线=${values}');
   return values;
 }
+
 /*APP下线*/
 List<int> offLineData() {
   int v = 0xA5 + 0x06 + 0x16 + 0x00;
@@ -144,10 +146,11 @@ List<int> openPurpleLightsData(int targetNumber) {
   print('打开紫灯${data}');
   //  开灯
   int v = 0xA5 + 0x07 + 0x27 + 0x01 + targetNumber;
-  List<int> targetDatas = [0xA5, 0x07, 0x27,0x01, targetNumber ,v ,0xAA];
+  List<int> targetDatas = [0xA5, 0x07, 0x27, 0x01, targetNumber, v, 0xAA];
   print('打开某个紫灯:${pre_data}');
   return targetDatas;
 }
+
 // 关闭紫灯
 List<int> closePurpleLightsData(int targetNumber) {
   String pre_data = '11';
@@ -161,8 +164,24 @@ List<int> closePurpleLightsData(int targetNumber) {
   print('关闭紫灯${data}');
   // 0x00 关灯
   int v = 0xA5 + 0x07 + 0x27 + 0x00 + targetNumber;
-  List<int> targetDatas = [0xA5, 0x07, 0x27,0x00, targetNumber ,v ,0xAA];
+  List<int> targetDatas = [0xA5, 0x07, 0x27, 0x00, targetNumber, v, 0xAA];
   print('关闭某个紫灯:${pre_data}');
+  return targetDatas;
+}
+
+List<int> closePurpleAndAllLightsData(int targetNumber) {
+  String pre_data = '11';
+  List<int> values = [0, 0, 0, 0, 0, 0];
+  int targetIndex = (targetNumber - 1 - 5).abs();
+  values[targetIndex] = 1;
+  values.forEach((element) {
+    pre_data += element.toString();
+  });
+  int data = int.parse(pre_data, radix: 2);
+  // 0x00 关灯
+  int v = 0xA5 + 0x07 + 0x27 + 0x00 + targetNumber;
+  List<int> targetDatas = [0xA5, 0x07, 0x01, 0x00, targetNumber, v, 0xAA];
+  print('关闭某个紫灯和全部:${pre_data}');
   return targetDatas;
 }
 
@@ -175,6 +194,30 @@ List<int> openJuniorBlueLightData(int targetNumber) {
   values.forEach((element) {
     pre_data += element.toString();
   });
+  int data = int.parse(pre_data, radix: 2);
+  int v = 0xA5 + 0x06 + 0x01 + data;
+  List<int> targetDatas = [0xA5, 0x06, 0x01, data, v, 0xAA];
+  print('junior模式仅仅打开某个蓝灯:${pre_data}');
+  return targetDatas;
+}
+
+/*新流程junior模式*/
+List<int> openJuniorTwoBlueLightData(List<int> targetNumbers) {
+  if (targetNumbers.isEmpty || targetNumbers.length != 2) {
+    return [];
+  }
+  String pre_data = '10';
+  int blue = targetNumbers[0];
+  int red = targetNumbers[1];
+  List<int> values = [0, 0, 0, 0, 0, 0];
+  int targetIndex = (blue - 1 - 5).abs();
+  values[targetIndex] = 1;
+  int redTargetIndex = (red - 1 - 5).abs();
+  values[redTargetIndex] = 1;
+  values.forEach((element) {
+    pre_data += element.toString();
+  });
+
   int data = int.parse(pre_data, radix: 2);
   int v = 0xA5 + 0x06 + 0x01 + data;
   List<int> targetDatas = [0xA5, 0x06, 0x01, data, v, 0xAA];
@@ -240,6 +283,17 @@ List<int> queryMasterStatu() {
   // 0x80 = 10000000
   int v = 0xA5 + 0x05 + kQueryMasterStatu;
   List<int> values = [0xA5, 0x05, kQueryMasterStatu, v, 0xAA];
-  print('重置:${values}');
+  print('请求主机状态:${values}');
+  return values;
+}
+
+/*设置游戏状态
+* 0 idle 1开始 2结束
+* */
+List<int> setGameStatuData(int statu) {
+  // 0x80 = 10000000
+  int v = 0xA5 + 0x05 + kGameStatu + statu;
+  List<int> values = [0xA5, 0x05, kGameStatu, statu, v, 0xAA];
+  print('设置游戏状态:${values}');
   return values;
 }

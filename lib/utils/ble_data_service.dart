@@ -80,7 +80,7 @@ class BluetoothDataParse {
     //print('handleNotFullData12 ${isNew}');
     if (isNew) {
       isNew = false;
-      delayTimer = Timer(Duration(milliseconds: 150), () {
+      delayTimer = Timer(Duration(milliseconds: 300), () {
         if (!isNew) {
           print(
               '解析数据超时 ${bleNotAllData.map((toElement) => toElement.toRadixString(16)).toList()}');
@@ -210,13 +210,17 @@ class BluetoothDataParse {
         // mcu主动上报击中
         int data = element[2];
         BluetoothManager().gameData.targetNumber = data;
-        BluetoothManager().triggerCallback(type: BLEDataType.targetIn);
-        print('mcu主动上报击中--${data}');
+        if (getGameLockStatu()) {
+          print('游戏保护期,击中不上报--${data}');
+        } else {
+          BluetoothManager().triggerCallback(type: BLEDataType.targetIn);
+          print('mcu主动上报击中--${data}');
+        }
         break;
       case ResponseCMDType.heartBeatQuery:
-    // 收到心跳查询连续不响应 会导致游戏异常 比如任意集中标靶 收不到响应
-      BLESendUtil.heartBeatResponse();
-      break;
+        // 收到心跳查询连续不响应 会导致游戏异常 比如任意集中标靶 收不到响应
+        BLESendUtil.heartBeatResponse();
+        break;
       case ResponseCMDType.masterStatu:
         int masterStatu = element[2];
         GameUtil gameUtil = GetIt.instance<GameUtil>();

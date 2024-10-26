@@ -1,3 +1,5 @@
+import 'package:get_it/get_it.dart';
+
 class GameUtil {
   int currentPage = 0;
   bool nowISGamePage = false; // 是否在游戏页面，如果不在，收到了蓝牙的响应数据则不处理
@@ -5,4 +7,18 @@ class GameUtil {
   bool selectRecord = false;
   int masterStatu = 0; //  主机的状态
   bool gameLocking = true; //  游戏保护期
+}
+
+/*
+* 游戏保护/解除游戏保护
+* */
+lockGame(bool lock) {
+  GameUtil gameUtil = GetIt.instance<GameUtil>();
+  gameUtil.gameLocking = lock;
+}
+
+/*获取游戏保护期状态*/
+bool getGameLockStatu() {
+  GameUtil gameUtil = GetIt.instance<GameUtil>();
+  return gameUtil.gameLocking;
 }

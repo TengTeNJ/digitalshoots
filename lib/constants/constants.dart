@@ -337,9 +337,9 @@ const kPageLimit = 10; // 数据分页每页显示的数据量
 const kAutoRefreshDuration = 4500; // 游戏自动刷新的时间间隔
 
 const kBLEDevice_Names = [
-  kBLEDevice_Name,
+  // kBLEDevice_Name,
   kBLEDevice_NewName,
-  kFiveBallHandler_Name,
+  // kFiveBallHandler_Name,
   // 'Dangler-M-7293'
 ];
 
