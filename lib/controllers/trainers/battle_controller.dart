@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:robot/constants/constants.dart';
@@ -29,18 +30,20 @@ class _BattleControllerState extends State<BattleController> {
   late StreamSubscription subscription;
   Timer? timer;
   Timer? redTimer;
+  bool redLock = false;
+  bool blueLock = false;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    lockGame(false);
     subscription = EventBus().stream.listen((event) async {
       if (event == kJuniorGameEnd) {
         if (mounted) {
           resetTimer();
           resetRedTimer();
           await BLESendUtil.blueLightBlink();
-          await BLESendUtil.openAllBlueLight();
           initStatu();
         }
       }
@@ -67,6 +70,7 @@ class _BattleControllerState extends State<BattleController> {
           firsthit = true;
           // 熄灭所有的灯光
           BLESendUtil.closeAllLight();
+          lockGame(true);
           // 3 2 1 Go 然后开开始游戏
           _startCountdown();
         } else {
@@ -79,6 +83,11 @@ class _BattleControllerState extends State<BattleController> {
             // 先取消自动刷新的定时器
             int targetNumber = BluetoothManager().gameData.targetNumber;
             if (targetNumber == BluetoothManager().battleBlueIndex) {
+              if(blueLock){
+                return;
+              }
+             // lockGame(true);
+              blueLock = true;
               resetTimer();
               // 击中了蓝灯
               _score = (kTargetAndScoreMap[targetNumber]! + int.parse(_score))
@@ -89,15 +98,24 @@ class _BattleControllerState extends State<BattleController> {
               // 打开紫灯
               BLESendUtil.openPurpleLights(targetNumber);
               // 显示得分
-              Future.delayed(Duration(milliseconds: 100),(){
-                BLESendUtil.showScore(int.parse(_score));
-              });
+              // Future.delayed(Duration(milliseconds: 200), () {
+              //   BLESendUtil.showScore(int.parse(_score));
+              // });
               Future.delayed(Duration(milliseconds: 500), () async {
                 BLESendUtil.closePurpleLights(targetNumber);
-                BLESendUtil.battleControlBlueLight();
-                autoRefreshControl();
+                Future.delayed(Duration(milliseconds: 800), () {
+                  //lockGame(false);
+                  blueLock = false;
+                  BLESendUtil.battleControlBlueLight();
+                  autoRefreshControl();
+                });
               });
             } else if (targetNumber == BluetoothManager().battleRedIndex) {
+             // lockGame(true);
+              if(redLock){
+                return;
+              }
+              redLock = true;
               // 先取消自动刷新的定时器
               resetRedTimer();
               // 击中了红灯
@@ -108,14 +126,18 @@ class _BattleControllerState extends State<BattleController> {
               setState(() {});
               BLESendUtil.openPurpleLights(targetNumber);
               // 显示得分
-              Future.delayed(Duration(milliseconds: 100),(){
+              Future.delayed(Duration(milliseconds: 100), () {
                 BLESendUtil.showScore(int.parse(_score));
               });
               // 然后再随机点亮一个红灯
               Future.delayed(Duration(milliseconds: 500), () async {
                 BLESendUtil.closePurpleLights(targetNumber);
-                BLESendUtil.battleControlRedLight();
-                autoRedRefreshControl();
+                Future.delayed(Duration(milliseconds: 800), () {
+               //   lockGame(false);
+                  redLock = false;
+                  BLESendUtil.battleControlRedLight();
+                  autoRedRefreshControl();
+                });
               });
             }
           }
@@ -189,15 +211,28 @@ class _BattleControllerState extends State<BattleController> {
         begainGame = true;
         // 展示得分
         await BLESendUtil.showGo();
+        Random random = new Random();
+        bool randomRed = random.nextBool();
         Future.delayed(Duration(milliseconds: 100), () async {
           // 正式开始游戏
           // 蓝色
-          await BLESendUtil.battleControlBlueLight();
-          autoRefreshControl();
-          // 红色
-          Future.delayed(Duration(milliseconds: 100), () async {
+          lockGame(false);
+          if (randomRed) {
             await BLESendUtil.battleControlRedLight();
             autoRedRefreshControl();
+          } else {
+            await BLESendUtil.battleControlBlueLight();
+            autoRefreshControl();
+          }
+          // 红色
+          Future.delayed(Duration(milliseconds: 1500), () async {
+            if (randomRed) {
+              await BLESendUtil.battleControlBlueLight();
+              autoRefreshControl();
+            } else {
+              await BLESendUtil.battleControlRedLight();
+              autoRedRefreshControl();
+            }
             // 正式开始游戏
             _countdownTimer.start();
           });

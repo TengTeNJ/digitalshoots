@@ -37,6 +37,7 @@ class _JuniorControllerState extends State<JuniorController> {
     // TODO: implement initState
     super.initState();
     // WidgetsBinding.instance.addObserver(this);
+    lockGame(false);
     subscription = EventBus().stream.listen((event) async {
       if (event == kJuniorGameEnd) {
         if (mounted) {

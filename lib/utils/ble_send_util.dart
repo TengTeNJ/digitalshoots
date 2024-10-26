@@ -208,7 +208,7 @@ class BLESendUtil {
       } while (redLightIndex == battleTargets[red_index] ||
           battleTargets[red_index] == BluetoothManager().battleBlueIndex);
       BluetoothManager().battleRedIndex = battleTargets[red_index];
-      print('自动跳灯开红灯${battleTargets[red_index]}');
+      print('自动开红灯${battleTargets[red_index]}');
       BluetoothManager().battleTargetNumbers.remove(battleTargets[red_index]);
       Future.delayed(Duration(milliseconds: 100), () async {
         await BluetoothManager().writerDataToDevice(getWriterDevice(),
@@ -241,7 +241,7 @@ class BLESendUtil {
       } while (redLightIndex == battleTargets[blue_index] ||
           battleTargets[blue_index] == BluetoothManager().battleRedIndex);
 
-      print('自动跳灯开蓝灯${battleTargets[blue_index]}');
+      print('自动开蓝灯${battleTargets[blue_index]}');
       BluetoothManager().battleBlueIndex = battleTargets[blue_index];
       BluetoothManager().battleTargetNumbers.remove(battleTargets[blue_index]);
     });

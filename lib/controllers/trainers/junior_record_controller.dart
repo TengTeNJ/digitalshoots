@@ -8,8 +8,6 @@ import 'package:robot/controllers/base/base_view_controller.dart';
 import 'package:camera/camera.dart';
 import 'package:robot/model/user_info.dart';
 import 'package:robot/utils/color.dart';
-import 'package:device_screen_recorder/device_screen_recorder.dart';
-import 'package:robot/utils/string_util.dart';
 import 'package:robot/utils/toast.dart';
 import 'package:robot/views/base/avatar_view.dart';
 
@@ -56,6 +54,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
     // TODO: implement initState
     super.initState();
     initCamera();
+    lockGame(false);
     subscription = EventBus().stream.listen((event) async {
       if (event == kJuniorGameEnd) {
         if (mounted) {
@@ -64,9 +63,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
           Map result = await _ttScreenRecordPlugin.stopRecording();
           final _path = result['path'];
           print('视频保存路径:${_path}');
-
           await BLESendUtil.blueLightBlink();
-          await BLESendUtil.openAllBlueLight();          // DeviceScreenRecorder
           // 先保存数据
           Gamemodel model = Gamemodel.modelFromJson(
               {'score': _score.toString(), 'path': _path});
@@ -90,7 +87,9 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
     GameUtil gameUtil = GetIt.instance<GameUtil>();
     gameUtil.nowISGamePage = true;
     // 进入页面打开所有蓝灯
-    BLESendUtil.openAllBlueLight();
+    Future.delayed(Duration(milliseconds: 200),(){
+      BLESendUtil.openAllBlueLight();
+    });
     // 蓝牙数据监听
     BluetoothManager().dataChange = (BLEDataType type) async {
       if (type == BLEDataType.targetIn) {
@@ -99,6 +98,11 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
           // 熄灭所有的灯光
           BLESendUtil.closeAllLight();
           // 3 2 1 Go 然后开开始游戏
+          lockGame(true);
+          // 游戏开始
+          Future.delayed(Duration(milliseconds: 1000),(){
+            BLESendUtil.setGameStatu(1);
+          });
           _score = '0';
           _startCountdown();
         } else {
@@ -115,14 +119,21 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
               _score = (kTargetAndScoreMap[targetNumber]! + int.parse(_score))
                   .toString();
               setState(() {});
+              lockGame(true);
               // 打开紫灯
               BLESendUtil.openPurpleLights(targetNumber);
-              Future.delayed(Duration(milliseconds: 500),(){
-                BLESendUtil.closePurpleLights(targetNumber);
+              // 显示得分
+              Future.delayed(Duration(milliseconds: 200),(){
+                BLESendUtil.showScore(int.parse(_score));
+              });
+              Future.delayed(Duration(milliseconds: 500), () {
+                BLESendUtil.closeAllLight();
                 // 然后再随机点亮红和蓝灯各一个
-                BLESendUtil.juniorControlLight();
-                autoRefreshControl();
-
+                Future.delayed(Duration(milliseconds: 800),(){
+                  lockGame(false);
+                  BLESendUtil.juniorControlLight();
+                  autoRefreshControl();
+                });
               });
 
             } else if (targetNumber ==
@@ -133,15 +144,23 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
               _score = (kTargetAndScoreMap[targetNumber]! + int.parse(_score))
                   .toString();
               setState(() {});
+              lockGame(true);
               // 打开紫灯
               BLESendUtil.openPurpleLights(targetNumber);
-              Future.delayed(Duration(milliseconds: 500),(){
-                BLESendUtil.closePurpleLights(targetNumber);
-                // 然后再随机点亮红和蓝灯各一个
-                BLESendUtil.juniorControlLight();
-                autoRefreshControl();
+              // 显示得分
+              Future.delayed(Duration(milliseconds: 200),(){
+                BLESendUtil.showScore(int.parse(_score));
               });
-
+              // 关闭紫灯
+              Future.delayed(Duration(milliseconds: 500), () {
+                BLESendUtil.closeAllLight();
+                // 然后再随机点亮红和蓝灯各一个
+                Future.delayed(Duration(milliseconds: 800),(){
+                  lockGame(false);
+                  BLESendUtil.juniorControlLight();
+                  autoRefreshControl();
+                });
+              });
             }
           }
         }
@@ -201,10 +220,12 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
       } else {
         timer.cancel(); // 倒计时结束，取消定时器
         _countDownString = 'GO';
+        BLESendUtil.preGame(_secondsRemaining);
         setState(() {});
         // 开始录屏
         bool result = await _ttScreenRecordPlugin.startRecording();
         begainGame = true;
+        lockGame(false);
         BLESendUtil.juniorControlLight();
         autoRefreshControl();
         // 正式开始游戏

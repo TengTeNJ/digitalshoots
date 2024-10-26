@@ -139,7 +139,7 @@ class _NoviceControllerState extends State<NoviceController>
         setState(() {});
         begainGame = true;
         BLESendUtil.showGo();
-        Future.delayed(Duration(milliseconds: 100), () {
+        Future.delayed(Duration(milliseconds: 200), () {
           BLESendUtil.openAllBlueLight();
           // 正式开始游戏
           _countdownTimer.start();
