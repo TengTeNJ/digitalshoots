@@ -173,6 +173,12 @@ class BLESendUtil {
               kJuniorBluetargets[blue_index],
               kJuniorRedtargets[red_index]
             ]));
+        BluetoothManager().writerDataToDevice(
+            getWriterDevice(),
+            openJuniorTwoBlueLightData([
+              kJuniorBluetargets[blue_index],
+              kJuniorRedtargets[red_index]
+            ]));
       }
     });
   }

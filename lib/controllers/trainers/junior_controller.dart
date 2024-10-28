@@ -105,9 +105,11 @@ class _JuniorControllerState extends State<JuniorController> {
               resetTimer();
               // 打开紫灯
               BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
               lockGame(true);
               // 显示得分
               Future.delayed(Duration(milliseconds: 200),(){
+                BLESendUtil.showScore(int.parse(_score));
                 BLESendUtil.showScore(int.parse(_score));
               });
               // 关闭紫灯
@@ -133,12 +135,15 @@ class _JuniorControllerState extends State<JuniorController> {
               // 打开紫灯
               lockGame(true);
               BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
               // 显示得分
               Future.delayed(Duration(milliseconds: 200),(){
+                BLESendUtil.showScore(int.parse(_score));
                 BLESendUtil.showScore(int.parse(_score));
               });
               // 关闭紫灯
               Future.delayed(Duration(milliseconds: 500), () {
+                BLESendUtil.closeAllLight();
                 BLESendUtil.closeAllLight();
                 // 然后再随机点亮红和蓝灯各一个
                 Future.delayed(Duration(milliseconds: 800),(){
