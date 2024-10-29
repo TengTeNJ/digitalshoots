@@ -70,6 +70,10 @@ class _BattleControllerState extends State<BattleController> {
           firsthit = true;
           // 熄灭所有的灯光
           BLESendUtil.closeAllLight();
+          BLESendUtil.closeAllLight();
+          BLESendUtil.closeAllLight();
+          BLESendUtil.closeAllLight();
+          BLESendUtil.closeAllLight();
           lockGame(true);
           // 3 2 1 Go 然后开开始游戏
           _startCountdown();
@@ -83,10 +87,10 @@ class _BattleControllerState extends State<BattleController> {
             // 先取消自动刷新的定时器
             int targetNumber = BluetoothManager().gameData.targetNumber;
             if (targetNumber == BluetoothManager().battleBlueIndex) {
-              if(blueLock){
+              if (blueLock) {
                 return;
               }
-             // lockGame(true);
+              // lockGame(true);
               blueLock = true;
               resetTimer();
               // 击中了蓝灯
@@ -97,12 +101,20 @@ class _BattleControllerState extends State<BattleController> {
               // 然后再随机点亮一个蓝灯
               // 打开紫灯
               BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
               // 显示得分
-              // Future.delayed(Duration(milliseconds: 200), () {
-              //   BLESendUtil.showScore(int.parse(_score));
-              // });
+              Future.delayed(Duration(milliseconds: 200), () {
+                BLESendUtil.showScore(int.parse(_score));
+              });
               Future.delayed(Duration(milliseconds: 500), () async {
-                BLESendUtil.closePurpleLights(targetNumber);
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
                 Future.delayed(Duration(milliseconds: 800), () {
                   //lockGame(false);
                   blueLock = false;
@@ -111,8 +123,8 @@ class _BattleControllerState extends State<BattleController> {
                 });
               });
             } else if (targetNumber == BluetoothManager().battleRedIndex) {
-             // lockGame(true);
-              if(redLock){
+              // lockGame(true);
+              if (redLock) {
                 return;
               }
               redLock = true;
@@ -125,15 +137,23 @@ class _BattleControllerState extends State<BattleController> {
                       .toString();
               setState(() {});
               BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
               // 显示得分
-              Future.delayed(Duration(milliseconds: 100), () {
+              Future.delayed(Duration(milliseconds: 200), () {
                 BLESendUtil.showScore(int.parse(_score));
               });
               // 然后再随机点亮一个红灯
               Future.delayed(Duration(milliseconds: 500), () async {
-                BLESendUtil.closePurpleLights(targetNumber);
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
                 Future.delayed(Duration(milliseconds: 800), () {
-               //   lockGame(false);
+                  //   lockGame(false);
                   redLock = false;
                   BLESendUtil.battleControlRedLight();
                   autoRedRefreshControl();
@@ -168,19 +188,19 @@ class _BattleControllerState extends State<BattleController> {
   /*重置定时器*/
   resetTimer() {
     if (timer != null) {
-      if (timer!.isActive) {
-        timer!.cancel();
-        timer = null;
-      }
+      timer!.cancel();
+      timer = null;
+    } else {
+      timer?.cancel();
     }
   }
 
   resetRedTimer() {
     if (redTimer != null) {
-      if (redTimer!.isActive) {
-        redTimer!.cancel();
-        redTimer = null;
-      }
+      redTimer!.cancel();
+      redTimer = null;
+    } else {
+      redTimer?.cancel();
     }
   }
 

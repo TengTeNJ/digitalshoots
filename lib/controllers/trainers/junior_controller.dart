@@ -71,9 +71,11 @@ class _JuniorControllerState extends State<JuniorController> {
     GameUtil gameUtil = GetIt.instance<GameUtil>();
     gameUtil.nowISGamePage = true;
     // 进入页面打开所有蓝灯
-   Future.delayed(Duration(milliseconds: 200),(){
-     BLESendUtil.openAllBlueLight();
-   });
+    Future.delayed(Duration(milliseconds: 200), () {
+      BLESendUtil.openAllBlueLight();
+      BLESendUtil.openAllBlueLight();
+      BLESendUtil.openAllBlueLight();
+    });
     // 蓝牙数据监听
     BluetoothManager().dataChange = (BLEDataType type) async {
       if (type == BLEDataType.targetIn) {
@@ -83,11 +85,13 @@ class _JuniorControllerState extends State<JuniorController> {
           _speed = '0';
           firsthit = true;
           // 熄灭所有的灯光
-            BLESendUtil.closeAllBlueLight();
-            // 游戏开始
-            Future.delayed(Duration(milliseconds: 1000),(){
-              BLESendUtil.setGameStatu(1);
-            });
+          BLESendUtil.closeAllLight();
+          BLESendUtil.closeAllLight();
+          BLESendUtil.closeAllLight();
+          // 游戏开始
+          Future.delayed(Duration(milliseconds: 1000), () {
+            BLESendUtil.setGameStatu(1);
+          });
           // 3 2 1 Go 然后开开始游戏
           _startCountdown();
         } else {
@@ -113,7 +117,7 @@ class _JuniorControllerState extends State<JuniorController> {
               BLESendUtil.openPurpleLights(targetNumber);
               lockGame(true);
               // 显示得分
-              Future.delayed(Duration(milliseconds: 200),(){
+              Future.delayed(Duration(milliseconds: 200), () {
                 BLESendUtil.showScore(int.parse(_score));
                 BLESendUtil.showScore(int.parse(_score));
               });
@@ -125,7 +129,7 @@ class _JuniorControllerState extends State<JuniorController> {
                 BLESendUtil.closeAllLight();
                 BLESendUtil.closeAllLight();
                 // 然后再随机点亮红和蓝灯各一个
-                Future.delayed(Duration(milliseconds: 800),(){
+                Future.delayed(Duration(milliseconds: 800), () {
                   lockGame(false);
                   BLESendUtil.juniorControlLight();
                   autoRefreshControl();
@@ -149,7 +153,7 @@ class _JuniorControllerState extends State<JuniorController> {
               BLESendUtil.openPurpleLights(targetNumber);
               BLESendUtil.openPurpleLights(targetNumber);
               // 显示得分
-              Future.delayed(Duration(milliseconds: 200),(){
+              Future.delayed(Duration(milliseconds: 200), () {
                 BLESendUtil.showScore(int.parse(_score));
                 BLESendUtil.showScore(int.parse(_score));
               });
@@ -161,7 +165,7 @@ class _JuniorControllerState extends State<JuniorController> {
                 BLESendUtil.closeAllLight();
                 BLESendUtil.closeAllLight();
                 // 然后再随机点亮红和蓝灯各一个
-                Future.delayed(Duration(milliseconds: 800),(){
+                Future.delayed(Duration(milliseconds: 800), () {
                   lockGame(false);
                   BLESendUtil.juniorControlLight();
                   autoRefreshControl();
@@ -198,9 +202,9 @@ class _JuniorControllerState extends State<JuniorController> {
   resetTimer() {
     if (timer != null) {
       print('取消定时器-------------');
-        timer!.cancel();
-        timer = null;
-    }else{
+      timer!.cancel();
+      timer = null;
+    } else {
       timer?.cancel();
       print('取消定时器-----123--------');
     }

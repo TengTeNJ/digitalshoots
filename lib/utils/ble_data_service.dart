@@ -134,7 +134,7 @@ class BluetoothDataParse {
           BluetoothManager().gameData.powerValue = statu_data;
           BluetoothManager()
               .triggerDeviceInfoCallback(type: BLEDataType.dviceInfo);
-          print('电量---${statu_data}');
+          print('主板电量---${statu_data}');
         }
         break;
       case ResponseCMDType.boardBattery:

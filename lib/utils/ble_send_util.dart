@@ -234,10 +234,12 @@ class BLESendUtil {
       BluetoothManager().battleRedIndex = battleTargets[red_index];
       print('自动开红灯${battleTargets[red_index]}');
       BluetoothManager().battleTargetNumbers.remove(battleTargets[red_index]);
-      Future.delayed(Duration(milliseconds: 100), () async {
-        await BluetoothManager().writerDataToDevice(getWriterDevice(),
-            openJuniorRedLightData(BluetoothManager().battleRedIndex));
-      });
+      await BluetoothManager().writerDataToDevice(getWriterDevice(),
+          openJuniorRedLightData(BluetoothManager().battleRedIndex));
+      await BluetoothManager().writerDataToDevice(getWriterDevice(),
+          openJuniorRedLightData(BluetoothManager().battleRedIndex));
+      await BluetoothManager().writerDataToDevice(getWriterDevice(),
+          openJuniorRedLightData(BluetoothManager().battleRedIndex));
     });
   }
 
@@ -269,10 +271,12 @@ class BLESendUtil {
       BluetoothManager().battleBlueIndex = battleTargets[blue_index];
       BluetoothManager().battleTargetNumbers.remove(battleTargets[blue_index]);
     });
-    Future.delayed(Duration(milliseconds: 100), () async {
-      await BluetoothManager().writerDataToDevice(getWriterDevice(),
-          openJuniorBlueLightData(BluetoothManager().battleBlueIndex));
-    });
+    await BluetoothManager().writerDataToDevice(getWriterDevice(),
+        openJuniorBlueLightData(BluetoothManager().battleBlueIndex));
+    await BluetoothManager().writerDataToDevice(getWriterDevice(),
+        openJuniorBlueLightData(BluetoothManager().battleBlueIndex));
+    await BluetoothManager().writerDataToDevice(getWriterDevice(),
+        openJuniorBlueLightData(BluetoothManager().battleBlueIndex));
   }
 
   /*蓝灯闪烁效果*/

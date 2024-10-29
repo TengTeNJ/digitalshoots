@@ -89,6 +89,8 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
     // 进入页面打开所有蓝灯
     Future.delayed(Duration(milliseconds: 200),(){
       BLESendUtil.openAllBlueLight();
+      BLESendUtil.openAllBlueLight();
+      BLESendUtil.openAllBlueLight();
     });
     // 蓝牙数据监听
     BluetoothManager().dataChange = (BLEDataType type) async {
@@ -96,6 +98,8 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
         if (!firsthit) {
           firsthit = true;
           // 熄灭所有的灯光
+          BLESendUtil.closeAllLight();
+          BLESendUtil.closeAllLight();
           BLESendUtil.closeAllLight();
           // 3 2 1 Go 然后开开始游戏
           lockGame(true);
@@ -122,11 +126,21 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
               lockGame(true);
               // 打开紫灯
               BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
               // 显示得分
               Future.delayed(Duration(milliseconds: 200),(){
                 BLESendUtil.showScore(int.parse(_score));
+                BLESendUtil.showScore(int.parse(_score));
+                BLESendUtil.showScore(int.parse(_score));
               });
               Future.delayed(Duration(milliseconds: 500), () {
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
                 BLESendUtil.closeAllLight();
                 // 然后再随机点亮红和蓝灯各一个
                 Future.delayed(Duration(milliseconds: 800),(){
@@ -147,12 +161,22 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
               lockGame(true);
               // 打开紫灯
               BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
               // 显示得分
               Future.delayed(Duration(milliseconds: 200),(){
+                BLESendUtil.showScore(int.parse(_score));
+                BLESendUtil.showScore(int.parse(_score));
                 BLESendUtil.showScore(int.parse(_score));
               });
               // 关闭紫灯
               Future.delayed(Duration(milliseconds: 500), () {
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
                 BLESendUtil.closeAllLight();
                 // 然后再随机点亮红和蓝灯各一个
                 Future.delayed(Duration(milliseconds: 800),(){
@@ -189,10 +213,10 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
   /*重置定时器*/
   resetTimer() {
     if (timer != null) {
-      if (timer!.isActive) {
         timer!.cancel();
         timer = null;
-      }
+    }else{
+      timer?.cancel();
     }
   }
 
