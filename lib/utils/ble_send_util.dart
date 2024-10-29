@@ -150,6 +150,18 @@ class BLESendUtil {
               kJuniorBluetargets[blue_index],
               kJuniorRedtargets[red_index]
             ]));
+        BluetoothManager().writerDataToDevice(
+            getWriterDevice(),
+            openJuniorTwoBlueLightData([
+              kJuniorBluetargets[blue_index],
+              kJuniorRedtargets[red_index]
+            ]));
+        BluetoothManager().writerDataToDevice(
+            getWriterDevice(),
+            openJuniorTwoBlueLightData([
+              kJuniorBluetargets[blue_index],
+              kJuniorRedtargets[red_index]
+            ]));
       } else {
         // 说明不是第一次取随机数 所以先判断取出来的和上次一样不,一样的话就重新取
         int red_index;
@@ -167,6 +179,12 @@ class BLESendUtil {
             currentBlueIndex == blue_index || currentRedIndex == blue_index);
         BluetoothManager().juniorBlueIndex = blue_index;
         //openJuniorTwoBlueLightData
+        BluetoothManager().writerDataToDevice(
+            getWriterDevice(),
+            openJuniorTwoBlueLightData([
+              kJuniorBluetargets[blue_index],
+              kJuniorRedtargets[red_index]
+            ]));
         BluetoothManager().writerDataToDevice(
             getWriterDevice(),
             openJuniorTwoBlueLightData([

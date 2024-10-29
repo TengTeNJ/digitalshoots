@@ -41,8 +41,10 @@ class _JuniorControllerState extends State<JuniorController> {
     subscription = EventBus().stream.listen((event) async {
       if (event == kJuniorGameEnd) {
         if (mounted) {
+          print('游戏结束---------------');
           resetTimer();
           await BLESendUtil.blueLightBlink();
+          resetTimer();
           // 保存数据
           if (_score == 'GO') {
             _score = '0';
@@ -106,6 +108,9 @@ class _JuniorControllerState extends State<JuniorController> {
               // 打开紫灯
               BLESendUtil.openPurpleLights(targetNumber);
               BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
               lockGame(true);
               // 显示得分
               Future.delayed(Duration(milliseconds: 200),(){
@@ -114,6 +119,10 @@ class _JuniorControllerState extends State<JuniorController> {
               });
               // 关闭紫灯
               Future.delayed(Duration(milliseconds: 500), () {
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
                 BLESendUtil.closeAllLight();
                 // 然后再随机点亮红和蓝灯各一个
                 Future.delayed(Duration(milliseconds: 800),(){
@@ -136,6 +145,9 @@ class _JuniorControllerState extends State<JuniorController> {
               lockGame(true);
               BLESendUtil.openPurpleLights(targetNumber);
               BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
+              BLESendUtil.openPurpleLights(targetNumber);
               // 显示得分
               Future.delayed(Duration(milliseconds: 200),(){
                 BLESendUtil.showScore(int.parse(_score));
@@ -143,6 +155,9 @@ class _JuniorControllerState extends State<JuniorController> {
               });
               // 关闭紫灯
               Future.delayed(Duration(milliseconds: 500), () {
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
+                BLESendUtil.closeAllLight();
                 BLESendUtil.closeAllLight();
                 BLESendUtil.closeAllLight();
                 // 然后再随机点亮红和蓝灯各一个
@@ -182,10 +197,12 @@ class _JuniorControllerState extends State<JuniorController> {
   /*重置定时器*/
   resetTimer() {
     if (timer != null) {
-      if (timer!.isActive) {
+      print('取消定时器-------------');
         timer!.cancel();
         timer = null;
-      }
+    }else{
+      timer?.cancel();
+      print('取消定时器-----123--------');
     }
   }
 
