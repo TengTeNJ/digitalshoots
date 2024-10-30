@@ -40,10 +40,17 @@ class _BattleControllerState extends State<BattleController> {
     lockGame(false);
     subscription = EventBus().stream.listen((event) async {
       if (event == kJuniorGameEnd) {
+        print('游戏结束--------3-------');
+        battleResetTimer();
+       Future.delayed(Duration(milliseconds: 200),(){
+         resetRedTimer();
+       });
         if (mounted) {
-          resetTimer();
-          resetRedTimer();
           await BLESendUtil.blueLightBlink();
+          battleResetTimer();
+          Future.delayed(Duration(milliseconds: 200),(){
+            resetRedTimer();
+          });
           initStatu();
         }
       }
@@ -92,13 +99,14 @@ class _BattleControllerState extends State<BattleController> {
               }
               // lockGame(true);
               blueLock = true;
-              resetTimer();
+              battleResetTimer();
               // 击中了蓝灯
               _score = (kTargetAndScoreMap[targetNumber]! + int.parse(_score))
                   .toString();
               print('击中了蓝灯');
-              setState(() {});
-              // 然后再随机点亮一个蓝灯
+             if(mounted){
+               setState(() {});
+             }
               // 打开紫灯
               BLESendUtil.openPurpleLights(targetNumber);
               BLESendUtil.openPurpleLights(targetNumber);
@@ -107,14 +115,14 @@ class _BattleControllerState extends State<BattleController> {
               BLESendUtil.openPurpleLights(targetNumber);
               // 显示得分
               Future.delayed(Duration(milliseconds: 200), () {
-                BLESendUtil.showScore(int.parse(_score));
+               // BLESendUtil.showScore(int.parse(_score));
               });
               Future.delayed(Duration(milliseconds: 500), () async {
-                BLESendUtil.closeAllLight();
-                BLESendUtil.closeAllLight();
-                BLESendUtil.closeAllLight();
-                BLESendUtil.closeAllLight();
-                BLESendUtil.closeAllLight();
+                BLESendUtil.closePurpleLights(targetNumber);
+                BLESendUtil.closePurpleLights(targetNumber);
+                BLESendUtil.closePurpleLights(targetNumber);
+                BLESendUtil.closePurpleLights(targetNumber);
+                BLESendUtil.closePurpleLights(targetNumber);
                 Future.delayed(Duration(milliseconds: 800), () {
                   //lockGame(false);
                   blueLock = false;
@@ -135,7 +143,10 @@ class _BattleControllerState extends State<BattleController> {
               _redScore =
                   (kTargetAndScoreMap[targetNumber]! + int.parse(_redScore))
                       .toString();
-              setState(() {});
+             if(mounted){
+               setState(() {});
+             }
+
               BLESendUtil.openPurpleLights(targetNumber);
               BLESendUtil.openPurpleLights(targetNumber);
               BLESendUtil.openPurpleLights(targetNumber);
@@ -143,15 +154,19 @@ class _BattleControllerState extends State<BattleController> {
               BLESendUtil.openPurpleLights(targetNumber);
               // 显示得分
               Future.delayed(Duration(milliseconds: 200), () {
-                BLESendUtil.showScore(int.parse(_score));
+                // BLESendUtil.showScore(int.parse(_score));
+                // BLESendUtil.showScore(int.parse(_score));
+                // BLESendUtil.showScore(int.parse(_score));
+                // BLESendUtil.showScore(int.parse(_score));
+                // BLESendUtil.showScore(int.parse(_score));
               });
               // 然后再随机点亮一个红灯
               Future.delayed(Duration(milliseconds: 500), () async {
-                BLESendUtil.closeAllLight();
-                BLESendUtil.closeAllLight();
-                BLESendUtil.closeAllLight();
-                BLESendUtil.closeAllLight();
-                BLESendUtil.closeAllLight();
+                BLESendUtil.closePurpleLights(targetNumber);
+                BLESendUtil.closePurpleLights(targetNumber);
+                BLESendUtil.closePurpleLights(targetNumber);
+                BLESendUtil.closePurpleLights(targetNumber);
+                BLESendUtil.closePurpleLights(targetNumber);
                 Future.delayed(Duration(milliseconds: 800), () {
                   //   lockGame(false);
                   redLock = false;
@@ -170,7 +185,7 @@ class _BattleControllerState extends State<BattleController> {
   }
 
   autoRefreshControl() {
-    resetTimer();
+    battleResetTimer();
     timer = Timer.periodic(Duration(milliseconds: kAutoRefreshDuration),
         (Timer t) async {
       await BLESendUtil.battleControlBlueLight();
@@ -186,12 +201,13 @@ class _BattleControllerState extends State<BattleController> {
   }
 
   /*重置定时器*/
-  resetTimer() {
+  battleResetTimer() {
     if (timer != null) {
       timer!.cancel();
       timer = null;
     } else {
       timer?.cancel();
+      timer = null;
     }
   }
 
@@ -201,6 +217,7 @@ class _BattleControllerState extends State<BattleController> {
       redTimer = null;
     } else {
       redTimer?.cancel();
+      redTimer = null;
     }
   }
 
@@ -245,7 +262,7 @@ class _BattleControllerState extends State<BattleController> {
             autoRefreshControl();
           }
           // 红色
-          Future.delayed(Duration(milliseconds: 1500), () async {
+          Future.delayed(Duration(milliseconds: 200), () async {
             if (randomRed) {
               await BLESendUtil.battleControlBlueLight();
               autoRefreshControl();
@@ -280,14 +297,22 @@ class _BattleControllerState extends State<BattleController> {
         80 -
         32;
     return BaseViewController(
+        resumed: (){
+         // BLESendUtil.appOnLine();;
+        },
         paused: () {
           timer?.cancel();
+          timer = null;
           redTimer?.cancel();
+          redTimer = null;
           _countdownTimer.stop();
           _countdownTimer.dispose();
           subscription.cancel();
-          BLESendUtil.blueLightBlink();
           BLESendUtil.appOffLine();
+          BluetoothManager().dataChange = null;
+          Future.delayed(Duration(milliseconds: 200),(){
+            BLESendUtil.blueLightBlink();
+          });
           NavigatorUtil.popToRoot();
         },
         child: Padding(

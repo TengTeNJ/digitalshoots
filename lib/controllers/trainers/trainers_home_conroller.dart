@@ -10,6 +10,8 @@ import 'package:robot/utils/tt_dialog.dart';
 import 'package:robot/views/base/avatar_view.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../utils/ble_send_util.dart';
+
 class TrainersHomeController extends StatefulWidget {
   const TrainersHomeController({super.key});
 
@@ -60,6 +62,12 @@ class _TrainersHomeControllerState extends State<TrainersHomeController> {
   @override
   Widget build(BuildContext context) {
     return BaseViewController(
+      paused: (){
+        BLESendUtil.appOffLine();
+      },
+      resumed: (){
+        BLESendUtil.appOnLine();
+      },
       showBottomBar: false,
       child: Column(
         children: [

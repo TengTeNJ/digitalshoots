@@ -118,6 +118,10 @@ class BLESendUtil {
       return;
     }
     BluetoothManager().writerDataToDevice(getWriterDevice(), offLineData());
+    BluetoothManager().writerDataToDevice(getWriterDevice(), offLineData());
+    BluetoothManager().writerDataToDevice(getWriterDevice(), offLineData());
+    BluetoothManager().writerDataToDevice(getWriterDevice(), offLineData());
+    BluetoothManager().writerDataToDevice(getWriterDevice(), offLineData());
   }
 
   // 进入APP模式
@@ -125,7 +129,11 @@ class BLESendUtil {
     if (BluetoothManager().hasConnectedDeviceList.isEmpty) {
       return;
     }
-    BluetoothManager().writerDataToDevice(getWriterDevice(), appOnLine());
+    BluetoothManager().writerDataToDevice(getWriterDevice(), onLineData());
+    BluetoothManager().writerDataToDevice(getWriterDevice(), onLineData());
+    BluetoothManager().writerDataToDevice(getWriterDevice(), onLineData());
+    BluetoothManager().writerDataToDevice(getWriterDevice(), onLineData());
+    BluetoothManager().writerDataToDevice(getWriterDevice(), onLineData());
   }
 
   /*Junior 模式的每次灯光控制*/
@@ -204,7 +212,7 @@ class BLESendUtil {
   static BLEModel getWriterDevice() {
     final model = BluetoothManager()
         .hasConnectedDeviceList
-        .firstWhere((element) => element.notifyCharacteristic != null);
+        .firstWhere((element) => element.notifyCharacteristic != null,orElse: null);
     return model;
   }
 
@@ -290,17 +298,25 @@ class BLESendUtil {
     futures.add(Future.delayed(Duration(milliseconds: 500), () async {
       print('1-----');
       await openAllBlueLight();
+      await openAllBlueLight();
+      await openAllBlueLight();
     }));
     futures.add(Future.delayed(Duration(milliseconds: 1000), () async {
       print('2-----');
+      await closeAllLight();
+      await closeAllLight();
       await closeAllLight();
     }));
     futures.add(Future.delayed(Duration(milliseconds: 1500), () async {
       print('3-----');
       await openAllBlueLight();
+      await openAllBlueLight();
+      await openAllBlueLight();
     }));
     futures.add(Future.delayed(Duration(milliseconds: 2000), () async {
       print('4-----');
+      await closeAllLight();
+      await closeAllLight();
       await closeAllLight();
     }));
     futures.add(Future.delayed(Duration(milliseconds: 2500), () async {

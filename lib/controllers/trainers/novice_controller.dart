@@ -169,10 +169,16 @@ class _NoviceControllerState extends State<NoviceController>
   @override
   Widget build(BuildContext context) {
     return BaseViewController(
+        resumed: (){
+         // BLESendUtil.appOnLine();
+        },
         paused: () {
           BLESendUtil.appOffLine();
-          BLESendUtil.blueLightBlink();
+          Future.delayed(Duration(milliseconds: 200),(){
+            BLESendUtil.blueLightBlink();
+          });
           NavigatorUtil.popToRoot();
+          BluetoothManager().dataChange = null;
         },
         child: Padding(
           padding: EdgeInsets.only(left: 32, right: 32),
@@ -237,6 +243,7 @@ class _NoviceControllerState extends State<NoviceController>
     super.dispose();
     _countdownTimer.stop();
     _countdownTimer.dispose();
+    BluetoothManager().dataChange = null;
     BLESendUtil.blueLightBlink();
     print('novice 界面退出');
     //  WidgetsBinding.instance.removeObserver(this);

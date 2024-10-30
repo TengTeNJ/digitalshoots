@@ -64,6 +64,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
           final _path = result['path'];
           print('视频保存路径:${_path}');
           await BLESendUtil.blueLightBlink();
+          resetTimer();
           // 先保存数据
           Gamemodel model = Gamemodel.modelFromJson(
               {'score': _score.toString(), 'path': _path});
@@ -217,6 +218,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
         timer = null;
     }else{
       timer?.cancel();
+      timer = null;
     }
   }
 
@@ -271,15 +273,22 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
   @override
   Widget build(BuildContext context) {
     return BaseViewController(
+      resumed: (){
+       // BLESendUtil.appOnLine();;
+      },
       paused: (){
         _ttScreenRecordPlugin.stopRecording();
         _countdownTimer.stop();
         _countdownTimer.dispose();
         timer?.cancel();
+        timer = null;
         subscription.cancel();
         _controller.dispose();
         BLESendUtil.appOffLine();
-        BLESendUtil.blueLightBlink();
+        BluetoothManager().dataChange = null;
+        Future.delayed(Duration(milliseconds: 200),(){
+          BLESendUtil.blueLightBlink();
+        });
         NavigatorUtil.popToRoot();
       },
       child: Container(
@@ -421,6 +430,7 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
     BLESendUtil.blueLightBlink();
     _countdownTimer.stop();
     _countdownTimer.dispose();
+    BluetoothManager().dataChange = null;
     timer?.cancel();
     subscription.cancel();
     _controller.dispose();

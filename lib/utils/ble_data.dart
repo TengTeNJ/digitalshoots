@@ -3,18 +3,19 @@ const kReset = 0x32; // 重置相关
 const kQueryMasterStatu = 0x13; // 请求主机的状态
 const kResponseMasterStatu = 0x12; // 响应主机的状态
 const kGameStatu = 0x33; // 游戏状态0 idle 1开始 2结束
+const kAppOnlineStatu = 0x22; // APP上下线状态
 /*APP上线*/
 List<int> onLineData() {
-  int v = 0xA5 + 0x07 + 0x22 + 0x01 + 0x01;
-  List<int> values = [0xA5, 0x07, 0x22, 0x01, 0x01, v, 0xAA];
+  int v = 0xA5 + 0x07 + kAppOnlineStatu + 0x01 + 0x01;
+  List<int> values = [0xA5, 0x07, kAppOnlineStatu, 0x01, 0x01, v, 0xAA];
   print('APP上线=${values}');
   return values;
 }
 
 /*APP下线*/
 List<int> offLineData() {
-  int v = 0xA5 + 0x06 + 0x16 + 0x00;
-  List<int> values = [0xA5, 0x06, 0x16, 0x00, v, 0xAA];
+  int v = 0xA5 + 0x07 + kAppOnlineStatu + 0x01 + 0x00;
+  List<int> values = [0xA5, 0x07, kAppOnlineStatu, 0x01,0x00, v, 0xAA];
   print('APP下线=${values}');
   return values;
 }

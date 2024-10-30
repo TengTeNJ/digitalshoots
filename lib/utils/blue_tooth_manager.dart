@@ -134,7 +134,7 @@ class BluetoothManager {
       return;
     }
     //EasyLoading.show();
-    _ble
+    StreamSubscription<ConnectionStateUpdate> stream = _ble
         .connectToDevice(
             id: model.device.id, connectionTimeout: Duration(seconds: 10))
         .listen((ConnectionStateUpdate connectionStateUpdate) {
@@ -170,7 +170,8 @@ class BluetoothManager {
         }
         //  给digital shoots设备发送上线通知，不能给测速器发送
         if (model.device.name == kBLEDevice_NewName) {
-          writerDataToDevice(model, onLineData());
+          BLESendUtil.appOnLine();
+         // writerDataToDevice(model, onLineData());
           // 每五秒发送一次心跳指令
           if (repeatTimer == null) {
             repeatTimer = Timer.periodic(Duration(seconds: 5), (timer) {
@@ -212,11 +213,26 @@ class BluetoothManager {
         deviceListLength.value = this.deviceList.length;
       }
     });
+    model.bleStream = stream;
   }
 
+  /*断开连接*/
+  disconecteDevice() {
+    if( BLESendUtil.getWriterDevice() == null){
+      print('断开连接，但是没有已连接设备');
+      return;
+    }
+    print('断开连接');
+    BLESendUtil.getWriterDevice().bleStream?.cancel();
+    EasyLoading.showToast('Disconnected');
+    BLESendUtil.getWriterDevice().hasConected = false;
+  }
   /*发送数据*/
   Future<void> writerDataToDevice(BLEModel model, List<int> data) async {
     if(BluetoothManager().deviceList.isEmpty){
+      return;
+    }
+    if(model.writerCharacteristic == null){
       return;
     }
     //  数据校验

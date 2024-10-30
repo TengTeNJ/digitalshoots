@@ -15,13 +15,15 @@ class BaseViewController extends StatefulWidget {
   bool resizeToAvoidBottomInset;
   Function? paused;
   Function? onWillPop;
+  Function? resumed;
 
   BaseViewController(
       {this.child,
       this.resizeToAvoidBottomInset = false,
       this.showBottomBar = true,
       this.paused,
-      this.onWillPop});
+      this.onWillPop,
+      this.resumed});
 
   @override
   State<BaseViewController> createState() => _BaseViewControllerState();
@@ -53,6 +55,9 @@ class _BaseViewControllerState extends State<BaseViewController>
     } else if (state == AppLifecycleState.resumed) {
       GameUtil gameUtil = GetIt.instance<GameUtil>();
       print('App returned to foreground');
+      if (widget.resumed != null) {
+        widget.resumed!();
+      }
     }
   }
 

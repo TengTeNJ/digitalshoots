@@ -8,6 +8,7 @@ import 'package:robot/utils/ble_send_util.dart';
 import 'package:robot/utils/navigator_util.dart';
 import 'package:robot/views/tracking/game_mode_view.dart';
 
+import '../../utils/blue_tooth_manager.dart';
 import '../../utils/global.dart';
 
 class GameModeController extends StatefulWidget {
@@ -50,6 +51,16 @@ class _GameModeControllerState extends State<GameModeController> {
   Widget build(BuildContext context) {
     return ConditionalWillPopScope(
         child: BaseViewController(
+          resumed: (){
+           //BLESendUtil.appOnLine();;
+          },
+          paused: (){
+            BLESendUtil.appOffLine();
+            Future.delayed(Duration(milliseconds: 200),(){
+              BLESendUtil.blueLightBlink();
+            });
+            NavigatorUtil.popToRoot();
+          },
           child: Padding(
             padding: EdgeInsets.only(top: 32, bottom: 32, left: 16, right: 16),
             child: Column(

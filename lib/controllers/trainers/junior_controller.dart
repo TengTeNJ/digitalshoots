@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:robot/constants/constants.dart';
 import 'package:robot/controllers/base/base_view_controller.dart';
 import 'package:robot/model/game_model.dart';
+import 'package:robot/utils/ble_data.dart';
 import 'package:robot/utils/ble_send_util.dart';
 import 'package:robot/utils/count_down_75_timer.dart';
 import 'package:robot/utils/data_base.dart';
@@ -41,7 +42,7 @@ class _JuniorControllerState extends State<JuniorController> {
     subscription = EventBus().stream.listen((event) async {
       if (event == kJuniorGameEnd) {
         if (mounted) {
-          print('游戏结束---------------');
+          print('游戏结束--------2-------');
           resetTimer();
           await BLESendUtil.blueLightBlink();
           resetTimer();
@@ -172,7 +173,9 @@ class _JuniorControllerState extends State<JuniorController> {
                 });
               });
 
-              setState(() {});
+              if (mounted) {
+                setState(() {});
+              }
             }
           }
         }
@@ -206,6 +209,7 @@ class _JuniorControllerState extends State<JuniorController> {
       timer = null;
     } else {
       timer?.cancel();
+      timer = null;
       print('取消定时器-----123--------');
     }
   }
@@ -226,11 +230,13 @@ class _JuniorControllerState extends State<JuniorController> {
     });
     Timer.periodic(Duration(seconds: 1), (timer) {
       if (_secondsRemaining > 0) {
-        setState(() {
-          BLESendUtil.preGame(_secondsRemaining);
-          _score = _secondsRemaining.toString();
-          _secondsRemaining--; // 每秒递减
-        });
+        if (mounted) {
+          setState(() {
+            BLESendUtil.preGame(_secondsRemaining);
+            _score = _secondsRemaining.toString();
+            _secondsRemaining--; // 每秒递减
+          });
+        }
       } else {
         timer.cancel(); // 倒计时结束，取消定时器
         _score = 'GO';
@@ -267,14 +273,19 @@ class _JuniorControllerState extends State<JuniorController> {
         },
         shouldAddCallback: false,
         child: BaseViewController(
+            resumed: () {
+             // BLESendUtil.appOnLine();
+            },
             paused: () {
+              print('进入后台');
               timer?.cancel();
+              resetTimer();
               _countdownTimer.stop();
               _countdownTimer.dispose();
               subscription.cancel();
-              BLESendUtil.appOffLine();
-              BLESendUtil.blueLightBlink();
               NavigatorUtil.popToRoot();
+              BLESendUtil.appOffLine();
+              BluetoothManager().dataChange = null;
             },
             child: Padding(
               padding: EdgeInsets.only(left: 32, right: 32),
@@ -339,6 +350,8 @@ class _JuniorControllerState extends State<JuniorController> {
     // TODO: implement dispose
     super.dispose();
     timer?.cancel();
+    timer = null;
+    BluetoothManager().dataChange = null;
     _countdownTimer.stop();
     _countdownTimer.dispose();
     subscription.cancel();
