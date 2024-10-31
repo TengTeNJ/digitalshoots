@@ -42,13 +42,13 @@ class _BattleControllerState extends State<BattleController> {
       if (event == kJuniorGameEnd) {
         print('游戏结束--------3-------');
         battleResetTimer();
-       Future.delayed(Duration(milliseconds: 200),(){
-         resetRedTimer();
-       });
+        Future.delayed(Duration(milliseconds: 200), () {
+          resetRedTimer();
+        });
         if (mounted) {
           await BLESendUtil.blueLightBlink();
           battleResetTimer();
-          Future.delayed(Duration(milliseconds: 200),(){
+          Future.delayed(Duration(milliseconds: 200), () {
             resetRedTimer();
           });
           initStatu();
@@ -69,7 +69,13 @@ class _BattleControllerState extends State<BattleController> {
     // 进入页面打开所有蓝灯
     Future.delayed(Duration(milliseconds: 200), () {
       BLESendUtil.openAllBlueLight();
+      BLESendUtil.openAllBlueLight();
+      BLESendUtil.openAllBlueLight();
     });
+    dataListen();
+  }
+
+  dataListen() {
     // 蓝牙数据监听
     BluetoothManager().dataChange = (BLEDataType type) async {
       if (type == BLEDataType.targetIn) {
@@ -104,9 +110,9 @@ class _BattleControllerState extends State<BattleController> {
               _score = (kTargetAndScoreMap[targetNumber]! + int.parse(_score))
                   .toString();
               print('击中了蓝灯');
-             if(mounted){
-               setState(() {});
-             }
+              if (mounted) {
+                setState(() {});
+              }
               // 打开紫灯
               BLESendUtil.openPurpleLights(targetNumber);
               BLESendUtil.openPurpleLights(targetNumber);
@@ -115,7 +121,7 @@ class _BattleControllerState extends State<BattleController> {
               BLESendUtil.openPurpleLights(targetNumber);
               // 显示得分
               Future.delayed(Duration(milliseconds: 200), () {
-               // BLESendUtil.showScore(int.parse(_score));
+                // BLESendUtil.showScore(int.parse(_score));
               });
               Future.delayed(Duration(milliseconds: 500), () async {
                 BLESendUtil.closePurpleLights(targetNumber);
@@ -143,9 +149,9 @@ class _BattleControllerState extends State<BattleController> {
               _redScore =
                   (kTargetAndScoreMap[targetNumber]! + int.parse(_redScore))
                       .toString();
-             if(mounted){
-               setState(() {});
-             }
+              if (mounted) {
+                setState(() {});
+              }
 
               BLESendUtil.openPurpleLights(targetNumber);
               BLESendUtil.openPurpleLights(targetNumber);
@@ -236,6 +242,10 @@ class _BattleControllerState extends State<BattleController> {
     });
     Timer.periodic(Duration(seconds: 1), (timer) async {
       if (_secondsRemaining > 0) {
+        // 倒计时每一次都发 防止数据丢失
+        Future.delayed(Duration(milliseconds: 500), () {
+          BLESendUtil.changeGameMode(3);
+        });
         setState(() {
           BLESendUtil.preGame(_secondsRemaining);
           _score = _secondsRemaining.toString();
@@ -297,23 +307,34 @@ class _BattleControllerState extends State<BattleController> {
         80 -
         32;
     return BaseViewController(
-        resumed: (){
-         // BLESendUtil.appOnLine();;
+        resumed: () {
+          BLESendUtil.appOnLine();
+          Future.delayed(Duration(milliseconds: 200),(){
+            BLESendUtil.openAllBlueLight();
+            BLESendUtil.openAllBlueLight();
+            BLESendUtil.openAllBlueLight();
+            BLESendUtil.openAllBlueLight();
+            BLESendUtil.openAllBlueLight();
+          });
+          dataListen();
+          if(mounted){
+            setState(() {
+
+            });
+          }
         },
         paused: () {
-          timer?.cancel();
-          timer = null;
-          redTimer?.cancel();
-          redTimer = null;
+          //NavigatorUtil.popToRoot();
+          battleResetTimer();
+          resetRedTimer();
           _countdownTimer.stop();
-          _countdownTimer.dispose();
-          subscription.cancel();
+          // _countdownTimer.dispose();
+          // subscription.cancel();
           BLESendUtil.appOffLine();
           BluetoothManager().dataChange = null;
-          Future.delayed(Duration(milliseconds: 200),(){
-            BLESendUtil.blueLightBlink();
-          });
-          NavigatorUtil.popToRoot();
+          initStatu();
+          battleResetTimer();
+          resetRedTimer();
         },
         child: Padding(
           padding: EdgeInsets.only(left: 32, right: 32),
@@ -390,6 +411,7 @@ class _BattleControllerState extends State<BattleController> {
     _countdownTimer.stop();
     _countdownTimer.dispose();
     subscription.cancel();
+    print('---------dispose----------');
     BLESendUtil.blueLightBlink();
     //  WidgetsBinding.instance.removeObserver(this);
   }

@@ -63,9 +63,11 @@ class _TrainersHomeControllerState extends State<TrainersHomeController> {
   Widget build(BuildContext context) {
     return BaseViewController(
       paused: (){
+        print('----------');
         BLESendUtil.appOffLine();
       },
       resumed: (){
+        print('----1111------');
         BLESendUtil.appOnLine();
       },
       showBottomBar: false,

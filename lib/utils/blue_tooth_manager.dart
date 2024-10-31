@@ -171,6 +171,13 @@ class BluetoothManager {
         //  给digital shoots设备发送上线通知，不能给测速器发送
         if (model.device.name == kBLEDevice_NewName) {
           BLESendUtil.appOnLine();
+          Future.delayed(Duration(milliseconds: 200),(){
+            BLESendUtil.openAllBlueLight();
+            BLESendUtil.openAllBlueLight();
+            BLESendUtil.openAllBlueLight();
+            BLESendUtil.openAllBlueLight();
+            BLESendUtil.openAllBlueLight();
+          });
          // writerDataToDevice(model, onLineData());
           // 每五秒发送一次心跳指令
           if (repeatTimer == null) {

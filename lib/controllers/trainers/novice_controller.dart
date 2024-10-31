@@ -51,12 +51,18 @@ class _NoviceControllerState extends State<NoviceController>
     gameUtil.nowISGamePage = true;
     // 进入页面打开所有蓝灯
     BLESendUtil.openAllBlueLight();
+    dataListen();
+  }
+
+  dataListen(){
     // 蓝牙数据监听
     BluetoothManager().dataChange = (BLEDataType type) async {
       if (type == BLEDataType.targetIn) {
         if (!firsthit) {
           firsthit = true;
           // 熄灭所有的灯光
+          BLESendUtil.closeAllLight();
+          BLESendUtil.closeAllLight();
           BLESendUtil.closeAllLight();
           // 3 2 1 Go 然后开开始游戏
           _startCountdown();
@@ -73,18 +79,28 @@ class _NoviceControllerState extends State<NoviceController>
               // 打开紫灯
               print('击中的灯的索引${targetNumber}');
               print('已经关闭的灯的索引${doneLights}');
-              Future.delayed(Duration(milliseconds: 10), () {
+              Future.delayed(Duration(milliseconds: 100), () {
+                BLESendUtil.openPurpleLights(targetNumber);
+                BLESendUtil.openPurpleLights(targetNumber);
+                BLESendUtil.openPurpleLights(targetNumber);
+                BLESendUtil.openPurpleLights(targetNumber);
                 BLESendUtil.openPurpleLights(targetNumber);
               });
               // 显示得分
-              Future.delayed(Duration(milliseconds: 100),(){
+              Future.delayed(Duration(milliseconds: 200),(){
+                BLESendUtil.showScore(int.parse(_score));
+                BLESendUtil.showScore(int.parse(_score));
                 BLESendUtil.showScore(int.parse(_score));
               });
-              Future.delayed(Duration(milliseconds: 200), () {
-                BLESendUtil.showScore(int.parse(_score));
-              });
+              // Future.delayed(Duration(milliseconds: 200), () {
+              //   BLESendUtil.showScore(int.parse(_score));
+              // });
               // 关闭紫灯
               Future.delayed(Duration(milliseconds: 500), () {
+                BLESendUtil.closePurpleLights(targetNumber);
+                BLESendUtil.closePurpleLights(targetNumber);
+                BLESendUtil.closePurpleLights(targetNumber);
+                BLESendUtil.closePurpleLights(targetNumber);
                 BLESendUtil.closePurpleLights(targetNumber);
               });
 
@@ -141,6 +157,8 @@ class _NoviceControllerState extends State<NoviceController>
         BLESendUtil.showGo();
         Future.delayed(Duration(milliseconds: 200), () {
           BLESendUtil.openAllBlueLight();
+          BLESendUtil.openAllBlueLight();
+          BLESendUtil.openAllBlueLight();
           // 正式开始游戏
           _countdownTimer.start();
         });
@@ -170,15 +188,28 @@ class _NoviceControllerState extends State<NoviceController>
   Widget build(BuildContext context) {
     return BaseViewController(
         resumed: (){
-         // BLESendUtil.appOnLine();
+         BLESendUtil.appOnLine();
+         BLESendUtil.appOnLine();
+         BLESendUtil.appOnLine();
+         Future.delayed(Duration(milliseconds: 200),(){
+           BLESendUtil.openAllBlueLight();
+           BLESendUtil.openAllBlueLight();
+           BLESendUtil.openAllBlueLight();
+           BLESendUtil.openAllBlueLight();
+           BLESendUtil.openAllBlueLight();
+         });
+         dataListen();
+         if(mounted){
+           setState(() {
+
+           });
+         }
         },
         paused: () {
           BLESendUtil.appOffLine();
-          Future.delayed(Duration(milliseconds: 200),(){
-            BLESendUtil.blueLightBlink();
-          });
-          NavigatorUtil.popToRoot();
+          //NavigatorUtil.popToRoot();
           BluetoothManager().dataChange = null;
+          initStatu();
         },
         child: Padding(
           padding: EdgeInsets.only(left: 32, right: 32),

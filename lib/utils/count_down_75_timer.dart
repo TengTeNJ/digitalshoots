@@ -30,6 +30,7 @@ class Countdown75Timer {
       _minutes--;
     }
     if(_seconds == 0 && _minutes == 0){
+      print('倒计时结束');
       // 一轮倒计时结束
       stop();
       EventBus().sendEvent(kJuniorGameEnd);

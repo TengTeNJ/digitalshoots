@@ -4,6 +4,7 @@ const kQueryMasterStatu = 0x13; // 请求主机的状态
 const kResponseMasterStatu = 0x12; // 响应主机的状态
 const kGameStatu = 0x33; // 游戏状态0 idle 1开始 2结束
 const kAppOnlineStatu = 0x22; // APP上下线状态
+const kChangeGameMode = 0x34; // 切换游戏模式 1:novice 2:junior 3:battle
 /*APP上线*/
 List<int> onLineData() {
   int v = 0xA5 + 0x07 + kAppOnlineStatu + 0x01 + 0x01;
@@ -296,5 +297,13 @@ List<int> setGameStatuData(int statu) {
   int v = 0xA5 + 0x05 + kGameStatu + statu;
   List<int> values = [0xA5, 0x05, kGameStatu, statu, v, 0xAA];
   print('设置游戏状态:${values}');
+  return values;
+}
+
+/*切换游戏模式*/
+List<int> changeGameModeData(int mode) {
+  int v = 0xA5 + 0x06 + kChangeGameMode + mode;
+  List<int> values = [0xA5, 0x06, kChangeGameMode, mode, v, 0xAA];
+  print('切换游戏模式=${values}');
   return values;
 }

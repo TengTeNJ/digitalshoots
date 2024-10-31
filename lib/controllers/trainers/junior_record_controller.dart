@@ -93,6 +93,11 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
       BLESendUtil.openAllBlueLight();
       BLESendUtil.openAllBlueLight();
     });
+
+    dataListen();
+  }
+
+  dataListen(){
     // 蓝牙数据监听
     BluetoothManager().dataChange = (BLEDataType type) async {
       if (type == BLEDataType.targetIn) {
@@ -274,22 +279,35 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
   Widget build(BuildContext context) {
     return BaseViewController(
       resumed: (){
-       // BLESendUtil.appOnLine();;
+       BLESendUtil.appOnLine();
+       BLESendUtil.appOnLine();
+       BLESendUtil.appOnLine();
+       Future.delayed(Duration(milliseconds: 200),(){
+         BLESendUtil.openAllBlueLight();
+         BLESendUtil.openAllBlueLight();
+         BLESendUtil.openAllBlueLight();
+         BLESendUtil.openAllBlueLight();
+         BLESendUtil.openAllBlueLight();
+       });
+       dataListen();
+       if(mounted){
+         setState(() {
+
+         });
+       }
       },
       paused: (){
         _ttScreenRecordPlugin.stopRecording();
         _countdownTimer.stop();
-        _countdownTimer.dispose();
+        //_countdownTimer.dispose();
         timer?.cancel();
         timer = null;
         subscription.cancel();
-        _controller.dispose();
+        //_controller.dispose();
         BLESendUtil.appOffLine();
         BluetoothManager().dataChange = null;
-        Future.delayed(Duration(milliseconds: 200),(){
-          BLESendUtil.blueLightBlink();
-        });
-        NavigatorUtil.popToRoot();
+        initStatu();
+       // NavigatorUtil.popToRoot();
       },
       child: Container(
         margin: EdgeInsets.only(left: 16, right: 16, top: 24, bottom: 32),

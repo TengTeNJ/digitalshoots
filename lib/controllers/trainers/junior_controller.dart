@@ -77,6 +77,10 @@ class _JuniorControllerState extends State<JuniorController> {
       BLESendUtil.openAllBlueLight();
       BLESendUtil.openAllBlueLight();
     });
+    dataListen();
+  }
+
+  dataListen(){
     // 蓝牙数据监听
     BluetoothManager().dataChange = (BLEDataType type) async {
       if (type == BLEDataType.targetIn) {
@@ -274,18 +278,32 @@ class _JuniorControllerState extends State<JuniorController> {
         shouldAddCallback: false,
         child: BaseViewController(
             resumed: () {
-             // BLESendUtil.appOnLine();
+              BLESendUtil.appOnLine();
+              Future.delayed(Duration(milliseconds: 200),(){
+                BLESendUtil.openAllBlueLight();
+                BLESendUtil.openAllBlueLight();
+                BLESendUtil.openAllBlueLight();
+                BLESendUtil.openAllBlueLight();
+                BLESendUtil.openAllBlueLight();
+              });
+              dataListen();
+              if(mounted){
+                setState(() {
+
+                });
+              }
             },
             paused: () {
               print('进入后台');
               timer?.cancel();
               resetTimer();
               _countdownTimer.stop();
-              _countdownTimer.dispose();
-              subscription.cancel();
-              NavigatorUtil.popToRoot();
+              // _countdownTimer.dispose();
+              // subscription.cancel();
+              //NavigatorUtil.popToRoot();
               BLESendUtil.appOffLine();
               BluetoothManager().dataChange = null;
+              initStatu();
             },
             child: Padding(
               padding: EdgeInsets.only(left: 32, right: 32),

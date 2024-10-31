@@ -120,8 +120,6 @@ class BLESendUtil {
     BluetoothManager().writerDataToDevice(getWriterDevice(), offLineData());
     BluetoothManager().writerDataToDevice(getWriterDevice(), offLineData());
     BluetoothManager().writerDataToDevice(getWriterDevice(), offLineData());
-    BluetoothManager().writerDataToDevice(getWriterDevice(), offLineData());
-    BluetoothManager().writerDataToDevice(getWriterDevice(), offLineData());
   }
 
   // 进入APP模式
@@ -129,8 +127,6 @@ class BLESendUtil {
     if (BluetoothManager().hasConnectedDeviceList.isEmpty) {
       return;
     }
-    BluetoothManager().writerDataToDevice(getWriterDevice(), onLineData());
-    BluetoothManager().writerDataToDevice(getWriterDevice(), onLineData());
     BluetoothManager().writerDataToDevice(getWriterDevice(), onLineData());
     BluetoothManager().writerDataToDevice(getWriterDevice(), onLineData());
     BluetoothManager().writerDataToDevice(getWriterDevice(), onLineData());
@@ -240,7 +236,7 @@ class BLESendUtil {
       } while (redLightIndex == battleTargets[red_index] ||
           battleTargets[red_index] == BluetoothManager().battleBlueIndex);
       BluetoothManager().battleRedIndex = battleTargets[red_index];
-      print('自动开红灯${battleTargets[red_index]}');
+      print('battle自动开红灯${battleTargets[red_index]}');
       BluetoothManager().battleTargetNumbers.remove(battleTargets[red_index]);
       await BluetoothManager().writerDataToDevice(getWriterDevice(),
           openJuniorRedLightData(BluetoothManager().battleRedIndex));
@@ -275,7 +271,7 @@ class BLESendUtil {
       } while (redLightIndex == battleTargets[blue_index] ||
           battleTargets[blue_index] == BluetoothManager().battleRedIndex);
 
-      print('自动开蓝灯${battleTargets[blue_index]}');
+      print('battle自动开红灯自动开蓝灯${battleTargets[blue_index]}');
       BluetoothManager().battleBlueIndex = battleTargets[blue_index];
       BluetoothManager().battleTargetNumbers.remove(battleTargets[blue_index]);
     });
@@ -295,32 +291,24 @@ class BLESendUtil {
     lockGame(true);
     final List<Future<dynamic>> futures = [];
     futures.add(closeAllLight());
+    futures.add(closeAllLight());
+    futures.add(closeAllLight());
+    // futures.add(Future.delayed(Duration(milliseconds: 1500), () async {
+    //   print('3-----');
+    //   await openAllBlueLight();
+    //   await openAllBlueLight();
+    //   await openAllBlueLight();
+    // }));
+    // futures.add(Future.delayed(Duration(milliseconds: 2000), () async {
+    //   print('4-----');
+    //   await closeAllLight();
+    //   await closeAllLight();
+    //   await closeAllLight();
+    // }));
     futures.add(Future.delayed(Duration(milliseconds: 500), () async {
-      print('1-----');
-      await openAllBlueLight();
-      await openAllBlueLight();
-      await openAllBlueLight();
-    }));
-    futures.add(Future.delayed(Duration(milliseconds: 1000), () async {
-      print('2-----');
-      await closeAllLight();
-      await closeAllLight();
-      await closeAllLight();
-    }));
-    futures.add(Future.delayed(Duration(milliseconds: 1500), () async {
-      print('3-----');
-      await openAllBlueLight();
-      await openAllBlueLight();
-      await openAllBlueLight();
-    }));
-    futures.add(Future.delayed(Duration(milliseconds: 2000), () async {
-      print('4-----');
-      await closeAllLight();
-      await closeAllLight();
-      await closeAllLight();
-    }));
-    futures.add(Future.delayed(Duration(milliseconds: 2500), () async {
       print('5-----');
+      await openAllBlueLight();
+      await openAllBlueLight();
       await openAllBlueLight();
       EasyLoading.dismiss();
       lockGame(false);
@@ -368,5 +356,18 @@ class BLESendUtil {
     }
     BluetoothManager()
         .writerDataToDevice(getWriterDevice(), setGameStatuData(statu));
+  }
+/*
+* 切换游戏模式
+* 1 novice
+* 2 junior
+* 3 battle
+* */
+  static changeGameMode(int mode) {
+    if (BluetoothManager().hasConnectedDeviceList.isEmpty) {
+      return;
+    }
+    BluetoothManager()
+        .writerDataToDevice(getWriterDevice(), changeGameModeData(mode));
   }
 }

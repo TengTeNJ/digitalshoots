@@ -52,14 +52,18 @@ class _GameModeControllerState extends State<GameModeController> {
     return ConditionalWillPopScope(
         child: BaseViewController(
           resumed: (){
-           //BLESendUtil.appOnLine();;
+            BLESendUtil.appOnLine();
+            Future.delayed(Duration(milliseconds: 200),(){
+              BLESendUtil.openAllBlueLight();
+              BLESendUtil.openAllBlueLight();
+              BLESendUtil.openAllBlueLight();
+              BLESendUtil.openAllBlueLight();
+              BLESendUtil.openAllBlueLight();
+            });
           },
           paused: (){
             BLESendUtil.appOffLine();
-            Future.delayed(Duration(milliseconds: 200),(){
-              BLESendUtil.blueLightBlink();
-            });
-            NavigatorUtil.popToRoot();
+           // NavigatorUtil.popToRoot();
           },
           child: Padding(
             padding: EdgeInsets.only(top: 32, bottom: 32, left: 16, right: 16),
