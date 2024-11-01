@@ -19,7 +19,7 @@ import 'package:robot/utils/tt_dialog.dart';
 import 'package:robot/views/my/my_table_view.dart';
 import 'package:robot/views/my/stars_view.dart';
 import 'dart:io';
-
+import 'package:package_info_plus/package_info_plus.dart';
 import '../../utils/notification_bloc.dart';
 class MyAccountController extends StatefulWidget {
   const MyAccountController({super.key});
@@ -30,10 +30,12 @@ class MyAccountController extends StatefulWidget {
 
 class _MyAccountControllerState extends State<MyAccountController> {
   late StreamSubscription subscription;
+  String _version = '1.0';
+  List<String> _titles = ['TEAM', 'NAME', 'BRITHDAY','VERSION'];
   bool showTableView = false;
   Gamemodel maxModel = Gamemodel(score: '0', indexString: '1');
   String fileImagePath = '';
-  List<String> datas = ['-','-','-'];
+  List<String> datas = ['-','-','-','1.0'];
   DateTime selectedDate = DateTime.now();
   Future<void> _selectDate(BuildContext context) async {
     DateTime? picked = await showDatePicker(
@@ -52,10 +54,24 @@ class _MyAccountControllerState extends State<MyAccountController> {
     }
   }
 
+  getApplicationVersion() async{
+    _version = await getApplicationVersionUtil();
+    setState(() {
+
+    });
+  }
+
+  /*获取系统版本*/
+    Future<String> getApplicationVersionUtil() async{
+    final info = await PackageInfo.fromPlatform();
+    return info.version + '#' + info.buildNumber;
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getApplicationVersion();
     subscription = EventBus().stream.listen((event) async{
       if(event == kUpdateAvatar){
       // 需要先清空一次这个变量 要不然因为路径没变化 刷新UI的话头像不会重新渲染
@@ -123,10 +139,10 @@ class _MyAccountControllerState extends State<MyAccountController> {
                     height: 32,
                   ),
                   Container(
-                      height: 183,
+                      height: 244,
                       child: ListView.builder(
                         itemBuilder: _itemBuilder,
-                        itemCount: 3,
+                        itemCount: _titles.length,
                       )),
                   Container(height: 0.5,color: Constants.baseGreyStyleColor,),
                   SizedBox(height: 32,),
@@ -186,7 +202,6 @@ class _MyAccountControllerState extends State<MyAccountController> {
   }
   
   Widget _itemBuilder(BuildContext context, int index) {
-    const _titles = ['TEAM', 'NAME', 'BRITHDAY'];
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () async{
@@ -200,7 +215,7 @@ class _MyAccountControllerState extends State<MyAccountController> {
             UserProvider.of(context).userName = value;
             NSUserDefault.setKeyValue(kUserName, value);
           });
-        }else{
+        }else if(index == 2){
           final _brith =  await NSUserDefault.getValue(kBrithDay);
           if (_brith == null ||  _brith.length < 4) {
             selectedDate = DateTime.now();
@@ -208,6 +223,8 @@ class _MyAccountControllerState extends State<MyAccountController> {
             selectedDate = StringUtil.stringToDate(_brith);
           }
           _selectDate(context);
+        }else{
+          print('点击版本');
         }
       },
       child: Column(
@@ -223,7 +240,7 @@ class _MyAccountControllerState extends State<MyAccountController> {
                   Constants.boldBlackItalicTextWidget(_titles[index], 16),
                    Row(
                      children: [
-                       Constants.regularGreyTextWidget([userModel.team,userModel.userName, StringUtil.serviceStringToShowDateString(userModel.brith) ][index],14),
+                       Constants.regularGreyTextWidget([userModel.team,userModel.userName, StringUtil.serviceStringToShowDateString(userModel.brith),_version ][index],14),
                        SizedBox(width: 4,),
                        Icon(Icons.arrow_forward_ios,size: 14,color: Constants.baseGreyStyleColor,)
                      ],

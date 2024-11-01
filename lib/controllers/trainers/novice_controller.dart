@@ -64,6 +64,10 @@ class _NoviceControllerState extends State<NoviceController>
           BLESendUtil.closeAllLight();
           BLESendUtil.closeAllLight();
           BLESendUtil.closeAllLight();
+          // 游戏开始
+          Future.delayed(Duration(milliseconds: 1000), () {
+            BLESendUtil.setGameStatu(1);
+          });
           // 3 2 1 Go 然后开开始游戏
           _startCountdown();
         } else {
