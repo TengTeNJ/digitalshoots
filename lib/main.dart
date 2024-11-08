@@ -10,6 +10,7 @@ import 'model/user_info.dart';
 import 'package:cupertino_will_pop_scope/cupertino_will_pop_scope.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   GetIt.I.registerSingleton<GameUtil>(GameUtil()); // 注册GameUtil实例
   runApp(UserProvider(child: const MyApp()));
 

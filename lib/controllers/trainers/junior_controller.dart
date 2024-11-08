@@ -10,6 +10,7 @@ import 'package:robot/utils/ble_data.dart';
 import 'package:robot/utils/ble_send_util.dart';
 import 'package:robot/utils/count_down_75_timer.dart';
 import 'package:robot/utils/data_base.dart';
+import 'package:robot/utils/toast.dart';
 import 'package:robot/views/tracking/speed_view.dart';
 import 'package:robot/views/tracking/stop_watch_view.dart';
 import 'package:sqflite/sqflite.dart';
@@ -20,6 +21,7 @@ import '../../utils/count_down_timer.dart';
 import '../../utils/global.dart';
 import '../../utils/navigator_util.dart';
 import '../../utils/notification_bloc.dart';
+import '../../utils/system_util.dart';
 
 class JuniorController extends StatefulWidget {
   const JuniorController({super.key});
@@ -37,27 +39,26 @@ class _JuniorControllerState extends State<JuniorController> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    SystemUtil.wakeUpDevice(); // 保持屏幕活跃
     // WidgetsBinding.instance.addObserver(this);
     lockGame(false);
     subscription = EventBus().stream.listen((event) async {
       if (event == kJuniorGameEnd) {
-        if (mounted) {
-          print('游戏结束--------2-------');
-          resetTimer();
-          await BLESendUtil.blueLightBlink();
-          resetTimer();
-          // 保存数据
-          if (_score == 'GO') {
-            _score = '0';
-          }
-          Gamemodel model =
-              Gamemodel.modelFromJson({'score': _score.toString()});
-          model.speed = maxSpeed.toString();
-          await DatabaseHelper()
-              .insertData(kDataBaseTableName, model); // 数据存入数据库
-          // 初始化状态
-          initStatu();
+        lockGame(true);
+        resetTimer();
+        await BLESendUtil.blueLightBlink();
+        Future.delayed(Duration(milliseconds: 1000), () async {
+          lockGame(false);
+        });
+        // 保存数据
+        if (_score == 'GO') {
+          _score = '0';
         }
+        Gamemodel model = Gamemodel.modelFromJson({'score': _score.toString()});
+        model.speed = maxSpeed.toString();
+        await DatabaseHelper().insertData(kDataBaseTableName, model); // 数据存入数据库
+        // 初始化状态
+        initStatu();
       }
     });
     // 初始化秒表倒计时
@@ -74,15 +75,16 @@ class _JuniorControllerState extends State<JuniorController> {
     // 进入页面打开所有蓝灯
     Future.delayed(Duration(milliseconds: 200), () {
       BLESendUtil.openAllBlueLight();
-      BLESendUtil.openAllBlueLight();
-      BLESendUtil.openAllBlueLight();
     });
     dataListen();
   }
 
-  dataListen(){
+  dataListen() {
     // 蓝牙数据监听
     BluetoothManager().dataChange = (BLEDataType type) async {
+      if(getGameLockStatu()){
+        return;
+      }
       if (type == BLEDataType.targetIn) {
         if (!firsthit) {
           // 游戏保护期
@@ -91,12 +93,7 @@ class _JuniorControllerState extends State<JuniorController> {
           firsthit = true;
           // 熄灭所有的灯光
           BLESendUtil.closeAllLight();
-          BLESendUtil.closeAllLight();
-          BLESendUtil.closeAllLight();
           // 游戏开始
-          Future.delayed(Duration(milliseconds: 1000), () {
-            BLESendUtil.setGameStatu(1);
-          });
           // 3 2 1 Go 然后开开始游戏
           _startCountdown();
         } else {
@@ -116,28 +113,21 @@ class _JuniorControllerState extends State<JuniorController> {
               resetTimer();
               // 打开紫灯
               BLESendUtil.openPurpleLights(targetNumber);
-              BLESendUtil.openPurpleLights(targetNumber);
-              BLESendUtil.openPurpleLights(targetNumber);
-              BLESendUtil.openPurpleLights(targetNumber);
-              BLESendUtil.openPurpleLights(targetNumber);
               lockGame(true);
               // 显示得分
               Future.delayed(Duration(milliseconds: 200), () {
-                BLESendUtil.showScore(int.parse(_score));
                 BLESendUtil.showScore(int.parse(_score));
               });
               // 关闭紫灯
               Future.delayed(Duration(milliseconds: 500), () {
                 BLESendUtil.closeAllLight();
-                BLESendUtil.closeAllLight();
-                BLESendUtil.closeAllLight();
-                BLESendUtil.closeAllLight();
-                BLESendUtil.closeAllLight();
                 // 然后再随机点亮红和蓝灯各一个
                 Future.delayed(Duration(milliseconds: 800), () {
+                  if(begainGame){
+                    BLESendUtil.juniorControlLight();
+                    autoRefreshControl();
+                  }
                   lockGame(false);
-                  BLESendUtil.juniorControlLight();
-                  autoRefreshControl();
                 });
               });
               setState(() {});
@@ -153,27 +143,20 @@ class _JuniorControllerState extends State<JuniorController> {
               // 打开紫灯
               lockGame(true);
               BLESendUtil.openPurpleLights(targetNumber);
-              BLESendUtil.openPurpleLights(targetNumber);
-              BLESendUtil.openPurpleLights(targetNumber);
-              BLESendUtil.openPurpleLights(targetNumber);
-              BLESendUtil.openPurpleLights(targetNumber);
               // 显示得分
               Future.delayed(Duration(milliseconds: 200), () {
-                BLESendUtil.showScore(int.parse(_score));
                 BLESendUtil.showScore(int.parse(_score));
               });
               // 关闭紫灯
               Future.delayed(Duration(milliseconds: 500), () {
                 BLESendUtil.closeAllLight();
-                BLESendUtil.closeAllLight();
-                BLESendUtil.closeAllLight();
-                BLESendUtil.closeAllLight();
-                BLESendUtil.closeAllLight();
                 // 然后再随机点亮红和蓝灯各一个
                 Future.delayed(Duration(milliseconds: 800), () {
+                  if(begainGame){
+                    BLESendUtil.juniorControlLight();
+                    autoRefreshControl();
+                  }
                   lockGame(false);
-                  BLESendUtil.juniorControlLight();
-                  autoRefreshControl();
                 });
               });
 
@@ -201,7 +184,12 @@ class _JuniorControllerState extends State<JuniorController> {
     resetTimer();
     timer = Timer.periodic(Duration(seconds: 5), (Timer t) {
       print('自动刷新执行------');
-      BLESendUtil.juniorControlLight();
+      if(_secondsRemaining == 3 || !begainGame){
+        t.cancel();
+      }else{
+        BLESendUtil.juniorControlLight();
+      }
+
     });
   }
 
@@ -227,10 +215,15 @@ class _JuniorControllerState extends State<JuniorController> {
   }
 
   void _startCountdown() {
-    setState(() {
+    Future.delayed(Duration(milliseconds: 200),(){
       BLESendUtil.preGame(_secondsRemaining);
-      _score = _secondsRemaining.toString();
-      _secondsRemaining--; // 每秒递减
+      setState(() {
+        _score = _secondsRemaining.toString();
+        _secondsRemaining--; // 每秒递减
+      });
+    });
+    Future.delayed(Duration(milliseconds: 500), () {
+      BLESendUtil.setGameStatu(1);
     });
     Timer.periodic(Duration(seconds: 1), (timer) {
       if (_secondsRemaining > 0) {
@@ -279,18 +272,12 @@ class _JuniorControllerState extends State<JuniorController> {
         child: BaseViewController(
             resumed: () {
               BLESendUtil.appOnLine();
-              Future.delayed(Duration(milliseconds: 200),(){
-                BLESendUtil.openAllBlueLight();
-                BLESendUtil.openAllBlueLight();
-                BLESendUtil.openAllBlueLight();
-                BLESendUtil.openAllBlueLight();
+              Future.delayed(Duration(milliseconds: 200), () {
                 BLESendUtil.openAllBlueLight();
               });
               dataListen();
-              if(mounted){
-                setState(() {
-
-                });
+              if (mounted) {
+                setState(() {});
               }
             },
             paused: () {
@@ -304,6 +291,7 @@ class _JuniorControllerState extends State<JuniorController> {
               BLESendUtil.appOffLine();
               BluetoothManager().dataChange = null;
               initStatu();
+              SystemUtil.disableWakeUpDevice();
             },
             child: Padding(
               padding: EdgeInsets.only(left: 32, right: 32),

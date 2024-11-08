@@ -118,8 +118,6 @@ class BLESendUtil {
       return;
     }
     BluetoothManager().writerDataToDevice(getWriterDevice(), offLineData());
-    BluetoothManager().writerDataToDevice(getWriterDevice(), offLineData());
-    BluetoothManager().writerDataToDevice(getWriterDevice(), offLineData());
   }
 
   // 进入APP模式
@@ -127,8 +125,6 @@ class BLESendUtil {
     if (BluetoothManager().hasConnectedDeviceList.isEmpty) {
       return;
     }
-    BluetoothManager().writerDataToDevice(getWriterDevice(), onLineData());
-    BluetoothManager().writerDataToDevice(getWriterDevice(), onLineData());
     BluetoothManager().writerDataToDevice(getWriterDevice(), onLineData());
   }
 
@@ -154,18 +150,18 @@ class BLESendUtil {
               kJuniorBluetargets[blue_index],
               kJuniorRedtargets[red_index]
             ]));
-        BluetoothManager().writerDataToDevice(
-            getWriterDevice(),
-            openJuniorTwoBlueLightData([
-              kJuniorBluetargets[blue_index],
-              kJuniorRedtargets[red_index]
-            ]));
-        BluetoothManager().writerDataToDevice(
-            getWriterDevice(),
-            openJuniorTwoBlueLightData([
-              kJuniorBluetargets[blue_index],
-              kJuniorRedtargets[red_index]
-            ]));
+        // BluetoothManager().writerDataToDevice(
+        //     getWriterDevice(),
+        //     openJuniorTwoBlueLightData([
+        //       kJuniorBluetargets[blue_index],
+        //       kJuniorRedtargets[red_index]
+        //     ]));
+        // BluetoothManager().writerDataToDevice(
+        //     getWriterDevice(),
+        //     openJuniorTwoBlueLightData([
+        //       kJuniorBluetargets[blue_index],
+        //       kJuniorRedtargets[red_index]
+        //     ]));
       } else {
         // 说明不是第一次取随机数 所以先判断取出来的和上次一样不,一样的话就重新取
         int red_index;
@@ -189,18 +185,18 @@ class BLESendUtil {
               kJuniorBluetargets[blue_index],
               kJuniorRedtargets[red_index]
             ]));
-        BluetoothManager().writerDataToDevice(
-            getWriterDevice(),
-            openJuniorTwoBlueLightData([
-              kJuniorBluetargets[blue_index],
-              kJuniorRedtargets[red_index]
-            ]));
-        BluetoothManager().writerDataToDevice(
-            getWriterDevice(),
-            openJuniorTwoBlueLightData([
-              kJuniorBluetargets[blue_index],
-              kJuniorRedtargets[red_index]
-            ]));
+        // BluetoothManager().writerDataToDevice(
+        //     getWriterDevice(),
+        //     openJuniorTwoBlueLightData([
+        //       kJuniorBluetargets[blue_index],
+        //       kJuniorRedtargets[red_index]
+        //     ]));
+        // BluetoothManager().writerDataToDevice(
+        //     getWriterDevice(),
+        //     openJuniorTwoBlueLightData([
+        //       kJuniorBluetargets[blue_index],
+        //       kJuniorRedtargets[red_index]
+        //     ]));
       }
     });
   }
@@ -240,10 +236,6 @@ class BLESendUtil {
       BluetoothManager().battleTargetNumbers.remove(battleTargets[red_index]);
       await BluetoothManager().writerDataToDevice(getWriterDevice(),
           openJuniorRedLightData(BluetoothManager().battleRedIndex));
-      await BluetoothManager().writerDataToDevice(getWriterDevice(),
-          openJuniorRedLightData(BluetoothManager().battleRedIndex));
-      await BluetoothManager().writerDataToDevice(getWriterDevice(),
-          openJuniorRedLightData(BluetoothManager().battleRedIndex));
     });
   }
 
@@ -277,10 +269,6 @@ class BLESendUtil {
     });
     await BluetoothManager().writerDataToDevice(getWriterDevice(),
         openJuniorBlueLightData(BluetoothManager().battleBlueIndex));
-    await BluetoothManager().writerDataToDevice(getWriterDevice(),
-        openJuniorBlueLightData(BluetoothManager().battleBlueIndex));
-    await BluetoothManager().writerDataToDevice(getWriterDevice(),
-        openJuniorBlueLightData(BluetoothManager().battleBlueIndex));
   }
 
   /*蓝灯闪烁效果*/
@@ -290,8 +278,6 @@ class BLESendUtil {
     );
     lockGame(true);
     final List<Future<dynamic>> futures = [];
-    futures.add(closeAllLight());
-    futures.add(closeAllLight());
     futures.add(closeAllLight());
     // futures.add(Future.delayed(Duration(milliseconds: 1500), () async {
     //   print('3-----');
@@ -307,8 +293,6 @@ class BLESendUtil {
     // }));
     futures.add(Future.delayed(Duration(milliseconds: 500), () async {
       print('5-----');
-      await openAllBlueLight();
-      await openAllBlueLight();
       await openAllBlueLight();
       EasyLoading.dismiss();
       lockGame(false);

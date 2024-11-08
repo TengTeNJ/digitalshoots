@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -8,6 +9,7 @@ import 'package:robot/controllers/my/my_account_controller.dart';
 import 'package:robot/controllers/status/my_status_controller.dart';
 import 'package:robot/controllers/tracking/tracking_controller.dart';
 import 'package:robot/controllers/trainers/trainers_home_conroller.dart';
+import 'package:robot/utils/ble_util.dart';
 import 'package:robot/utils/blue_tooth_manager.dart';
 import 'package:robot/utils/global.dart';
 import 'package:robot/utils/local_data_util.dart';
@@ -24,6 +26,7 @@ class HomePageController extends StatefulWidget {
 }
 
 class _HomePageControllerState extends State<HomePageController> {
+  int _testtCount = 0;
   late StreamSubscription subscription;
   int _currentPage = 0;
   List<Widget>_controllers = [TrainersHomeController(),TrackingController(),MyStatusController(),MyAccountController()];
@@ -31,10 +34,20 @@ class _HomePageControllerState extends State<HomePageController> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    // test();
+    // test();
+    // test();
+    // test();
+    // test();
+    // test();
     // 确认有没有需要删除的视频
     LocalDataUtil.getDeletedVideoPath();
     // 开市搜索蓝牙设备
-    BluetoothManager().startScan();
+    BluetoothManager();
+    Future.delayed(Duration(milliseconds: 500),(){
+      BleUtil.begainScan(context);
+    });
+   // BluetoothManager().startScan();
     subscription = EventBus().stream.listen((event) {
       if (event == kTabBarPageChange) {
         GameUtil gameUtil = GetIt.instance<GameUtil>();
@@ -50,6 +63,14 @@ class _HomePageControllerState extends State<HomePageController> {
       }
     });
   }
+
+  test(){
+    Future.delayed(Duration(milliseconds: 20),(){
+      _testtCount ++ ;
+      print('_testtCount = ${_testtCount}');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     NavigatorUtil.init(context);

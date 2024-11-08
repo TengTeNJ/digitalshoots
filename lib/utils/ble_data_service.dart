@@ -219,7 +219,7 @@ class BluetoothDataParse {
         break;
       case ResponseCMDType.heartBeatQuery:
         // 收到心跳查询连续不响应 会导致游戏异常 比如任意集中标靶 收不到响应
-        BLESendUtil.heartBeatResponse();
+       BLESendUtil.heartBeatResponse();
         break;
       case ResponseCMDType.masterStatu:
         int masterStatu = element[2];

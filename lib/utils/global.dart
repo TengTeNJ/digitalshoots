@@ -1,3 +1,4 @@
+import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:get_it/get_it.dart';
 
 class GameUtil {
@@ -7,6 +8,7 @@ class GameUtil {
   bool selectRecord = false;
   int masterStatu = 0; //  主机的状态
   bool gameLocking = true; //  游戏保护期
+  BleStatus bleStatus = BleStatus.unknown; // 蓝牙的状态
 }
 
 /*

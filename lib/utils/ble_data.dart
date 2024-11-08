@@ -202,6 +202,21 @@ List<int> openJuniorBlueLightData(int targetNumber) {
   print('junior模式仅仅打开某个蓝灯:${pre_data}');
   return targetDatas;
 }
+List<int> testOpenJuniorBlueLightData(int targetNumber,int controlId) {
+  String pre_data = '10';
+  List<int> values = [0, 0, 0, 0, 0, 0];
+  int targetIndex = (targetNumber - 1 - 5).abs();
+  values[targetIndex] = 1;
+  values.forEach((element) {
+    pre_data += element.toString();
+  });
+  int data = int.parse(pre_data, radix: 2);
+  int v = 0xA5 + 0x07 + 0x01 + data + controlId;
+  List<int> targetDatas = [0xA5, 0x07, 0x01, data, controlId,v, 0xAA];
+  print('测试junior模式仅仅打开某个蓝灯:${targetDatas}');
+  return targetDatas;
+}
+
 
 /*新流程junior模式*/
 List<int> openJuniorTwoBlueLightData(List<int> targetNumbers) {

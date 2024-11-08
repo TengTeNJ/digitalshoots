@@ -442,3 +442,5 @@ const Map<int,int> kTargetAndScoreMap = {
 }; // 标靶和得分映射表
 
 // const preShowSwitch = false; // 游戏 3 2 1倒计时开关
+
+const kRetrySendCount = 1; //  命令重发次数

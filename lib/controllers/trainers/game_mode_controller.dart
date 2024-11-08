@@ -55,10 +55,6 @@ class _GameModeControllerState extends State<GameModeController> {
             BLESendUtil.appOnLine();
             Future.delayed(Duration(milliseconds: 200),(){
               BLESendUtil.openAllBlueLight();
-              BLESendUtil.openAllBlueLight();
-              BLESendUtil.openAllBlueLight();
-              BLESendUtil.openAllBlueLight();
-              BLESendUtil.openAllBlueLight();
             });
           },
           paused: (){

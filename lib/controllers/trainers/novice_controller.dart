@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:robot/constants/constants.dart';
 import 'package:robot/controllers/base/base_view_controller.dart';
 import 'package:robot/utils/ble_send_util.dart';
+import 'package:robot/utils/system_util.dart';
 import 'package:robot/views/tracking/speed_view.dart';
 import 'package:robot/views/tracking/stop_watch_view.dart';
 
@@ -36,6 +37,7 @@ class _NoviceControllerState extends State<NoviceController>
   void initState() {
     // TODO: implement initState
     super.initState();
+    SystemUtil.wakeUpDevice();
     // WidgetsBinding.instance.addObserver(this);
     // 初始化秒表倒计时
     _countdownTimer = CountdownTimer(
@@ -62,8 +64,6 @@ class _NoviceControllerState extends State<NoviceController>
           firsthit = true;
           // 熄灭所有的灯光
           BLESendUtil.closeAllLight();
-          BLESendUtil.closeAllLight();
-          BLESendUtil.closeAllLight();
           // 游戏开始
           Future.delayed(Duration(milliseconds: 1000), () {
             BLESendUtil.setGameStatu(1);
@@ -85,15 +85,9 @@ class _NoviceControllerState extends State<NoviceController>
               print('已经关闭的灯的索引${doneLights}');
               Future.delayed(Duration(milliseconds: 100), () {
                 BLESendUtil.openPurpleLights(targetNumber);
-                BLESendUtil.openPurpleLights(targetNumber);
-                BLESendUtil.openPurpleLights(targetNumber);
-                BLESendUtil.openPurpleLights(targetNumber);
-                BLESendUtil.openPurpleLights(targetNumber);
               });
               // 显示得分
               Future.delayed(Duration(milliseconds: 200),(){
-                BLESendUtil.showScore(int.parse(_score));
-                BLESendUtil.showScore(int.parse(_score));
                 BLESendUtil.showScore(int.parse(_score));
               });
               // Future.delayed(Duration(milliseconds: 200), () {
@@ -101,10 +95,6 @@ class _NoviceControllerState extends State<NoviceController>
               // });
               // 关闭紫灯
               Future.delayed(Duration(milliseconds: 500), () {
-                BLESendUtil.closePurpleLights(targetNumber);
-                BLESendUtil.closePurpleLights(targetNumber);
-                BLESendUtil.closePurpleLights(targetNumber);
-                BLESendUtil.closePurpleLights(targetNumber);
                 BLESendUtil.closePurpleLights(targetNumber);
               });
 
@@ -141,10 +131,15 @@ class _NoviceControllerState extends State<NoviceController>
   }
 
   void _startCountdown() {
-    setState(() {
+    Future.delayed(Duration(milliseconds: 200),(){
       BLESendUtil.preGame(_secondsRemaining);
-      _score = _secondsRemaining.toString();
-      _secondsRemaining--; // 每秒递减
+      setState(() {
+        _score = _secondsRemaining.toString();
+        _secondsRemaining--; // 每秒递减
+      });
+    });
+    Future.delayed(Duration(milliseconds: 500), () {
+      BLESendUtil.setGameStatu(1);
     });
     Timer.periodic(Duration(seconds: 1), (timer) {
       if (_secondsRemaining > 0) {
@@ -160,8 +155,6 @@ class _NoviceControllerState extends State<NoviceController>
         begainGame = true;
         BLESendUtil.showGo();
         Future.delayed(Duration(milliseconds: 200), () {
-          BLESendUtil.openAllBlueLight();
-          BLESendUtil.openAllBlueLight();
           BLESendUtil.openAllBlueLight();
           // 正式开始游戏
           _countdownTimer.start();
@@ -193,13 +186,7 @@ class _NoviceControllerState extends State<NoviceController>
     return BaseViewController(
         resumed: (){
          BLESendUtil.appOnLine();
-         BLESendUtil.appOnLine();
-         BLESendUtil.appOnLine();
          Future.delayed(Duration(milliseconds: 200),(){
-           BLESendUtil.openAllBlueLight();
-           BLESendUtil.openAllBlueLight();
-           BLESendUtil.openAllBlueLight();
-           BLESendUtil.openAllBlueLight();
            BLESendUtil.openAllBlueLight();
          });
          dataListen();
@@ -281,6 +268,7 @@ class _NoviceControllerState extends State<NoviceController>
     BluetoothManager().dataChange = null;
     BLESendUtil.blueLightBlink();
     print('novice 界面退出');
+    SystemUtil.disableWakeUpDevice();
     //  WidgetsBinding.instance.removeObserver(this);
   }
 }
