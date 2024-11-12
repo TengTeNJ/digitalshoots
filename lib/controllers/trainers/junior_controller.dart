@@ -383,6 +383,9 @@ class _JuniorControllerState extends State<JuniorController> {
     _countdownTimer.dispose();
     subscription.cancel();
     BLESendUtil.blueLightBlink();
+    SystemUtil.disableWakeUpDevice();
+    GameUtil gameUtil = GetIt.instance<GameUtil>();
+    gameUtil.nowISGamePage = false;
     //  WidgetsBinding.instance.removeObserver(this);
   }
 }

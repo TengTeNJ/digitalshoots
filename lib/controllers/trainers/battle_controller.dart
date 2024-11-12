@@ -460,6 +460,8 @@ class _BattleControllerState extends State<BattleController> {
     print('---------dispose----------');
     BLESendUtil.blueLightBlink();
     SystemUtil.disableWakeUpDevice();
+    GameUtil gameUtil = GetIt.instance<GameUtil>();
+    gameUtil.nowISGamePage = false;
     //  WidgetsBinding.instance.removeObserver(this);
   }
 }

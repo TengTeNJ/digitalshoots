@@ -294,6 +294,8 @@ void waitingToBegainGame(){
     BLESendUtil.blueLightBlink();
     print('novice 界面退出');
     SystemUtil.disableWakeUpDevice();
+    GameUtil gameUtil = GetIt.instance<GameUtil>();
+    gameUtil.nowISGamePage = false;
     //  WidgetsBinding.instance.removeObserver(this);
   }
 }

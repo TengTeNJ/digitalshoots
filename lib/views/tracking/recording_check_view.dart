@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../constants/constants.dart';
 import '../../utils/color.dart';
+
 class RecordingCheckView extends StatefulWidget {
   Function? onSelected;
 
-   RecordingCheckView({this.onSelected});
+  RecordingCheckView({this.onSelected});
 
   @override
   State<RecordingCheckView> createState() => _RecordingCheckViewState();
@@ -20,7 +21,7 @@ class _RecordingCheckViewState extends State<RecordingCheckView> {
       children: [
         Checkbox(
             fillColor: MaterialStateProperty.resolveWith<Color>(
-                  (Set<MaterialState> states) {
+              (Set<MaterialState> states) {
                 if (states.contains(MaterialState.disabled)) {
                   return Colors.grey; // 禁用时的颜色
                 } else if (states.contains(MaterialState.selected)) {
@@ -43,8 +44,21 @@ class _RecordingCheckViewState extends State<RecordingCheckView> {
                 }
               });
             }),
-        SizedBox(width: 4,),
-        Constants.mediumWhiteTextWidget('Recording', 18)
+        SizedBox(
+          width: 4,
+        ),
+        GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            setState(() {
+              isChecked = !isChecked;
+              if (widget.onSelected != null) {
+                widget.onSelected!(isChecked);
+              }
+            });
+          },
+          child: Constants.mediumWhiteTextWidget('Recording', 18,height: 1.3),
+        ),
       ],
     );
   }
