@@ -109,7 +109,8 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
           lockGame(true);
           // 游戏开始
           _score = '0';
-          _startCountdown();
+          waitingToBegainGame();
+          //_startCountdown();
         } else {
           if (_countDownString == 'GO') {
             _countDownString = '00:00';
@@ -207,6 +208,31 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
     firsthit = false;
     begainGame = false;
     maxSpeed = 0;
+   // _score = '0';
+  }
+
+  /*等待开始游戏*/
+  void waitingToBegainGame() {
+    Future.delayed(Duration(milliseconds: 200), () {
+      BLESendUtil.showScore(75);
+    });
+    Future.delayed(Duration(milliseconds: 500), () {
+      BLESendUtil.setGameStatu(1);
+    });
+    // 等待2秒开始游戏
+    Future.delayed(Duration(milliseconds: 2000),()async{
+     // _countDownString = 'GO';
+     // BLESendUtil.preGame(_secondsRemaining);
+      setState(() {});
+      // 开始录屏
+      bool result = await _ttScreenRecordPlugin.startRecording();
+      begainGame = true;
+      lockGame(false);
+      BLESendUtil.juniorControlLight();
+      autoRefreshControl();
+      // 正式开始游戏
+      _countdownTimer.start();
+    });
   }
 
   void _startCountdown() {

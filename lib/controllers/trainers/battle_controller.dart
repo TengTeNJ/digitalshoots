@@ -91,7 +91,8 @@ class _BattleControllerState extends State<BattleController> {
           BLESendUtil.closeAllLight();
           lockGame(true);
           // 3 2 1 Go 然后开开始游戏
-          _startCountdown();
+         // _startCountdown();
+          waitingToBegainGame();
         } else {
           if (_score == 'GO') {
             _score = '0';
@@ -228,6 +229,55 @@ class _BattleControllerState extends State<BattleController> {
     begainGame = false;
   }
 
+  /*等待开始游戏*/
+  void waitingToBegainGame() {
+    Future.delayed(Duration(milliseconds: 200), () {
+      BLESendUtil.showScore(75);
+    });
+    Future.delayed(Duration(milliseconds: 500), () {
+      BLESendUtil.setGameStatu(1);
+    });
+    // 等待2秒开始游戏
+    Future.delayed(Duration(milliseconds: 2000),() async{
+      _score = 'GO';
+      setState(() {});
+      begainGame = true;
+      // 展示得分
+      //await BLESendUtil.showGo();
+      Random random = new Random();
+      bool randomRed = random.nextBool();
+      Future.delayed(Duration(milliseconds: 100), () async {
+        // 正式开始游戏
+        // 蓝色
+        setState(() {
+          _redScore = '0';
+          _score = '0';
+        });
+        lockGame(false);
+        if (randomRed) {
+          await BLESendUtil.battleControlRedLight();
+          autoRedRefreshControl();
+        } else {
+          await BLESendUtil.battleControlBlueLight();
+          autoRefreshControl();
+        }
+        // 红色
+        Future.delayed(Duration(milliseconds: 200), () async {
+          if (randomRed) {
+            await BLESendUtil.battleControlBlueLight();
+            autoRefreshControl();
+          } else {
+            await BLESendUtil.battleControlRedLight();
+            autoRedRefreshControl();
+          }
+          // 正式开始游戏
+          _countdownTimer.start();
+        });
+      });
+    });
+  }
+
+  /*3 2 1 GO 倒计时*/
   void _startCountdown() {
     Future.delayed(Duration(milliseconds: 200),(){
       BLESendUtil.preGame(_secondsRemaining);

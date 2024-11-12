@@ -69,7 +69,8 @@ class _NoviceControllerState extends State<NoviceController>
             BLESendUtil.setGameStatu(1);
           });
           // 3 2 1 Go 然后开开始游戏
-          _startCountdown();
+          waitingToBegainGame();
+          //_startCountdown();
         } else {
           if (begainGame) {
             int targetNumber = BluetoothManager().gameData.targetNumber;
@@ -129,6 +130,30 @@ class _NoviceControllerState extends State<NoviceController>
     firsthit = false;
     begainGame = false;
   }
+
+void waitingToBegainGame(){
+  Future.delayed(Duration(milliseconds: 200), () {
+    BLESendUtil.showScore(0);
+    _score = '0';
+    setState(() {
+
+    });
+  });
+  Future.delayed(Duration(milliseconds: 500), () {
+    BLESendUtil.setGameStatu(1);
+  });
+  Future.delayed(Duration(milliseconds: 2000),(){
+   // _score = 'GO';
+    setState(() {});
+    begainGame = true;
+    //BLESendUtil.showGo();
+    Future.delayed(Duration(milliseconds: 200), () {
+      BLESendUtil.openAllBlueLight();
+      // 正式开始游戏
+      _countdownTimer.start();
+    });
+  });
+}
 
   void _startCountdown() {
     Future.delayed(Duration(milliseconds: 200),(){

@@ -44,7 +44,7 @@ class _HomePageControllerState extends State<HomePageController> {
     LocalDataUtil.getDeletedVideoPath();
     // 开市搜索蓝牙设备
     BluetoothManager();
-    Future.delayed(Duration(milliseconds: 500),(){
+    Future.delayed(Duration(milliseconds: 1000),(){
       BleUtil.begainScan(context);
     });
    // BluetoothManager().startScan();

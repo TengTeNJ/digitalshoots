@@ -51,9 +51,6 @@ class _JuniorControllerState extends State<JuniorController> {
           lockGame(false);
         });
         // 保存数据
-        if (_score == 'GO') {
-          _score = '0';
-        }
         Gamemodel model = Gamemodel.modelFromJson({'score': _score.toString()});
         model.speed = maxSpeed.toString();
         await DatabaseHelper().insertData(kDataBaseTableName, model); // 数据存入数据库
@@ -82,7 +79,7 @@ class _JuniorControllerState extends State<JuniorController> {
   dataListen() {
     // 蓝牙数据监听
     BluetoothManager().dataChange = (BLEDataType type) async {
-      if(getGameLockStatu()){
+      if (getGameLockStatu()) {
         return;
       }
       if (type == BLEDataType.targetIn) {
@@ -94,12 +91,12 @@ class _JuniorControllerState extends State<JuniorController> {
           // 熄灭所有的灯光
           BLESendUtil.closeAllLight();
           // 游戏开始
-          // 3 2 1 Go 然后开开始游戏
-          _startCountdown();
+          //_startCountdown();3 2 1 Go 然后开开始游戏
+          waitingToBegainGame();
         } else {
-          if (_score == 'GO') {
-            _score = '0';
-          }
+          // if (_score == 'GO') {
+          //   _score = '0';
+          // }
           if (begainGame) {
             int targetNumber = BluetoothManager().gameData.targetNumber;
             if (targetNumber ==
@@ -123,7 +120,7 @@ class _JuniorControllerState extends State<JuniorController> {
                 BLESendUtil.closeAllLight();
                 // 然后再随机点亮红和蓝灯各一个
                 Future.delayed(Duration(milliseconds: 800), () {
-                  if(begainGame){
+                  if (begainGame) {
                     BLESendUtil.juniorControlLight();
                     autoRefreshControl();
                   }
@@ -152,7 +149,7 @@ class _JuniorControllerState extends State<JuniorController> {
                 BLESendUtil.closeAllLight();
                 // 然后再随机点亮红和蓝灯各一个
                 Future.delayed(Duration(milliseconds: 800), () {
-                  if(begainGame){
+                  if (begainGame) {
                     BLESendUtil.juniorControlLight();
                     autoRefreshControl();
                   }
@@ -184,12 +181,11 @@ class _JuniorControllerState extends State<JuniorController> {
     resetTimer();
     timer = Timer.periodic(Duration(seconds: 5), (Timer t) {
       print('自动刷新执行------');
-      if(_secondsRemaining == 3 || !begainGame){
+      if (!begainGame) {
         t.cancel();
-      }else{
+      } else {
         BLESendUtil.juniorControlLight();
       }
-
     });
   }
 
@@ -212,10 +208,35 @@ class _JuniorControllerState extends State<JuniorController> {
     firsthit = false;
     begainGame = false;
     maxSpeed = 0;
+   // _score = '0';
+  }
+
+  /*等待开始游戏*/
+  void waitingToBegainGame() {
+    Future.delayed(Duration(milliseconds: 200), () {
+      BLESendUtil.showScore(75);
+    });
+    Future.delayed(Duration(milliseconds: 500), () {
+      BLESendUtil.setGameStatu(1);
+    });
+    // 等待2秒开始游戏
+    Future.delayed(Duration(milliseconds: 2000),(){
+     // _score = 'GO';
+      _score = '0';
+      setState(() {});
+     // BLESendUtil.showGo();
+      begainGame = true;
+      // 解除游戏保护期
+      lockGame(false);
+      BLESendUtil.juniorControlLight();
+      autoRefreshControl();
+      // 正式开始游戏
+      _countdownTimer.start();
+    });
   }
 
   void _startCountdown() {
-    Future.delayed(Duration(milliseconds: 200),(){
+    Future.delayed(Duration(milliseconds: 200), () {
       BLESendUtil.preGame(_secondsRemaining);
       setState(() {
         _score = _secondsRemaining.toString();
