@@ -54,6 +54,7 @@ class Constants {
       maxLines: maxLines,
       textAlign: textAlign,
       text,
+      textScaler: TextScaler.noScaling,
       style: TextStyle(
           height: height,
           fontFamily: 'SanFranciscoDisplay',
@@ -71,6 +72,7 @@ class Constants {
       maxLines: maxLines ?? null,
       textAlign: textAlign,
       text,
+      textScaler: TextScaler.noScaling,
       style: TextStyle(
           height: height,
           fontFamily: 'SanFranciscoDisplay',
@@ -88,6 +90,7 @@ class Constants {
       maxLines: maxLines ?? null,
       textAlign: textAlign,
       text,
+      textScaler: TextScaler.noScaling,
       style: TextStyle(
           height: height,
           fontFamily: 'SanFranciscoDisplay',
@@ -105,6 +108,7 @@ class Constants {
       maxLines: maxLines ?? null,
       textAlign: textAlign,
       text,
+      textScaler: TextScaler.noScaling,
       style: TextStyle(
           height: height,
           fontFamily: 'SanFranciscoDisplay',
@@ -124,6 +128,7 @@ class Constants {
       maxLines: maxLines,
       textAlign: textAlign,
       text,
+      textScaler: TextScaler.noScaling,
       style: TextStyle(
           height: height,
           fontFamily: 'SanFranciscoDisplay',
@@ -141,6 +146,7 @@ class Constants {
       maxLines: maxLines,
       textAlign: textAlign,
       text,
+      textScaler: TextScaler.noScaling,
       style: TextStyle(
           height: height,
           fontFamily: 'SanFranciscoDisplay',
@@ -158,6 +164,7 @@ class Constants {
       maxLines: maxLines,
       textAlign: textAlign,
       text,
+      textScaler: TextScaler.noScaling,
       style: TextStyle(
           height: height,
           fontFamily: 'SanFranciscoDisplay',
@@ -175,6 +182,7 @@ class Constants {
       textAlign: textAlign,
       maxLines: maxLines,
       text,
+      textScaler: TextScaler.noScaling,
       style: TextStyle(
         height: height,
         fontFamily: 'SanFranciscoDisplay',
@@ -193,6 +201,7 @@ class Constants {
       textAlign: textAlign,
       maxLines: maxLines,
       text,
+      textScaler: TextScaler.noScaling,
       style: TextStyle(
           height: height,
           fontFamily: 'SanFranciscoDisplay',
@@ -211,6 +220,7 @@ class Constants {
       textAlign: textAlign,
       maxLines: maxLines,
       text,
+      textScaler: TextScaler.noScaling,
       style: TextStyle(
           height: height,
           fontFamily: 'SanFranciscoDisplay4',
@@ -229,6 +239,7 @@ class Constants {
       textAlign: textAlign,
       maxLines: maxLines,
       text,
+      textScaler: TextScaler.noScaling,
       style: TextStyle(
           height: height,
           fontFamily: 'DS-DIGI',
@@ -246,6 +257,7 @@ class Constants {
       textAlign: textAlign,
       maxLines: maxLines,
       text,
+      textScaler: TextScaler.noScaling,
       style: TextStyle(
           height: height,
           fontFamily: 'DS-DIGI',
@@ -264,6 +276,7 @@ class Constants {
       textAlign: textAlign,
       maxLines: maxLines ?? null,
       text,
+      textScaler: TextScaler.noScaling,
       style: TextStyle(
           overflow: overflow,
           height: height,
@@ -291,6 +304,7 @@ class Constants {
       textAlign: textAlign,
       maxLines: maxLines ?? null,
       text,
+      textScaler: TextScaler.noScaling,
       style: TextStyle(
           overflow: overflow,
           height: height,
