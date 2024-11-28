@@ -81,7 +81,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
         behavior: HitTestBehavior.opaque,
         onTap: () {
           GameUtil gameUtil = GetIt.instance<GameUtil>();
-          if (gameUtil.pageDepth == 0) {
+          if (!gameUtil.isBLEListPage) {
             NavigatorUtil.push(Routes.blelist);
           }
         },

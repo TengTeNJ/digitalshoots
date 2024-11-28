@@ -9,6 +9,7 @@ class GameUtil {
   int masterStatu = 0; //  主机的状态
   bool gameLocking = false; //  游戏保护期
   BleStatus bleStatus = BleStatus.unknown; // 蓝牙的状态
+  bool isBLEListPage = false; // 当前是否在蓝牙列表页
 }
 
 /*
