@@ -10,6 +10,7 @@ import 'package:robot/views/tracking/game_mode_view.dart';
 
 import '../../utils/blue_tooth_manager.dart';
 import '../../utils/global.dart';
+import '../../utils/system_util.dart';
 
 class GameModeController extends StatefulWidget {
   const GameModeController({super.key});
@@ -19,6 +20,7 @@ class GameModeController extends StatefulWidget {
 }
 
 class _GameModeControllerState extends State<GameModeController> {
+  bool _isIpad = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -27,7 +29,19 @@ class _GameModeControllerState extends State<GameModeController> {
     GameUtil gameUtil = GetIt.instance<GameUtil>();
     gameUtil.selectRecord = false;
     BLESendUtil.queryMasterStatuControl();
+    queryIsIpad();
   }
+
+  queryIsIpad() async{
+    _isIpad =  await  SystemUtil.isIPad();
+    print('_isIpad = ${_isIpad}');
+    if(mounted){
+      setState(() {
+
+      });
+    }
+  }
+
 
   preLoadImage() {
     // 预加载下个页面的的游戏数据显示的试图的背景图片 防止每次启动初次打开加载会闪屏的显现象 应该是图片过大影响的
@@ -65,12 +79,13 @@ class _GameModeControllerState extends State<GameModeController> {
            // NavigatorUtil.popToRoot();
           },
           child: Padding(
-            padding: EdgeInsets.only(top: 32, bottom: 32, left: 16, right: 16),
+            padding: EdgeInsets.only(top: 32, bottom: 32, left: _isIpad ? 32 : 16, right: _isIpad ? 32 : 16),
             child: Column(
               children: [
                 Expanded(
                   child: GameModeView(
                     modeID: 1,
+                    isIpad: _isIpad,
                     play: () {
                       // Novice游戏模式页面
                       BLESendUtil.noviceShake();
@@ -84,6 +99,7 @@ class _GameModeControllerState extends State<GameModeController> {
                 ),
                 Expanded(
                   child: GameModeView(
+                    isIpad: _isIpad,
                     modeID: 2,
                     containRecording: true,
                     play: () async {
@@ -110,6 +126,7 @@ class _GameModeControllerState extends State<GameModeController> {
                 ),
                 Expanded(
                   child: GameModeView(
+                      isIpad: _isIpad,
                       modeID: 3,
                       play: () {
                         BLESendUtil.juniorShake();

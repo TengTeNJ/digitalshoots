@@ -10,6 +10,7 @@ class GameModeView extends StatelessWidget {
   Function? recordSelect;
   bool containRecording;
   int modeID;
+  bool isIpad;
   final _titles = ['Mode 1:Novice', 'Mode 2:Junior', 'Mode 3:Battle'];
   final _middle_titles = ['Single Play', 'Blue Target 15', 'Guest Blue'];
   final _bottom_titles = ['Blue Target', 'Red Target 20', 'Guest Red'];
@@ -18,7 +19,7 @@ class GameModeView extends StatelessWidget {
       {required this.modeID,
       this.play,
       this.containRecording = false,
-      this.recordSelect});
+      this.recordSelect,this.isIpad = false});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class GameModeView extends StatelessWidget {
               fit: BoxFit.fill),
         ),
         child: Padding(
-          padding: EdgeInsets.all(12),
+          padding: EdgeInsets.all(isIpad ? 32 : 12),
           child: Column(
             children: [
               Row(
