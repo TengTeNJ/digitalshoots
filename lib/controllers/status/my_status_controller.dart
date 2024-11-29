@@ -13,6 +13,8 @@ import 'package:robot/views/stats/mystats_middle_view.dart';
 import 'package:robot/views/stats/mystats_top_view.dart';
 import 'dart:io';
 
+import '../../utils/system_util.dart';
+
 class MyStatusController extends StatefulWidget {
   const MyStatusController({super.key});
 
@@ -28,12 +30,23 @@ class _MyStatusControllerState extends State<MyStatusController> {
   String score = '-';
   String speed = '-';
   double marginLeft = 5;
+  bool _isIpad = false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getLocalGamedata();
     queryAvatar();
+    queryIsIpad();
+  }
+  queryIsIpad() async{
+    _isIpad =  await  SystemUtil.isIPad();
+    print('_isIpad = ${_isIpad}');
+    if(mounted){
+      setState(() {
+
+      });
+    }
   }
   queryAvatar() async{
     final directory =  await getApplicationDocumentsDirectory();
@@ -65,7 +78,7 @@ class _MyStatusControllerState extends State<MyStatusController> {
     return BaseViewController(
       showBottomBar: false,
       child: Padding(
-        padding: EdgeInsets.only(top: 32, left: 16, right: 16, bottom: 32),
+        padding: EdgeInsets.only(top: 32, left: _isIpad ? 32 : 16, right: _isIpad ? 32 : 16, bottom: 32),
         child: Column(
           children: [
             Expanded(
@@ -78,7 +91,7 @@ class _MyStatusControllerState extends State<MyStatusController> {
             Expanded(
               child: Container(
                 color: Constants.geryBGColor,
-                child: MyStatsMiddleView(scoreLevel: scoreLevel,speedLevel: speedLevel,score: score,speed: speed,),
+                child: MyStatsMiddleView(isIpad: _isIpad, scoreLevel: scoreLevel,speedLevel: speedLevel,score: score,speed: speed,),
               ),
               flex: 1,
             ),

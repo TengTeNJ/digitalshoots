@@ -40,9 +40,8 @@ class _TrainersHomeControllerState extends State<TrainersHomeController> {
        }
     });
     preLoadImage();
-   // queryIsIpad();
+   queryIsIpad();
   }
-
   queryIsIpad() async{
     _isIpad =  await  SystemUtil.isIPad();
     print('_isIpad = ${_isIpad}');
@@ -88,16 +87,16 @@ class _TrainersHomeControllerState extends State<TrainersHomeController> {
             width: Constants.screenWidth(context) - (_isIpad ? kIpadMargin : kWidthMargin) * 2,
             child: ClipRRect(
               child: AspectRatio(
-                aspectRatio: 1.4,
+                aspectRatio: _isIpad ? 1.7 : 1.4,
                 child: VideoPlayer(_controller),
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular( _isIpad ? 32 : 12),
             ),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(_isIpad ? 32 : 12)),
           ),
           SizedBox(
-            height: 16,
+            height: 0,
           ),
           Expanded(child: GestureDetector(
             behavior: HitTestBehavior.opaque,
@@ -113,7 +112,7 @@ class _TrainersHomeControllerState extends State<TrainersHomeController> {
               width: Constants.screenWidth(context) - (_isIpad ? kIpadMargin : kWidthMargin)*2 ,
               margin: EdgeInsets.only(left: (_isIpad ? kIpadMargin : kWidthMargin),right: (_isIpad ? kIpadMargin : kWidthMargin)),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(_isIpad ? 32 : 12),
                   color: Colors.red
               ),
               child: Column(

@@ -15,6 +15,7 @@ import 'package:robot/utils/global.dart';
 import 'package:robot/utils/local_data_util.dart';
 import 'package:robot/utils/navigator_util.dart';
 import 'package:robot/utils/notification_bloc.dart';
+import 'package:robot/utils/system_util.dart';
 import 'package:robot/widges/base/customAppBar.dart';
 import 'package:robot/widges/base/custom_tab_bar.dart';
 
@@ -61,6 +62,10 @@ class _HomePageControllerState extends State<HomePageController> {
             });
           }
       }
+    });
+    //  锁定为竖屏
+    Future.delayed(Duration(milliseconds: 500),(){
+    //  SystemUtil.lockScreenDirection();
     });
   }
 

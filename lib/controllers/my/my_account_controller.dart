@@ -21,6 +21,7 @@ import 'package:robot/views/my/stars_view.dart';
 import 'dart:io';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../../utils/notification_bloc.dart';
+import '../../utils/system_util.dart';
 class MyAccountController extends StatefulWidget {
   const MyAccountController({super.key});
 
@@ -37,6 +38,7 @@ class _MyAccountControllerState extends State<MyAccountController> {
   String fileImagePath = '';
   List<String> datas = ['-','-','-','1.0'];
   DateTime selectedDate = DateTime.now();
+  bool _isIpad = false;
   Future<void> _selectDate(BuildContext context) async {
     DateTime? picked = await showDatePicker(
       context: context,
@@ -59,6 +61,16 @@ class _MyAccountControllerState extends State<MyAccountController> {
     setState(() {
 
     });
+  }
+
+  queryIsIpad() async{
+    _isIpad =  await  SystemUtil.isIPad();
+    print('_isIpad = ${_isIpad}');
+    if(mounted){
+      setState(() {
+
+      });
+    }
   }
 
   /*获取系统版本*/
@@ -85,6 +97,7 @@ class _MyAccountControllerState extends State<MyAccountController> {
     });
     queryMaxModel();
     queryAvatar();
+    queryIsIpad();
   }
   /*查询历史最大数据*/
   queryMaxModel() async{
@@ -121,7 +134,7 @@ class _MyAccountControllerState extends State<MyAccountController> {
           Positioned(
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(_isIpad ? 32 : 12),
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
@@ -167,8 +180,8 @@ class _MyAccountControllerState extends State<MyAccountController> {
                 ],
               ),),
             ),
-            left: 16,
-            right: 16,
+            left: _isIpad ? 32 :16,
+            right: _isIpad ? 32 :16,
             top: 64,
             bottom: 32,
           ),

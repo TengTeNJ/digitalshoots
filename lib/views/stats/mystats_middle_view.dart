@@ -9,11 +9,15 @@ class MyStatsMiddleView extends StatelessWidget {
   int speedLevel ; // 速度等级
   String score;
   String speed;
-  MyStatsMiddleView({this.scoreLevel = 0,this.speedLevel = 0,this.score = '-',this.speed='-'});
+  bool isIpad;
+  MyStatsMiddleView({this.scoreLevel = 0,this.speedLevel = 0,this.score = '-',this.speed='-',this.isIpad = false});
 
   @override
   Widget build(BuildContext context) {
-    final temp_width = (Constants.screenWidth(context) - 32 - 32 - 64 ) / 2.0;
+    var temp_width = (Constants.screenWidth(context) - 32 - 32 - 64 ) / 2.0;
+    if(isIpad){
+      temp_width = (Constants.screenWidth(context) - 32 - 32 - 64  - 32) / 2.0;
+    }
     final temp_height = (Constants.screenHeight(context) -  Constants.appBarHeight - Constants.tabBarHeight - 64)/3.0;
     return Container(
       margin: EdgeInsets.only(left: 16,right: 16),
@@ -21,7 +25,7 @@ class MyStatsMiddleView extends StatelessWidget {
         children: [
           Container(
             // color: Colors.red,
-            width: Constants.screenWidth(context) - 32 - 32,
+            width: isIpad ? Constants.screenWidth(context) - 32 - 32 - 32 : Constants.screenWidth(context) - 32 - 32,
             height: temp_height,
             child: Row(
               children: [
