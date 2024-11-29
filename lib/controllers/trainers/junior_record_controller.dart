@@ -62,10 +62,16 @@ class _JuniorRecordControllerState extends State<JuniorRecordController> {
         if (mounted) {
           resetTimer();
           TTToast.showLoading();
+          lockGame(true);
+          resetTimer();
           Map result = await _ttScreenRecordPlugin.stopRecording();
           final _path = result['path'];
           print('视频保存路径:${_path}');
           await BLESendUtil.blueLightBlink();
+          Future.delayed(Duration(milliseconds: 1000), () async {
+            lockGame(false);
+            BLESendUtil.openAllBlueLight();
+          });
           resetTimer();
           // 先保存数据
           Gamemodel model = Gamemodel.modelFromJson(

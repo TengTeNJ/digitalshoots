@@ -15,7 +15,8 @@ class RichSpanText extends StatelessWidget {
         if (word == filterText) {
           return WidgetSpan(
             child: FittedBox(
-              child: Text(word + ' ', style: TextStyle(color:filterTextColor,fontWeight: FontWeight.w500,fontSize: 14,height: 1.0)),
+              child: Text(word + ' ',
+                  style: TextStyle(color:filterTextColor,fontWeight: FontWeight.w500,fontSize: 14,height: 1.0)),
             ),
           );
         } else {

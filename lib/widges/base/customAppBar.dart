@@ -49,19 +49,27 @@ class _CustomAppBarState extends State<CustomAppBar> {
         }
         print('电量666${batteryLevel}');
       } else if (type == BLEDataType.boardBattery) {
-        firstName = GameDataUtil.boardPowerValueToBatteryImageLevel(BluetoothManager().gameData.firstPower);
-        secondName = GameDataUtil.boardPowerValueToBatteryImageLevel(BluetoothManager().gameData.secondPower);
-        thirdName = GameDataUtil.boardPowerValueToBatteryImageLevel(BluetoothManager().gameData.thirdPower);
-        fourName = GameDataUtil.boardPowerValueToBatteryImageLevel(BluetoothManager().gameData.fourPower);
-        fiveName = GameDataUtil.boardPowerValueToBatteryImageLevel(BluetoothManager().gameData.fivePower);
-        sixName = GameDataUtil.boardPowerValueToBatteryImageLevel(BluetoothManager().gameData.sixPower);
-
-        // print('1号板电量${BluetoothManager().gameData.firstPower}');
-        // print('2号板电量${BluetoothManager().gameData.secondPower}');
-        // print('3号板电量${BluetoothManager().gameData.thirdPower}');
-        // print('4号板电量${BluetoothManager().gameData.fourPower}');
-        // print('5号板电量${BluetoothManager().gameData.fivePower}');
-        // print('6号板电量${BluetoothManager().gameData.sixPower}');
+        firstName = GameDataUtil.boardPowerValueToBatteryImageLevel(
+            BluetoothManager().gameData.firstPower);
+        secondName = GameDataUtil.boardPowerValueToBatteryImageLevel(
+            BluetoothManager().gameData.secondPower);
+        thirdName = GameDataUtil.boardPowerValueToBatteryImageLevel(
+            BluetoothManager().gameData.thirdPower);
+        fourName = GameDataUtil.boardPowerValueToBatteryImageLevel(
+            BluetoothManager().gameData.fourPower);
+        fiveName = GameDataUtil.boardPowerValueToBatteryImageLevel(
+            BluetoothManager().gameData.fivePower);
+        sixName = GameDataUtil.boardPowerValueToBatteryImageLevel(
+            BluetoothManager().gameData.sixPower);
+        if (mounted) {
+          setState(() {});
+        }
+        print('1号板电量${BluetoothManager().gameData.firstPower}');
+        print('2号板电量${BluetoothManager().gameData.secondPower}');
+        print('3号板电量${BluetoothManager().gameData.thirdPower}');
+        print('4号板电量${BluetoothManager().gameData.fourPower}');
+        print('5号板电量${BluetoothManager().gameData.fivePower}');
+        print('6号板电量${BluetoothManager().gameData.sixPower}');
       }
     };
     BluetoothManager().conectedDeviceCount.addListener(() {
@@ -114,15 +122,18 @@ class _CustomAppBarState extends State<CustomAppBar> {
         ),
       ),
       actions: [
-        BluetoothManager().conectedDeviceCount.value > 0 ?
-        BatteryView(batteryImageNames: ['images/battery/battery_${firstName}.png',
-      'images/battery/battery_${secondName}.png',
-      'images/battery/battery_${thirdName}.png',
-      'images/battery/battery_${fourName}.png',
-      'images/battery/battery_${fiveName}.png',
-      'images/battery/battery_${sixName}.png'
-      ],)
-       :Container()
+        BluetoothManager().conectedDeviceCount.value > 0
+            ? BatteryView(
+                batteryImageNames: [
+                  'images/battery/battery_${firstName}.png',
+                  'images/battery/battery_${secondName}.png',
+                  'images/battery/battery_${thirdName}.png',
+                  'images/battery/battery_${fourName}.png',
+                  'images/battery/battery_${fiveName}.png',
+                  'images/battery/battery_${sixName}.png'
+                ],
+              )
+            : Container()
 
         // ),
       ],
