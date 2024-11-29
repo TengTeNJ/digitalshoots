@@ -61,6 +61,7 @@ dependencies:
   package_info_plus: ^8.0.0
   open_settings: ^2.0.2
   wakelock_plus: ^1.2.5
+  device_info_plus: ^10.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

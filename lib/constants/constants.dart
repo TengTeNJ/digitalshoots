@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:robot/utils/system_util.dart';
 
 import '../utils/color.dart';
 
@@ -458,3 +459,12 @@ const Map<int,int> kTargetAndScoreMap = {
 // const preShowSwitch = false; // 游戏 3 2 1倒计时开关
 
 const kRetrySendCount = 1; //  命令重发次数
+
+ Future<double> getWidthMargin() async{
+  double kWidthMargin  = await SystemUtil.isIPad() ? 32 : 16;
+  return kWidthMargin;
+}
+
+const kWidthMargin = 16.0;
+ const  kIpadMargin = 32.0;
+

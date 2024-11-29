@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:robot/constants/constants.dart';
 import 'package:robot/utils/ble_send_util.dart';
 import 'package:robot/utils/navigator_util.dart';
+import 'package:robot/utils/system_util.dart';
 import 'package:robot/widges/base/customAppBar.dart';
 import 'package:robot/widges/base/custom_tab_bar.dart';
 
@@ -31,6 +32,9 @@ class BaseViewController extends StatefulWidget {
 
 class _BaseViewControllerState extends State<BaseViewController>
     with WidgetsBindingObserver {
+
+  bool _isIpad = false;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -38,7 +42,18 @@ class _BaseViewControllerState extends State<BaseViewController>
     // 监听生命周期
     WidgetsBinding.instance.addObserver(this);
     print('BaseViewController initState');
+    queryIsIpad();
   }
+
+   queryIsIpad() async{
+     _isIpad =  await  SystemUtil.isIPad();
+     if(mounted){
+       setState(() {
+
+       });
+     }
+  }
+
 
   /*生命周期函数*/
   @override
@@ -74,7 +89,7 @@ class _BaseViewControllerState extends State<BaseViewController>
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('images/background.png'), // 替换为你的图片路径
-                    fit: BoxFit.cover, // 根据需要调整图片的适应方式
+                    fit: _isIpad ? BoxFit.fill : BoxFit.cover, // 根据需要调整图片的适应方式
                   ),
                 ),
                 child: widget.child,
@@ -86,14 +101,15 @@ class _BaseViewControllerState extends State<BaseViewController>
             appBar: CustomAppBar(),
             body: Container(
               width: Constants.screenWidth(context),
+              height: Constants.screenHeight(context) - Constants.navigationBarHeight -  Constants.tabBarHeight ,
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('images/background.png'), // 替换为你的图片路径
-                    fit: BoxFit.cover, // 根据需要调整图片的适应方式
+                    fit:   _isIpad ? BoxFit.fill : BoxFit.cover, // 根据需要调整图片的适应方式
                   ),
                 ),
-                child: widget.child,
+               child: widget.child,
               ),
             ),
           );

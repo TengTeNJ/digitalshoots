@@ -114,7 +114,7 @@ class _BLEListControllerState extends State<BLEListController> {
                                     itemCount: BluetoothManager()
                                         .deviceListLength
                                         .value)
-                                : EmptyView()),
+                                : EmptyView(title: 'No available devices found.',)),
                         SizedBox(
                           height: 12,
                         ),

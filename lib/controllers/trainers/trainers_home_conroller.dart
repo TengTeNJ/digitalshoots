@@ -11,6 +11,7 @@ import 'package:robot/views/base/avatar_view.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../utils/ble_send_util.dart';
+import '../../utils/system_util.dart';
 
 class TrainersHomeController extends StatefulWidget {
   const TrainersHomeController({super.key});
@@ -21,6 +22,7 @@ class TrainersHomeController extends StatefulWidget {
 
 class _TrainersHomeControllerState extends State<TrainersHomeController> {
   late VideoPlayerController _controller;
+  bool _isIpad = false;
 
   @override
   void initState() {
@@ -38,11 +40,21 @@ class _TrainersHomeControllerState extends State<TrainersHomeController> {
        }
     });
     preLoadImage();
+   // queryIsIpad();
   }
 
+  queryIsIpad() async{
+    _isIpad =  await  SystemUtil.isIPad();
+    print('_isIpad = ${_isIpad}');
+    if(mounted){
+      setState(() {
+
+      });
+    }
+  }
   preLoadImage(){
     // 预加载下个页面的的几个模式的背景图片 防止每次启动初次加载会闪屏的显现象 应该是图片过大影响的
-    Future.delayed(Duration(milliseconds: 100),(){
+    Future.delayed(Duration(milliseconds: 300),(){
       precacheImage(
         ExactAssetImage('images/gamemodel/model1.png'),
         context,
@@ -63,19 +75,17 @@ class _TrainersHomeControllerState extends State<TrainersHomeController> {
   Widget build(BuildContext context) {
     return BaseViewController(
       paused: (){
-        print('----------');
         BLESendUtil.appOffLine();
       },
       resumed: (){
-        print('----1111------');
         BLESendUtil.appOnLine();
       },
       showBottomBar: false,
       child: Column(
         children: [
           Container(
-            margin: EdgeInsets.all(16),
-            width: Constants.screenWidth(context) - 32,
+            margin: EdgeInsets.all(_isIpad ? kIpadMargin : kWidthMargin),
+            width: Constants.screenWidth(context) - (_isIpad ? kIpadMargin : kWidthMargin) * 2,
             child: ClipRRect(
               child: AspectRatio(
                 aspectRatio: 1.4,
@@ -84,7 +94,6 @@ class _TrainersHomeControllerState extends State<TrainersHomeController> {
               borderRadius: BorderRadius.circular(12),
             ),
             decoration: BoxDecoration(
-                color: Colors.red,
                 borderRadius: BorderRadius.circular(12)),
           ),
           SizedBox(
@@ -101,8 +110,8 @@ class _TrainersHomeControllerState extends State<TrainersHomeController> {
               }
             },
             child: Container(
-              width: Constants.screenWidth(context) - 32,
-              margin: EdgeInsets.only(left: 16,right: 16),
+              width: Constants.screenWidth(context) - (_isIpad ? kIpadMargin : kWidthMargin)*2 ,
+              margin: EdgeInsets.only(left: (_isIpad ? kIpadMargin : kWidthMargin),right: (_isIpad ? kIpadMargin : kWidthMargin)),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   color: Colors.red
