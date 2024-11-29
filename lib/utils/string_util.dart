@@ -61,7 +61,6 @@ class StringUtil {
 
   /*时间字符串转换为日期*/
   static DateTime stringToDate(String timeString) {
-    print('timeString=${timeString}');
     if(timeString.contains('/')){
       timeString = timeString.replaceAll('/', '-');
     }
@@ -113,6 +112,8 @@ class StringUtil {
       temp += timeString.substring(4,6);
       temp += '-';
       temp += timeString.substring(6,8);
+    }else{
+      return timeString;
     }
     DateTime date = DateTime.parse(temp);
     String formattedDate = DateFormat('MMMM dd').format(date);
