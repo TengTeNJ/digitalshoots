@@ -6,6 +6,7 @@ import 'package:robot/utils/blue_tooth_manager.dart';
 import 'package:robot/views/base/empty_view.dart';
 
 import '../../utils/global.dart';
+import '../../utils/system_util.dart';
 
 class BLEListController extends StatefulWidget {
   const BLEListController({super.key});
@@ -15,12 +16,24 @@ class BLEListController extends StatefulWidget {
 }
 
 class _BLEListControllerState extends State<BLEListController> {
+  bool _isIpad = false;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     GameUtil gameUtil = GetIt.instance<GameUtil>();
     gameUtil.isBLEListPage = true;
+    queryIsIpad();
+  }
+  queryIsIpad() async{
+    _isIpad =  await  SystemUtil.isIPad();
+    print('_isIpad = ${_isIpad}');
+    if(mounted){
+      setState(() {
+
+      });
+    }
   }
 
   @override
@@ -28,7 +41,7 @@ class _BLEListControllerState extends State<BLEListController> {
     return BaseViewController(
       // showBottomBar: false,
       child: Container(
-        margin: EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 32),
+        margin: EdgeInsets.only(left: _isIpad ? 32 : 16, right: _isIpad ? 32 : 16, top: 32, bottom: 32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
