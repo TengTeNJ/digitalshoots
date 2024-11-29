@@ -31,8 +31,6 @@ editImage(XFile pickedFile) async {
     return;
   }
   final croppedFile = await ImageCropper().cropImage(
-    maxHeight: 50,
-    maxWidth: 50,
     cropStyle: CropStyle.circle,
     sourcePath: pickedFile != null ? pickedFile!.path : '',
     aspectRatioPresets: [
