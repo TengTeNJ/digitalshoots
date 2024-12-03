@@ -14,6 +14,9 @@ class CountdownTimer {
 
   void start() {
     print('---start---');
+    _minutes = 0;
+    _seconds = 0;
+    _milliseconds = 0;
     _timer = Timer.periodic(Duration(milliseconds: 10), (timer) {
       if (_milliseconds < 100) {
         _milliseconds += 1;
@@ -48,9 +51,9 @@ class CountdownTimer {
 
   void stop() {
     _timer?.cancel();
-    _minutes = 0;
-    _seconds = 0;
-    _milliseconds = 0;
+    // _minutes = 0;
+    // _seconds = 0;
+    // _milliseconds = 0;
   }
 
   void dispose() {
