@@ -5,6 +5,16 @@ const kResponseMasterStatu = 0x12; // 响应主机的状态
 const kGameStatu = 0x33; // 游戏状态0 idle 1开始 2结束
 const kAppOnlineStatu = 0x22; // APP上下线状态
 const kChangeGameMode = 0x34; // 切换游戏模式 1:novice 2:junior 3:battle
+const kPowerOff = 0x36; // 关机指令
+
+/*关机*/
+List<int> powerOffData() {
+  int v = 0xA5 + 0x07 + kPowerOff + 0x01 + 0x01;
+  List<int> values = [0xA5, 0x07, kPowerOff, 0x01, 0x01, v, 0xAA];
+  print('关机指令${values}');
+  return values;
+}
+
 /*APP上线*/
 List<int> onLineData() {
   int v = 0xA5 + 0x07 + kAppOnlineStatu + 0x01 + 0x01;

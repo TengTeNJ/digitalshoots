@@ -20,6 +20,12 @@ class BLESendUtil {
         .writerDataToDevice(getWriterDevice(), heartBeatResponseData());
   }
 
+  /*关机*/
+  static powerOff() {
+    BluetoothManager()
+        .writerDataToDevice(getWriterDevice(), powerOffData());
+  }
+
   /*打开所有蓝灯*/
   static Future<void> openAllBlueLight() async {
     if (BluetoothManager().hasConnectedDeviceList.isEmpty) {

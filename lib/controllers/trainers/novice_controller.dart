@@ -14,6 +14,7 @@ import '../../utils/blue_tooth_manager.dart';
 import '../../utils/count_down_timer.dart';
 import '../../utils/global.dart';
 import '../../utils/navigator_util.dart';
+import '../../utils/notification_bloc.dart';
 
 class NoviceController extends StatefulWidget {
   const NoviceController({super.key});
@@ -25,6 +26,7 @@ class NoviceController extends StatefulWidget {
 class _NoviceControllerState extends State<NoviceController>
     with WidgetsBindingObserver {
   late CountdownTimer _countdownTimer;
+  late StreamSubscription subscription;
 
   List<int> doneLights = []; // 已经关闭的灯
   int _secondsRemaining = 3; // 倒计时时间
@@ -102,6 +104,7 @@ class _NoviceControllerState extends State<NoviceController>
               setState(() {});
               // 6个全部击中 则一轮游戏结束
               if (doneLights.length == 6) {
+                print('游戏结束');
                 // 一轮游戏结束
                 _countdownTimer.stop();
                 await BLESendUtil.blueLightBlink();
@@ -231,8 +234,24 @@ void waitingToBegainGame(){
           padding: EdgeInsets.only(left: 32, right: 32),
           child: Column(
             children: [
+              SizedBox(height: 16,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.power_settings_new), // 使用电源图标
+                    onPressed: () {
+                      // 按钮点击时的逻辑
+                      print('Power button pressed');
+                      BLESendUtil.powerOff();
+                    },
+                    color: Colors.red, // 设置图标颜色
+                    iconSize: 30, // 设置图标大小
+                  )
+                ],
+              ),
               SizedBox(
-                height: 32,
+                height: 16,
               ),
               Constants.regularBaseTextWidget('GAME TIME', 16),
               StopWatchView(
@@ -290,6 +309,7 @@ void waitingToBegainGame(){
     super.dispose();
     _countdownTimer.stop();
     _countdownTimer.dispose();
+    subscription.cancel();
     BluetoothManager().dataChange = null;
     BLESendUtil.blueLightBlink();
     print('novice 界面退出');

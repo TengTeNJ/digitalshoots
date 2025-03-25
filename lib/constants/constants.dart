@@ -407,7 +407,7 @@ const kTabBarPageChangeToRoot= 'change_tab_bar_page_to_root'; //
 const kUpdateAvatar = 'update_avatar'; // 切换头像
 const kStatsToTracking = 'stats_to_tracking'; // stats页面点击tracking跳转到tracking页面
 const kStatsToAccount = 'stats_to_account'; // stats页面点击tracking跳转到account页面
-
+const kSleepWakeUp = 'wake_up'; // 设备睡眠唤醒
 const Map<String,Map<String,String>> kGameSceneAndModelMap = {
   "1" :{
     "7" : "ZIGZAG Challenge",

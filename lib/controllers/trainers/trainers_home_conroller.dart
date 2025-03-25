@@ -30,14 +30,14 @@ class _TrainersHomeControllerState extends State<TrainersHomeController> {
     super.initState();
     _controller = VideoPlayerController.asset('images/splash.mp4')..initialize().then((value) => (){_controller.play();
     });
-    _controller.play();
+    // _controller.play();
     _controller.addListener((){
-       if(_controller.value.isPlaying) {
-
-       } else if (_controller.value.position == _controller.value.duration) {
-         _controller.seekTo(Duration.zero);
-         _controller.play();
-       }
+       // if(_controller.value.isPlaying) {
+       //
+       // } else if (_controller.value.position == _controller.value.duration) {
+       //   _controller.seekTo(Duration.zero);
+       //   _controller.play();
+       // }
     });
     preLoadImage();
    queryIsIpad();

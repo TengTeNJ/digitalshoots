@@ -318,6 +318,22 @@ class _JuniorControllerState extends State<JuniorController> {
               padding: EdgeInsets.only(left: 32, right: 32),
               child: Column(
                 children: [
+                  SizedBox(height: 16,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.power_settings_new), // 使用电源图标
+                        onPressed: () {
+                          // 按钮点击时的逻辑
+                          print('Power button pressed');
+                          BLESendUtil.powerOff();
+                        },
+                        color: Colors.red, // 设置图标颜色
+                        iconSize: 30, // 设置图标大小
+                      )
+                    ],
+                  ),
                   SizedBox(
                     height: 32,
                   ),

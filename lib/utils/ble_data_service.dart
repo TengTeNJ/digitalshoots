@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:get_it/get_it.dart';
 import 'package:robot/utils/ble_send_util.dart';
+import 'package:robot/utils/notification_bloc.dart';
 
 import '../constants/constants.dart';
 import '../model/ble_model.dart';
@@ -28,7 +29,6 @@ class ResponseCMDType {
   static const int deviceInfo = 0x20; // 设备信息，包含开机状态、电量等
   static const int speed = 0x25; // 速度
   static const int boardBattery = 0x24; // 从板电量上报
-
   static const int targetResponse = 0x26; // 标靶响应
   static const int score = 0x28; // 得分
   static const int gameStatu = 0x2A; // 游戏状态:开始和结束
@@ -37,6 +37,8 @@ class ResponseCMDType {
   static const int targetIn = 0x10; // 目标击中
   static const int heartBeatQuery = 0x30; // 心跳查询
   static const masterStatu = kResponseMasterStatu; // 主机的状态
+  static const int sleepWakeup = 0x37; // 休眠唤醒 0X01休眠 0X00唤醒
+  static const int powerOff = 0x36; // 设备关机
 }
 
 List<int> bleNotAllData = []; // 不完整数据 被分包发送的蓝牙数据
@@ -123,6 +125,15 @@ class BluetoothDataParse {
     element = element.sublist(1, element.length);
     int cmd = element[1];
     switch (cmd) {
+      case ResponseCMDType.sleepWakeup:
+        int data = element[2];
+        print('休眠状态=${data}');
+        if(data == 0){
+          // 休眠唤醒
+          // 发送通知
+          // EventBus().sendEvent(kSleepWakeUp);
+        }
+        break;
       case ResponseCMDType.deviceInfo:
         int parameter_data = element[2];
         int statu_data = element[3];
