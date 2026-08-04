@@ -447,15 +447,23 @@ const kAppVersion = '202405131652';
 const kJuniorRedtargets = [2,4,5];
 const kJuniorBluetargets = [1,3,6];
 const kBattleTargets = [1,2,3,4,5,6];
-const Map<int,int> kTargetAndScoreMap = {
-  1:11,
-  2:25,
-  3:9,
-  4:11,
-  5:25,
-  6:9
-}; // 标靶和得分映射表
+// const Map<int,int> kTargetAndScoreMap = {
+//   1:11,
+//   2:25,
+//   3:9,
+//   4:11,
+//   5:25,
+//   6:9
+// }; // 标靶和得分映射表
 
+const Map<int,int> kTargetAndScoreMap = {
+  1:10,
+  2:10,
+  3:10,
+  4:10,
+  5:10,
+  6:10
+}; // 标靶和得分映射表
 // const preShowSwitch = false; // 游戏 3 2 1倒计时开关
 
 const kRetrySendCount = 1; //  命令重发次数

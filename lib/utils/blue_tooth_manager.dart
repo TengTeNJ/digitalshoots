@@ -87,6 +87,7 @@ class BluetoothManager {
       // print('event.name=${event.name}');
       if (kBLEDevice_Names.indexOf(event.name) != -1) {
         // 如果设备列表数组中无，则添加
+        print('搜索到了${event.name}');
         if (!hasDevice(event.id)) {
           this.deviceList.add(BLEModel(device: event));
           deviceListLength.value = this.deviceList.length;

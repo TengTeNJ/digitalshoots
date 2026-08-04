@@ -31,23 +31,23 @@ editImage(XFile pickedFile) async {
     return;
   }
   final croppedFile = await ImageCropper().cropImage(
-    cropStyle: CropStyle.circle,
     sourcePath: pickedFile != null ? pickedFile!.path : '',
-    aspectRatioPresets: [
-      CropAspectRatioPreset.square,
-    ],
-    androidUiSettings: AndroidUiSettings(
+
+    uiSettings: [
+      AndroidUiSettings(
         toolbarTitle: 'Cropper',
         toolbarColor: Colors.deepOrange,
         toolbarWidgetColor: Colors.white,
-        initAspectRatio: CropAspectRatioPreset.original,
-        lockAspectRatio: false),
-    iosUiSettings: IOSUiSettings(
-      title: 'Cropper',
-    ),
+        lockAspectRatio: false,
+      ),
+      IOSUiSettings(
+        title: 'Cropper',
+      ),
+    ],
   );
+
   if (croppedFile != null) {
-    saveImageToSandbox(croppedFile!);
+    saveImageToSandbox(File(croppedFile!.path));
   }
 }
 
